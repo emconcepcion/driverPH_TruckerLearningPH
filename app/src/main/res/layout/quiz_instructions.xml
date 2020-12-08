@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".QuizInstructions">
+
+    <TextView
+        android:id="@+id/textview_course_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/course_title"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        />
+
+    <View
+        android:id="@+id/divider_up"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="5dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/textview_course_title"/>
+
+    <TextView
+        android:id="@+id/textview_questions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textview_course_title"
+        android:text="@string/questions_5"
+        android:layout_marginTop="15dp"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/textview_time_limit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textview_questions"
+        android:text="@string/time_limit"
+        android:layout_marginTop="5dp"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        />
+
+    <View
+        android:id="@+id/divider_down"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="5dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/textview_time_limit"/>
+
+    <TextView
+        android:id="@+id/textview_instruction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="INSTRUCTIONS"
+        android:layout_marginTop="20dp"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:layout_below="@id/divider_down"
+        />
+
+    <TextView
+        android:id="@+id/textview_instruct_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textview_instruction"
+        android:text="@string/read_questions"
+        android:layout_marginTop="5dp"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        />
+
+    <Button
+        android:id="@+id/btn_start_quiz"
+        android:layout_width="230dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/textview_instruct_msg"
+        android:text="@string/start_quiz"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        />
+
+    <Button
+        android:id="@+id/btn_back_to_take_quiz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Back"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"/>
+
+</RelativeLayout>
