@@ -1,14 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+<!--    <color name="colorPrimary">#6200EE</color>-->
+<!--    <color name="colorPrimaryDark">#3700B3</color>-->
+<!--    <color name="colorAccent">#03DAC5</color>-->
     <color name="colorGray">#D2D5D4</color>
     <color name="colorBlueLight">#0079DA</color>
     <color name="colorGreenLight">#C1FF7A</color>
     <color name="colorYellow">#E8FF00</color>
     <color name="colorRed">#6E1710</color>
 
+    <color name="colorPrimary">#fca10b</color>
+    <color name="colorPrimaryDark">#3d93d9</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="blue">#0096cb</color>
+    <color name="yellow">#ffc200</color>
+    <color name="green">#95c83d</color>
+    <color name="red">#dc2d34</color>
+    <color name="dark_green">#329F0B</color>
+    <color name="dark_blue">#0235EC</color>
+    <color name="textInputOutlineColor">#FBB8AC</color>
+    <color name="textColorPrimary">#442C2E</color>
+
+    <!--<color name="colorPrimary">#6200EE</color>ORIGINAL!-->
+    <!--<color name="colorAccent">#03DAC5</color> ORIGINAL!-->
+    <!--<color name="colorPrimaryDark">#3700B3</color>ORIGINAL!-->
 
 
 </resources>

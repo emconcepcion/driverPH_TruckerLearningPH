@@ -1,18 +1,6 @@
 <resources>
-    <string name="app_name">Driver.PH</string>
-    <string name="app_email">driver.ph@gmail.com</string>
-    <string name="title_activity_dashboard">Dashboard</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">DriverPH_TruckerLearningPH</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
-    <string name="score_0">Score: 0</string>
     <string name="questions_go_here">Questions go here\nQuestions go here\nQuestions go here</string>
     <string name="lessons_go_here">Lessons go here\nLessons go here\nLessons go here\nLessons go here\nLessons go here\nLessons go here\nLessons go here\nLessons go here</string>
     <string name="option_1">Option 1</string>
@@ -34,7 +22,7 @@
     <string name="recap_msg">What have you learned from our lesson?\n\nPress the mic icon to START recording and tap the mic again to STOP recording.\nGive at least 1 keyword or 1 sentence about our lesson.</string>
     <string name="quick_recap">Quick Recap</string>
     <string name="quiz_results">Quiz Results</string>
-    <string name="you_scored">YOU SCORED</string>
+    <string name="you_scored">YOU SCORED:</string>
     <string name="unlock_next_module">Unlock next module</string>
     <string name="review">Review</string>
     <string name="retake">Retake</string>
@@ -71,5 +59,50 @@
     <string name="time_remaining">Time Remaining</string>
     <string name="time_is_up">Time is up!</string>
     <string name="option_4">Option 4</string>
+
+    <string name="app_email">driver.ph@gmail.com</string>
+    <string name="title_activity_dashboard">Dashboard</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <string name="current_date">Day, Month Date Year</string>
+
+    <string name="evaluation_text">1. Observation \n2. Interviews\n3. Demonstration\n4. Case Studies\n5.Written Test\n6. Practical/\nPerformance Test</string>
+
+    <string name="you_passed">You Passed!</string>
+    <string name="you_failed">You Failed!</string>
+
+    <string name="eval_points_interview">• Interviews</string>
+    <string name="eval_points_demonstration">• Demonstration</string>
+    <string name="eval_points_caseStudy">• Case Studies</string>
+    <string name="eval_points_writtenTest">• Written Test</string>
+    <string name="eval_points_practicalTest">• Practical/Performance Test</string>
+    <string name="eval_points_observation">• Observation</string>
+    <string name="see_details"><u>See Details</u></string>
+
+    <string name="change_language">Change Language</string>
+
+    <string name="shr_hint_username">Username</string>
+    <string name="shr_hint_password">Password</string>
+    <string name="passenger_bus_driver_n_straight_truck_driver">•Passenger Bus Driver \n •Straight Truck Driver</string>
+
+    <string name="textview_3">The DRIVING (Passenger Bus/Straight Truck) NC III    Qualification consists of competencies that a person must achieve to drive/operate buses/straight trucks classified under LTO Restriction codes 3 up to 5 on highways; transport passengers and/or heavy goods, liquids and materials over specified long or short distances; comply with local traffic rules/ regulations and ordinances and perform minor repairs on the assigned vehicle.
+        \n\nThis Qualification is packaged from the competency map of the Automotive/Land Transport sector as shown in Annex A.
+        \n\nThe Units of Competency comprising this Qualification include the following:</string>
+    <string name="code_no"><b>CODE NO.\t\tBASIC COMPETENCIES</b></string>
+    <string name="code"><b>CODE NO.\tCOMMON COMPETENCIES</b></string>
+    <string name="code_no_1"><b>CODE NO.\t\tCORE COMPETENCIES</b></string>
+    <string name="obser"><b><u>OBSERVATION</u></b></string>
+    <string name="rec">You need to undergo another\ntraining for the Basic\nCompetences to improve on the\nfollowing area/s:</string>
+    <string name="tesda">TESDA DRIVING (Passenger\nBus/Straight Truck) NC III</string>
+    <string name="alt311">ALT311204 Performance Job Estimate</string>
 
 </resources>

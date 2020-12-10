@@ -4,10 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
     tools:context=".QuizResults">
 
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
+
     <TextView
+        android:layout_below="@id/toolbar"
         android:id="@+id/quiz_results"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -34,14 +37,14 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="2dp"
         android:text="x/5"
-        android:textSize="20sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <ScrollView
         android:layout_width="344dp"
         android:layout_height="530dp"
         android:layout_below="@id/txt_score_result"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="5dp"
         android:scrollbars="vertical"
         android:fillViewport="true"
         >
@@ -49,7 +52,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:layout_margin="1dp">
 
             <ListView
                 android:layout_width="match_parent"
@@ -67,7 +72,8 @@
         android:layout_height="wrap_content"
         android:text="@string/review"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="25dp"/>
+        android:layout_marginBottom="25dp"
+        android:layout_margin="16dp"/>
 
     <Button
         android:id="@+id/btn_retake"
@@ -76,7 +82,7 @@
         android:text="@string/retake"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginBottom="25dp"
+        android:layout_margin="16dp"
         android:layout_alignParentRight="true" />
 
 </RelativeLayout>

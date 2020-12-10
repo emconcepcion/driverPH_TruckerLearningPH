@@ -20,6 +20,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    viewBinding
+            {
+                enabled=true
+            }
 }
 
 dependencies {
@@ -38,5 +43,10 @@ dependencies {
     implementation 'com.kofigyan.stateprogressbar:stateprogressbar:1.0.0'
     implementation 'com.anton46:stepsview:0.0.2'
     implementation 'com.muddzdev:styleabletoast:2.2.3'
+    // Circular ImageView https://github.com/hdodenhof/CircleImageView
+    implementation 'de.hdodenhof:circleimageview:3.0.1'
+
+    // MDC-101 Android: Material Components (MDC) Basics (Java) https://codelabs.developers.google.com/codelabs/mdc-101-java#1
+    api 'com.google.android.material:material:1.1.0-alpha06'
 
 }

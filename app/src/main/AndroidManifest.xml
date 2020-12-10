@@ -2,22 +2,78 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cav.quizinstructions">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".QuizResults"></activity>
-        <activity android:name=".QuizActivity" />
-        <activity android:name=".QuizInstructions">
+        <activity android:name=".ChangeAvatar"></activity>
+        <activity android:name=".AccountEdit" />
+        <activity android:name=".Recommendation" />
+        <activity android:name=".Polguide" />
+        <activity
+            android:name=".MyAccount"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".VoiceResponse"
+            android:parentActivityName=".Dashboard" />
+        <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".Login"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Lessons_Menu"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Lessons_Basic_Content"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Evaluation_Basic_Content"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Evaluation_Menu"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Registration"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".MyProgress"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Lesson"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Help"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".Dashboard"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".Advisory"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".QuizResults"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".QuizActivity"
+            android:parentActivityName=".Dashboard" />
+        <activity
+            android:name=".QuizInstructions"
+            android:parentActivityName=".Dashboard" />
     </application>
 
 </manifest>

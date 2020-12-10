@@ -1,6 +1,7 @@
 package com.cav.quizinstructions;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
@@ -58,6 +59,11 @@ public class QuizActivity extends AppCompatActivity {
     private int score;
     private boolean answered;
 
+    private Dialog show_score;
+    Button btn_view_result;
+    ImageView pass_icon, fail_icon;
+    TextView pass_fail, textview_show_score;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,7 +106,6 @@ public class QuizActivity extends AppCompatActivity {
                                 Toast.LENGTH_LONG, R.style.toastStyle).show();
                     }
                 } else {
-                    rbGroup.clearCheck();
                     showNextQuestion();
                 }
             }
@@ -113,6 +118,8 @@ public class QuizActivity extends AppCompatActivity {
         rb3.setTextColor(textColorDefaultRb);
         rb4.setTextColor(textColorDefaultRb);
 
+        rbSetEnabledTrue();
+
         if (questionCounter < questionCountTotal) {
             currentQuestion = questionList.get(questionCounter);
 
@@ -122,16 +129,6 @@ public class QuizActivity extends AppCompatActivity {
             rb2.setText(currentQuestion.getOption2());
             rb3.setText(currentQuestion.getOption3());
             rb4.setText(currentQuestion.getOption4());
-
-        //    askedQuestions.add(currentQuestion.getQuestion() + "\n" +"Correct Answer will not be shown.");
-
-//            +
-//             askedQuestions.add(currentQuestion.getOption1() + "\n");
-//             +
-//                            currentQuestion.getOption2() + "\n" +
-//                            currentQuestion.getOption3() + "\n" +
-//                            currentQuestion.getOption4() + "\n");
-
 
             questionCounter++;
             textViewQuestionCount.setText("Question: " + questionCounter + "/" + questionCountTotal);
@@ -193,7 +190,7 @@ public class QuizActivity extends AppCompatActivity {
             textViewScore.setText("Score: " + score);
         }
         else{
-            String ansNotAvailable = "Correct answer will not be shown";
+            String ansNotAvailable = "Correct answer is hidden.";
             askedQuestions.add(currentQuestion.getQuestion() + "\n" + ansNotAvailable);
         }
         showSolution();
@@ -202,8 +199,10 @@ public class QuizActivity extends AppCompatActivity {
     public void showSolution() {
         RadioButton rbSelected = findViewById(rbGroup.getCheckedRadioButtonId());
         int answerNr = rbGroup.indexOfChild(rbSelected) + 1;
+        rbSetEnabledFalse();
 
         if(answerNr != currentQuestion.getAnswerNr()) {
+            textViewQuestion.setText("Wrong Answer.");
             rb1.setTextColor(Color.RED);
             rb2.setTextColor(Color.RED);
             rb3.setTextColor(Color.RED);
@@ -213,29 +212,43 @@ public class QuizActivity extends AppCompatActivity {
             switch (currentQuestion.getAnswerNr()) {
                 case 1:
                     rb1.setTextColor(Color.GREEN);
-                    textViewQuestion.setText("Correct");
+                    textViewQuestion.setText("Correct!");
                     break;
                 case 2:
                     rb2.setTextColor(Color.GREEN);
-                    textViewQuestion.setText("Correct");
+                    textViewQuestion.setText("Correct!");
                     break;
                 case 3:
                     rb3.setTextColor(Color.GREEN);
-                    textViewQuestion.setText("Correct");
+                    textViewQuestion.setText("Correct!");
                     break;
                 case 4:
                     rb4.setTextColor(Color.GREEN);
-                    textViewQuestion.setText("Correct");
+                    textViewQuestion.setText("Correct!");
                     break;
             }
             rbGroup.clearCheck();
         }
+
             if (questionCounter < questionCountTotal) {
                 btn_next.setText("Next");
             } else {
                 btn_next.setText("Submit Quiz");
             }
 
+    }
+
+    public void rbSetEnabledFalse(){
+        rb1.setEnabled(false);
+        rb2.setEnabled(false);
+        rb3.setEnabled(false);
+        rb4.setEnabled(false);
+    }
+    public void rbSetEnabledTrue(){
+        rb1.setEnabled(true);
+        rb2.setEnabled(true);
+        rb3.setEnabled(true);
+        rb4.setEnabled(true);
     }
 
     public void toResults(){
@@ -248,6 +261,7 @@ public class QuizActivity extends AppCompatActivity {
 
     private void finishQuiz() {
         toResults();
+        //showScore();
         finish();
     }
 
@@ -302,6 +316,46 @@ public class QuizActivity extends AppCompatActivity {
 
         button.setImageDrawable(
                 ContextCompat.getDrawable(getApplicationContext(), icon));
+
+    }
+    public void showScore(){
+
+        textview_show_score = show_score.findViewById(R.id.textview_show_score);
+//        ArrayList<String> arrayList = new ArrayList<>();
+//        arrayList = (ArrayList<String>) getIntent().getSerializableExtra("askedQuestions");
+//        int txt_score_result = getIntent().getExtras().getInt("score");
+        textview_show_score.setText(score + "/" + (questionList.size() -2));
+
+        if(score > (questionList.size() * 0.8)){
+            pass_fail.setText("Like a Boss!");
+            pass_icon.setImageResource(R.drawable.ic_star);
+        }else{
+            pass_fail.setText("Aww, snap!");
+            fail_icon.setImageResource(R.drawable.ic_sad);
+        }
+        show_score.setContentView(R.layout.show_score);
+        close_exit_popup = show_score.findViewById(R.id.close_imgview);
+        btn_view_result = show_score.findViewById(R.id.view_result);
+        pass_fail = show_score.findViewById(R.id.passed_failed);
+        pass_icon = show_score.findViewById(R.id.pass_icon);
+        fail_icon = show_score.findViewById(R.id.fail_icon);
+        close_exit_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                show_score.dismiss();
+            }
+        });
+
+        show_score.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        show_score.show();
+
+        btn_view_result.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(QuizActivity.this, QuizResults.class));
+                finish();
+            }
+        });
 
     }
 }

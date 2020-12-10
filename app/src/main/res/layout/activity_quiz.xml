@@ -5,8 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:padding="16dp"
     tools:context=".QuizActivity">
+
+    <include layout="@layout/toolbar"
+        android:id="@+id/toolbar"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_below="@id/toolbar"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
 
     <TextView
         android:id="@+id/textview_chapter"
@@ -16,7 +27,7 @@
         android:text="Quiz: Chapter"
         android:textColor="@android:color/black"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/textview_instruction"
@@ -40,6 +51,9 @@
         android:textSize="16sp" />
 
 
+    </LinearLayout>
+
+
     <!--    <TextView-->
     <!--        android:id="@+id/txt_score"-->
     <!--        android:layout_width="wrap_content"-->
@@ -52,17 +66,18 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textview_instruct_msg">
+        android:layout_below="@id/linearLayout">
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/textview_instruct_msg"
-            android:layout_marginTop="10dp"
             android:background="@drawable/border"
+            android:layout_marginTop="10dp"
+            android:layout_margin="15dp"
             android:orientation="vertical"
-            android:padding="15dp">
+            android:padding="10dp">
 
             <!--    <LinearLayout-->
             <!--        android:layout_width="match_parent"-->
@@ -196,6 +211,7 @@
     </ScrollView>
 
     <ImageButton
+        android:layout_below="@id/toolbar"
         android:id="@+id/btn_sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
