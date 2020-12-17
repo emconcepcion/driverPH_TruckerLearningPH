@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cav.quizinstructions">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -14,8 +17,10 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:exported = "true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ChangeAvatar"></activity>
+        <activity android:name=".QuizStatusList"></activity>
+        <activity android:name=".ChangeAvatar" />
         <activity android:name=".AccountEdit" />
         <activity android:name=".Recommendation" />
         <activity android:name=".Polguide" />
@@ -74,6 +79,12 @@
         <activity
             android:name=".QuizInstructions"
             android:parentActivityName=".Dashboard" />
+        <receiver android:name=".NetworkMonitor">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

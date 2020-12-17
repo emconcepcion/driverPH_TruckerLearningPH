@@ -46,23 +46,39 @@ public class QuizResults extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 //        getSupportActionBar().setTitle("Quiz Results");
 
-
+        btn_view_result = findViewById(R.id.btn_retake);
+        btn_view_result.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //   toQuizList();
+                startActivity(new Intent(QuizResults.this, QuizStatusList.class));
+            }
+        });
 
         score_result = findViewById(R.id.txt_score_result);
         listView = findViewById(R.id.list_view);
 
+        showResult();
+
+    }
+
+    public void showResult(){
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList = (ArrayList<String>) getIntent().getSerializableExtra("askedQuestions");
 //        int correctAns = getIntent().getExtras().getInt("correctAns");
 //        answerKey.setText(correctAns);
         int txt_score_result = getIntent().getExtras().getInt("score");
+
         score_result.setText(txt_score_result + "/" + arrayList.size());
 
         ArrayAdapter arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, arrayList);
-
         listView.setAdapter(arrayAdapter);
-
     }
+
+    //        score_list = txt_score_result;
+//        scoreList = new ArrayList<>();
+//        scoreList.addAll(arrayList);
+////        scoreList.add("" + txt_score_result);
 
 
 

@@ -8,13 +8,17 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.cav.quizinstructions.QuizContract.*;
 
 import androidx.annotation.Nullable;
+import com.cav.quizinstructions.DbContract.*;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.cav.quizinstructions.DbContract.ScoresTable.DATABASE_NAME;
+
 public class QuizDbHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "driverPH.db";
+    //private static final String DATABASE_NAME = "driverPH.db";
     private static final int DATABASE_VERSION = 1;
 
     private SQLiteDatabase db;
@@ -39,15 +43,66 @@ public class QuizDbHelper extends SQLiteOpenHelper {
                 QuestionsTable.COLUMN_CHAPTER + " TEXT" +
                 ")";
 
+        final String SQL_CREATE_SCORES_TABLE = "CREATE TABLE " +
+                ScoresTable.TABLE_NAME_SCORES + " ( " +
+                ScoresTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                ScoresTable.COLUMN_NAME_EMAIL + " TEXT, " +
+                ScoresTable.COLUMN_NAME_SCORE + " INTEGER," +
+                ScoresTable.COLUMN_NAME_NUM_ITEMS + " INTEGER," +
+                ScoresTable.COLUMN_NAME_CHAPTER + " TEXT," +
+                ScoresTable.COLUMN_NAME_NUM_ATTEMPT + " INTEGER," +
+                ScoresTable.COLUMN_NAME_DATE_TAKEN + " TEXT," +
+                ScoresTable.SYNC_STATUS + " INTEGER" +
+                ")";
+
         db.execSQL(SQL_CREATE_QUESTIONS_TABLE);
+        db.execSQL(SQL_CREATE_SCORES_TABLE);
         fillQuestionsTable();
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + QuestionsTable.TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + ScoresTable.TABLE_NAME_SCORES);
         onCreate(db);
     }
+
+    public void saveToLocalDatabase(String email, int score, int num_items, String chap,
+                                    int num_of_attempt, String date_taken, int sync_status,
+                                    SQLiteDatabase database){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ScoresTable.COLUMN_NAME_EMAIL, email);
+        contentValues.put(ScoresTable.COLUMN_NAME_SCORE, score);
+        contentValues.put(ScoresTable.COLUMN_NAME_NUM_ITEMS, num_items);
+        contentValues.put(ScoresTable.COLUMN_NAME_CHAPTER, chap);
+        contentValues.put(ScoresTable.COLUMN_NAME_NUM_ATTEMPT, num_of_attempt);
+        contentValues.put(ScoresTable.COLUMN_NAME_DATE_TAKEN, date_taken);
+        contentValues.put(ScoresTable.SYNC_STATUS, sync_status);
+        database.insert(ScoresTable.TABLE_NAME_SCORES, null, contentValues);
+    }
+
+    public Cursor readFromLocalDatabase(SQLiteDatabase database){
+
+        //projection are the column names
+        String[] projection = {ScoresTable.COLUMN_NAME_EMAIL, ScoresTable.COLUMN_NAME_SCORE,
+                                ScoresTable.COLUMN_NAME_NUM_ITEMS, ScoresTable.COLUMN_NAME_CHAPTER,
+                                ScoresTable.COLUMN_NAME_NUM_ATTEMPT, ScoresTable.COLUMN_NAME_DATE_TAKEN,
+                                ScoresTable.SYNC_STATUS};
+        return (database.query(ScoresTable.TABLE_NAME_SCORES, projection,null, null, null, null, null));
+    }
+
+    public void updateLocalDatabase(String email, int score, int num_items, String chap,
+                               int num_of_attempt, String date_taken, int sync_status,
+                               SQLiteDatabase database){
+
+        ContentValues contentValues = new ContentValues(); //update syncstatus based on the score
+        contentValues.put(ScoresTable.SYNC_STATUS, sync_status);
+        //update table based on the score
+        String selection = ScoresTable.COLUMN_NAME_SCORE+" LIKE ?";
+        String[] selection_args = {String.valueOf(score)};
+        database.update(ScoresTable.TABLE_NAME_SCORES, contentValues, selection, selection_args);
+    }
+
 
     private void fillQuestionsTable() {
         Question q1 = new Question("First Question", "First", "second", "third", "fourth", 1, "Basic Competencies");

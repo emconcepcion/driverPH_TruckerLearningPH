@@ -24,7 +24,9 @@ import android.widget.Toast;
 import com.muddzdev.styleabletoast.StyleableToast;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -38,12 +40,15 @@ public class QuizActivity extends AppCompatActivity {
     private TextView textViewScore;
     private TextView textViewQuestionCount;
     private TextView textViewCountdown;
+    private TextView attempt;
     private RadioGroup rbGroup;
     private RadioButton rb1, rb2, rb3, rb4;
     private Dialog exit_quiz_popup;
     Button btn_next, btn_exit_quiz_yes, btn_exit_quiz_no;
     ImageButton btn_sound;
     ImageView close_exit_popup;
+
+    public int num_of_attempt;
 
     ArrayList<String> askedQuestions = new ArrayList<>();
 
@@ -81,11 +86,12 @@ public class QuizActivity extends AppCompatActivity {
         btn_next = findViewById(R.id.btn_next);
         btn_sound = findViewById(R.id.btn_sound);
         textViewScore = findViewById(R.id.textview_score);
+        attempt = findViewById(R.id.textview_attempt);
 
         textColorDefaultRb = rb1.getTextColors();
-
+        num_of_attempt++;
+        attempt.setText("Attempt #: " + num_of_attempt);
         exit_quiz_popup = new Dialog(this);
-
 
         textViewScore.setVisibility(View.GONE);
         QuizDbHelper dbHelper = new QuizDbHelper(this);
@@ -113,6 +119,7 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void showNextQuestion() {
+
         rb1.setTextColor(textColorDefaultRb);
         rb2.setTextColor(textColorDefaultRb);
         rb3.setTextColor(textColorDefaultRb);
@@ -188,11 +195,13 @@ public class QuizActivity extends AppCompatActivity {
             }
             score++;
             textViewScore.setText("Score: " + score);
+
         }
         else{
             String ansNotAvailable = "Correct answer is hidden.";
             askedQuestions.add(currentQuestion.getQuestion() + "\n" + ansNotAvailable);
         }
+
         showSolution();
     }
 
@@ -253,15 +262,35 @@ public class QuizActivity extends AppCompatActivity {
 
     public void toResults(){
 
-        Intent i = new Intent(QuizActivity.this, QuizResults.class);
-        i.putStringArrayListExtra("askedQuestions", askedQuestions);
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDate =  new SimpleDateFormat("EEEE MMMM dd, yyyy");
+        String currentDate = simpleDate.format(calendar.getTime());
+
+        String email = "Erin";
+//        String thisChap = textViewChapter.getText().toString();
+        questionCountTotal = questionList.size() - 2;
+
+        Intent intent = new Intent(QuizActivity.this, QuizResults.class);
+        intent.putStringArrayListExtra("askedQuestions", askedQuestions);
+        intent.putExtra("score", score);
+        startActivity(intent);
+
+        Intent i = new Intent(QuizActivity.this, QuizStatusList.class);
+       // i.putStringArrayListExtra("askedQuestions", askedQuestions);
         i.putExtra("score", score);
+        i.putExtra("items", questionCountTotal);
+        i.putExtra("email", email);
+        i.putExtra("chapter", currentQuestion.getChapter());
+        i.putExtra("num_of_attempt", num_of_attempt);
+        i.putExtra("date_taken", currentDate);
         startActivity(i);
+
+
     }
 
     private void finishQuiz() {
         toResults();
-        //showScore();
+        //showScore()
         finish();
     }
 
