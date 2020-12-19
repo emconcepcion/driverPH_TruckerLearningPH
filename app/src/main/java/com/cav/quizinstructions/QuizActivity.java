@@ -2,6 +2,7 @@ package com.cav.quizinstructions;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -43,10 +45,8 @@ public class QuizActivity extends AppCompatActivity {
     private TextView attempt;
     private RadioGroup rbGroup;
     private RadioButton rb1, rb2, rb3, rb4;
-    private Dialog exit_quiz_popup;
-    Button btn_next, btn_exit_quiz_yes, btn_exit_quiz_no;
+    Button btn_next;
     ImageButton btn_sound;
-    ImageView close_exit_popup;
 
     public int num_of_attempt;
 
@@ -63,17 +63,14 @@ public class QuizActivity extends AppCompatActivity {
 
     private int score;
     private boolean answered;
-
-    private Dialog show_score;
-    Button btn_view_result;
-    ImageView pass_icon, fail_icon;
-    TextView pass_fail, textview_show_score;
+    CardView cardViewScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
+        cardViewScore = findViewById(R.id.cardView_viewScore);
         textViewQuestion = findViewById(R.id.txt_question);
         textViewQuestionCount = findViewById(R.id.txt_question_counter);
         textViewCountdown = findViewById(R.id.textview_timer);
@@ -91,7 +88,6 @@ public class QuizActivity extends AppCompatActivity {
         textColorDefaultRb = rb1.getTextColors();
         num_of_attempt++;
         attempt.setText("Attempt #: " + num_of_attempt);
-        exit_quiz_popup = new Dialog(this);
 
         textViewScore.setVisibility(View.GONE);
         QuizDbHelper dbHelper = new QuizDbHelper(this);
@@ -267,16 +263,15 @@ public class QuizActivity extends AppCompatActivity {
         String currentDate = simpleDate.format(calendar.getTime());
 
         String email = "Erin";
-//        String thisChap = textViewChapter.getText().toString();
         questionCountTotal = questionList.size() - 2;
 
-        Intent intent = new Intent(QuizActivity.this, QuizResults.class);
-        intent.putStringArrayListExtra("askedQuestions", askedQuestions);
-        intent.putExtra("score", score);
-        startActivity(intent);
-
         Intent i = new Intent(QuizActivity.this, QuizStatusList.class);
-       // i.putStringArrayListExtra("askedQuestions", askedQuestions);
+        Bundle bundle = new Bundle();
+        bundle.putStringArrayList("askedQuestions", askedQuestions);
+        bundle.putInt("score", score);
+        bundle.putInt("items", questionCountTotal);
+        i.putExtras(bundle);
+        i.putStringArrayListExtra("askedQuestions", askedQuestions);
         i.putExtra("score", score);
         i.putExtra("items", questionCountTotal);
         i.putExtra("email", email);
@@ -285,22 +280,22 @@ public class QuizActivity extends AppCompatActivity {
         i.putExtra("date_taken", currentDate);
         startActivity(i);
 
-
     }
 
     private void finishQuiz() {
-        toResults();
-        //showScore()
-        finish();
+        showScore();
     }
 
 
     @Override
     public void onBackPressed() {
+        Dialog exit_quiz_popup = new Dialog(this);
+        ImageView close_exit_popup;
+        Button btn_exit_quiz_yes, btn_exit_quiz_no;
         exit_quiz_popup.setContentView(R.layout.exit_quiz_popup);
         close_exit_popup = exit_quiz_popup.findViewById(R.id.close_exit_quiz);
-        btn_exit_quiz_yes = exit_quiz_popup.findViewById(R.id.btn_exit_quiz_yes);
-        btn_exit_quiz_no = exit_quiz_popup.findViewById(R.id.btn_exit_quiz_no);
+        btn_exit_quiz_yes = (Button) exit_quiz_popup.findViewById(R.id.btn_exit_quiz_yes);
+        btn_exit_quiz_no = (Button) exit_quiz_popup.findViewById(R.id.btn_exit_quiz_no);
 
         close_exit_popup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -347,33 +342,36 @@ public class QuizActivity extends AppCompatActivity {
                 ContextCompat.getDrawable(getApplicationContext(), icon));
 
     }
+
     public void showScore(){
-
-        textview_show_score = show_score.findViewById(R.id.textview_show_score);
-//        ArrayList<String> arrayList = new ArrayList<>();
-//        arrayList = (ArrayList<String>) getIntent().getSerializableExtra("askedQuestions");
-//        int txt_score_result = getIntent().getExtras().getInt("score");
-        textview_show_score.setText(score + "/" + (questionList.size() -2));
-
-        if(score > (questionList.size() * 0.8)){
-            pass_fail.setText("Like a Boss!");
-            pass_icon.setImageResource(R.drawable.ic_star);
-        }else{
-            pass_fail.setText("Aww, snap!");
-            fail_icon.setImageResource(R.drawable.ic_sad);
-        }
+        Dialog show_score = new Dialog(this);
+        Button btn_view_result;
         show_score.setContentView(R.layout.show_score);
+        ImageView result_icon, fail_icon, close_exit_popup;
         close_exit_popup = show_score.findViewById(R.id.close_imgview);
-        btn_view_result = show_score.findViewById(R.id.view_result);
+        btn_view_result = (Button)show_score.findViewById(R.id.view_result);
+        TextView pass_fail, textview_show_score, textview_show_items;
         pass_fail = show_score.findViewById(R.id.passed_failed);
-        pass_icon = show_score.findViewById(R.id.pass_icon);
-        fail_icon = show_score.findViewById(R.id.fail_icon);
-        close_exit_popup.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                show_score.dismiss();
-            }
-        });
+        result_icon = show_score.findViewById(R.id.pass_fail_icon);
+        textview_show_score = show_score.findViewById(R.id.show_my_score);
+        textview_show_items = show_score.findViewById(R.id.show_my_item);
+        cardViewScore = findViewById(R.id.cardView_viewScore);
+
+        textview_show_score.setText(String.valueOf(score));
+        textview_show_items.setText(String.valueOf(questionCountTotal));
+
+        int myScore = Integer.parseInt(textview_show_score.getText().toString());
+        int myItems = Integer.parseInt(textview_show_items.getText().toString());
+
+
+        if(myScore > (myItems * 0.8)){
+            pass_fail.setText("Like a Boss!");
+            result_icon.setImageResource(R.drawable.ic_cheers);
+
+        }else if(myScore < (myItems * 0.8)){
+            pass_fail.setText("Aww, snap!");
+            result_icon.setImageResource(R.drawable.ic_sad);
+        }
 
         show_score.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         show_score.show();
@@ -381,10 +379,18 @@ public class QuizActivity extends AppCompatActivity {
         btn_view_result.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(QuizActivity.this, QuizResults.class));
+                toResults();
                 finish();
             }
         });
 
+        close_exit_popup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                show_score.dismiss();
+                toResults();
+                finish();
+            }
+        });
     }
 }

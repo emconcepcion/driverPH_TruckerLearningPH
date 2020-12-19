@@ -20,6 +20,9 @@
     <color name="dark_blue">#0235EC</color>
     <color name="textInputOutlineColor">#FBB8AC</color>
     <color name="textColorPrimary">#442C2E</color>
+    <color name="scoreRes">#BF010C71</color>
+    <color name="scoreFailed">#FF8B8F</color>
+
 
     <!--<color name="colorPrimary">#6200EE</color>ORIGINAL!-->
     <!--<color name="colorAccent">#03DAC5</color> ORIGINAL!-->

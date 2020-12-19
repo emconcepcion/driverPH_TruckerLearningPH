@@ -3,8 +3,8 @@
     package="com.cav.quizinstructions">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -12,14 +12,15 @@
 
     <application
         android:allowBackup="true"
+        android:exported="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:exported = "true"
         android:theme="@style/AppTheme">
-        <activity android:name=".QuizStatusList"></activity>
+        <activity android:name=".QuizStatusList" />
+        <activity android:name=".Quizzes_menu" />
         <activity android:name=".ChangeAvatar" />
         <activity android:name=".AccountEdit" />
         <activity android:name=".Recommendation" />
@@ -79,12 +80,12 @@
         <activity
             android:name=".QuizInstructions"
             android:parentActivityName=".Dashboard" />
+
         <receiver android:name=".NetworkMonitor">
             <intent-filter>
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"></action>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
-
     </application>
 
 </manifest>
