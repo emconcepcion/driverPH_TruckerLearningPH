@@ -7,113 +7,100 @@
     android:background="@android:color/white"
     tools:context=".QuizActivity">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/toolbar"/>
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_below="@id/toolbar"
+        android:layout_above="@id/btn_next"
+        android:orientation="vertical"
         android:paddingLeft="15dp"
         android:paddingRight="15dp">
 
-    <TextView
-        android:id="@+id/textview_chapter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:text="Quiz: Chapter"
-        android:textColor="@android:color/black"
-        android:textSize="18sp"
-        android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/textview_chapter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Quiz: Chapter"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/textview_instruction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textview_chapter"
-        android:layout_marginTop="15dp"
-        android:text="Instructions:"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        <TextView
+            android:id="@+id/textview_instruction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textview_chapter"
+            android:layout_marginTop="15dp"
+            android:text="Instructions:"
+            android:textColor="@android:color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/textview_instruct_msg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/textview_instruction"
-        android:layout_marginTop="5dp"
-        android:text="@string/read_questions"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
-
-
-    </LinearLayout>
+        <TextView
+            android:id="@+id/textview_instruct_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textview_instruction"
+            android:layout_marginTop="5dp"
+            android:text="@string/read_questions"
+            android:textColor="@android:color/black"
+            android:textSize="16sp" />
 
 
-    <!--    <TextView-->
-    <!--        android:id="@+id/txt_score"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="@string/score_0"-->
-    <!--        android:textColor="@android:color/black"-->
-    <!--        android:layout_marginTop="5dp"-->
-    <!--        android:textSize="20sp" />-->
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/linearLayout">
 
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textview_instruct_msg"
+            android:layout_height="match_parent"
+            android:layout_below="@id/linearLayout"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
             android:background="@drawable/border"
-            android:layout_marginTop="10dp"
-            android:layout_margin="15dp"
             android:orientation="vertical"
             android:padding="10dp">
 
-            <!--    <LinearLayout-->
-            <!--        android:layout_width="match_parent"-->
-            <!--        android:layout_height="wrap_content"-->
-            <!--        android:layout_below="@+id/txt_timer"-->
-            <!--        android:background="@drawable/border"-->
-            <!--        android:layout_marginTop="10dp"-->
-            <!--        android:orientation="vertical"-->
-            <!--        android:padding="15dp">-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textview_timer"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:freezesText="true"
-                android:layout_weight="3"
-                android:text="03:00"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="20sp"
-                />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textview_attempt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Attempt #"
-                android:layout_weight="1"
-                android:textColor="@color/colorPrimaryDark"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/textview_timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:freezesText="true"
+                    android:text="03:00"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20sp" />
 
+                <TextView
+                    android:id="@+id/txt_only_attempt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:text="Attempt #"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textview_attempt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:text="72"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
 
             <TextView
@@ -121,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="5dp"
                 android:freezesText="true"
                 android:text="Question 1/x"
                 android:textColor="@android:color/black"
@@ -133,22 +120,34 @@
                 android:layout_height="1dp"
                 android:layout_marginTop="10dp"
                 android:background="@android:color/darker_gray" />
-
-
             <TextView
                 android:id="@+id/txt_question"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="120dp"
                 android:layout_below="@id/txt_question_counter"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="5dp"
                 android:freezesText="true"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:paddingVertical="10dp"
                 android:text="@string/questions_go_here"
                 android:textAlignment="center"
                 android:textColor="@android:color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
+
+            <ScrollView
+                android:id="@+id/scrollable"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/linearLayout"
+             >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+
 
             <RadioGroup
                 android:id="@+id/radio_grp_options"
@@ -160,9 +159,9 @@
                 <RadioButton
                     android:id="@+id/radio_btn_option1"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="45dp"
                     android:freezesText="true"
-                    android:text="@string/option_1"
+                    android:text=""
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -170,10 +169,10 @@
                 <RadioButton
                     android:id="@+id/radio_btn_option2"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="45dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
-                    android:text="@string/option_2"
+                    android:text=""
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
@@ -181,59 +180,86 @@
                 <RadioButton
                     android:id="@+id/radio_btn_option3"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="45dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
+                    android:text=""
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
-                    android:text="@string/option_3"
                     android:textStyle="bold" />
 
                 <RadioButton
                     android:id="@+id/radio_btn_option4"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="45dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
-                    android:text="@string/option_4"
+                    android:text=""
                     android:textColor="@android:color/black"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
             </RadioGroup>
-
-            <Button
-                android:id="@+id/btn_next"
-                android:layout_width="match_parent"
-                android:layout_height="55dp"
-                android:layout_below="@id/radio_grp_options"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:freezesText="true"
-                android:text="NEXT"
-                android:textColor="@android:color/black"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textview_score"
+            </LinearLayout>
+            </ScrollView>
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Score"
-                android:layout_marginLeft="5dp"
-                android:textColor="@android:color/black"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:layout_marginTop="22dp"
+                android:visibility="gone"/>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+
+                <TextView
+                    android:id="@+id/textview_score"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Score"
+                    android:layout_weight="1"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/textview_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Email"
+                    android:textColor="@android:color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </ScrollView>
+    </LinearLayout>
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_margin="20dp"
+        android:layout_alignParentBottom="true"
+        android:freezesText="true"
+        android:text="NEXT"
+        android:textColor="@android:color/black"
+        android:textSize="16sp" />
 
     <ImageButton
-        android:layout_below="@id/toolbar"
         android:id="@+id/btn_sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_gravity="center_horizontal"
@@ -241,34 +267,5 @@
         android:onClick="buttonPressed"
         android:padding="6dp"
         android:src="@drawable/ic_sound_off" />
-
-    <!--    </LinearLayout>-->
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/txt_question_counter"-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:layout_below="@id/txt_timer"-->
-    <!--        android:layout_centerHorizontal="true"-->
-    <!--        android:layout_marginTop="20dp"-->
-    <!--        android:text="Question 1/x"-->
-    <!--        android:textColor="@android:color/black"-->
-    <!--        android:textSize="16sp" />-->
-
-
-    <!--    <LinearLayout-->
-    <!--        android:id="@+id/custom_toast_container"-->
-    <!--        android:orientation="horizontal"-->
-    <!--        android:layout_width="fill_parent"-->
-    <!--        android:layout_height="fill_parent"-->
-    <!--        android:padding="8dp"-->
-    <!--        >-->
-    <!--        <TextView android:id="@+id/text_toast"-->
-    <!--            android:layout_width="fill_parent"-->
-    <!--            android:layout_height="fill_parent"-->
-    <!--            android:gravity="center"-->
-    <!--            android:text="@string/please_select_an_answer" />-->
-    <!--    </LinearLayout>-->
-
 
 </RelativeLayout>

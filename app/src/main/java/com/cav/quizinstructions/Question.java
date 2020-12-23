@@ -1,5 +1,7 @@
 package com.cav.quizinstructions;
 
+import android.util.Log;
+
 import java.io.Serializable;
 
 //bridge between app and db
@@ -22,6 +24,7 @@ public class Question implements Serializable {
         this.option3 = option3;
         this.option4 = option4;
         this.answerNr = answerNr;
+        Log.d("answer", answerNr + "");
         this.chapter = chapter;
     }
 

@@ -3,14 +3,28 @@ package com.cav.quizinstructions;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.cav.quizinstructions.QuizContract.*;
 
-import androidx.annotation.Nullable;
 import com.cav.quizinstructions.DbContract.*;
 
-import java.text.SimpleDateFormat;
+import org.apache.http.HttpResponse;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +32,9 @@ import static com.cav.quizinstructions.DbContract.ScoresTable.DATABASE_NAME;
 
 public class QuizDbHelper extends SQLiteOpenHelper {
 
-    //private static final String DATABASE_NAME = "driverPH.db";
+    ProgressBar progressBar;
     private static final int DATABASE_VERSION = 1;
+    private List<Question> questionDb;
 
     private SQLiteDatabase db;
 
@@ -58,6 +73,7 @@ public class QuizDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_QUESTIONS_TABLE);
         db.execSQL(SQL_CREATE_SCORES_TABLE);
         fillQuestionsTable();
+
     }
 
     @Override
@@ -85,17 +101,17 @@ public class QuizDbHelper extends SQLiteOpenHelper {
 
         //projection are the column names
         String[] projection = {ScoresTable.COLUMN_NAME_EMAIL, ScoresTable.COLUMN_NAME_SCORE,
-                                ScoresTable.COLUMN_NAME_NUM_ITEMS, ScoresTable.COLUMN_NAME_CHAPTER,
-                                ScoresTable.COLUMN_NAME_NUM_ATTEMPT, ScoresTable.COLUMN_NAME_DATE_TAKEN,
-                                ScoresTable.SYNC_STATUS};
+                ScoresTable.COLUMN_NAME_NUM_ITEMS, ScoresTable.COLUMN_NAME_CHAPTER,
+                ScoresTable.COLUMN_NAME_NUM_ATTEMPT, ScoresTable.COLUMN_NAME_DATE_TAKEN,
+                ScoresTable.SYNC_STATUS};
         return (database.query(ScoresTable.TABLE_NAME_SCORES, projection,null, null, null, null, null));
     }
 
     public void updateLocalDatabase(String email, int score, int num_items, String chap,
-                               int num_of_attempt, String date_taken, int sync_status,
-                               SQLiteDatabase database){
-
-        ContentValues contentValues = new ContentValues(); //update syncstatus based on the score
+                                    int num_of_attempt, String date_taken, int sync_status,
+                                    SQLiteDatabase database){
+        //update syncstatus based on the score
+        ContentValues contentValues = new ContentValues();
         contentValues.put(ScoresTable.SYNC_STATUS, sync_status);
         //update table based on the score
         String selection = ScoresTable.COLUMN_NAME_SCORE+" LIKE ?";
@@ -117,7 +133,7 @@ public class QuizDbHelper extends SQLiteOpenHelper {
         addQuestion(q5);
     }
 
-    private void addQuestion(Question question){
+    public void addQuestion(Question question){
         ContentValues cv = new ContentValues();
         cv.put(QuestionsTable.COLUMN_QUESTION, question.getQuestion());
         cv.put(QuestionsTable.COLUMN_OPTION1, question.getOption1());
@@ -132,7 +148,10 @@ public class QuizDbHelper extends SQLiteOpenHelper {
     public List<Question> getAllQuestions(){
         List<Question> questionList = new ArrayList<>();
         db = getReadableDatabase();
-        Cursor c = db.rawQuery("SELECT * FROM " + QuestionsTable.TABLE_NAME, null);
+        String getChapter = "\"" + QuizInstructions.chapter + "\"";
+
+        Cursor c = db.rawQuery("SELECT * FROM " + QuestionsTable.TABLE_NAME +
+                    " WHERE chapter " + "=" + getChapter, null);
 
         if(c.moveToFirst()){
             do{
@@ -152,24 +171,88 @@ public class QuizDbHelper extends SQLiteOpenHelper {
         return questionList;
     }
 
-    public void incrementAttempt(Question question){
+    public void getJSON(final String urlWebService) {
+        class GetJSON extends AsyncTask<Void, Void, String> {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
 
-        ContentValues cv = new ContentValues();
-        cv.put(QuestionsTable.COLUMN_QUESTION, question.getQuestion());
-        cv.put(QuestionsTable.COLUMN_OPTION1, question.getOption1());
-        cv.put(QuestionsTable.COLUMN_OPTION2, question.getOption2());
-        cv.put(QuestionsTable.COLUMN_OPTION3, question.getOption3());
-        cv.put(QuestionsTable.COLUMN_OPTION4, question.getOption4());
-        cv.put(QuestionsTable.COLUMN_ANSWER_NR, question.getAnswerNr());
-        cv.put(QuestionsTable.COLUMN_CHAPTER, question.getChapter());
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                Log.d("s", s +"");
+                try {
+//                    loadRetrievedQuestions(s);
+                    parserQuestionsFromString(s);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
 
-        int ansNr = Integer.parseInt(QuestionsTable.COLUMN_ANSWER_NR.valueOf(question.getAnswerNr()));
-        String trSQL = "UPDATE " + QuestionsTable.TABLE_NAME+
-                " SET " + QuestionsTable.COLUMN_ANSWER_NR+
-                " = " + (ansNr++) +
-                " WHERE " + QuestionsTable._ID +
-                " = " + 2;
-        db.update(QuestionsTable.TABLE_NAME, cv, trSQL, null);
+            @Override
+            protected String doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(urlWebService);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+                    return sb.toString().trim();
+                } catch (Exception e) {
+                    return null;
+                }
 
+            }
+        }
+        GetJSON getJSON = new GetJSON();
+        getJSON.execute();
+    }
+
+    void parserQuestionsFromString(String refjson) {
+        String stringjson = refjson;
+        try {
+            JSONObject jObj = new JSONObject(stringjson);
+
+            JSONArray menuitemArray = jObj.getJSONArray("data");
+
+            for (int i = 0; i < menuitemArray.length(); i++) {
+
+                Log.d("question_text " + i,
+                        menuitemArray.getJSONObject(i).getString("question_text")
+                                .toString());
+                Log.d("option1: " + i, menuitemArray.getJSONObject(i)
+                        .getString("option1"));
+                Log.d("option2: " + i, menuitemArray.getJSONObject(i)
+                        .getString("option2"));
+                Log.d("option3: " + i, menuitemArray.getJSONObject(i)
+                        .getString("option3"));
+                Log.d("option4: " + i, menuitemArray.getJSONObject(i)
+                        .getString("option4"));
+                Log.d("answer_nr: " + i, menuitemArray.getJSONObject(i)
+                        .getString("answer_nr"));
+                Log.d("chapter: " + i, menuitemArray.getJSONObject(i)
+                        .getString("chapter"));
+
+                String question = menuitemArray.getJSONObject(i).getString("question_text").toString();
+                String option1 = menuitemArray.getJSONObject(i).getString("option1").toString();
+                String option2 = menuitemArray.getJSONObject(i).getString("option2").toString();
+                String option3 = menuitemArray.getJSONObject(i).getString("option3").toString();
+                String option4 = menuitemArray.getJSONObject(i).getString("option4").toString();
+                String answer_nr = menuitemArray.getJSONObject(i).getString("answer_nr").toString();
+                String chapter = menuitemArray.getJSONObject(i).getString("chapter").toString();
+                Question q1 = new Question(question, option1, option2, option3, option4, Integer.parseInt(answer_nr), chapter);
+                addQuestion(q1);
+
+            }
+
+        } catch (Exception je) {
+
+            Log.d("json error...", je + "");
+        }
+        Log.d("Inside aysnc task", "inside asynctask...");
     }
 }

@@ -1,45 +1,70 @@
 package com.cav.quizinstructions;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.google.android.material.navigation.NavigationView;
 import com.muddzdev.styleabletoast.StyleableToast;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class QuizActivity extends AppCompatActivity {
-
-    public static final String EXTRA_SCORE = "extraScore";
 
     private TextView textViewChapter;
     private TextView textViewQuestion;
     private TextView textViewScore;
+    private TextView textViewEmail;
     private TextView textViewQuestionCount;
     private TextView textViewCountdown;
     private TextView attempt;
@@ -48,7 +73,10 @@ public class QuizActivity extends AppCompatActivity {
     Button btn_next;
     ImageButton btn_sound;
 
+    SharedPreferences sp;
     public int num_of_attempt;
+
+    ProgressBar progressBar;
 
     ArrayList<String> askedQuestions = new ArrayList<>();
 
@@ -57,18 +85,26 @@ public class QuizActivity extends AppCompatActivity {
     private long timeLeftInMillis;
 
     private List<Question> questionList;
+    private List<Question> questionDb;
     private int questionCounter;
     private int questionCountTotal;
     private Question currentQuestion;
 
+    TextView answer_nr;
     private int score;
     private boolean answered;
     CardView cardViewScore;
+    private boolean backPressed;
+    String email;
+    private boolean endedAttempt;
+    int correct_answer = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
+
+        progressBar = (ProgressBar)findViewById(R.id.progressBar);
 
         cardViewScore = findViewById(R.id.cardView_viewScore);
         textViewQuestion = findViewById(R.id.txt_question);
@@ -83,19 +119,33 @@ public class QuizActivity extends AppCompatActivity {
         btn_next = findViewById(R.id.btn_next);
         btn_sound = findViewById(R.id.btn_sound);
         textViewScore = findViewById(R.id.textview_score);
+        textViewEmail = findViewById(R.id.textview_email);
         attempt = findViewById(R.id.textview_attempt);
 
         textColorDefaultRb = rb1.getTextColors();
-        num_of_attempt++;
-        attempt.setText("Attempt #: " + num_of_attempt);
+
+//        Intent intent = getIntent();
+//        Bundle bundle = intent.getExtras();
+//        String chapter = bundle.getString("chapter");
+//        textViewChapter.setText(chapter);
 
         textViewScore.setVisibility(View.GONE);
+        textViewEmail.setVisibility(View.GONE);
         QuizDbHelper dbHelper = new QuizDbHelper(this);
         questionList = dbHelper.getAllQuestions();
-        questionCountTotal = questionList.size() - 2;
-        Collections.shuffle(questionList);
+        questionCountTotal = (questionList.size() - 2);
+        FYAlgoShuffle(questionList);
+
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+        String myEmail = sp.getString("email", "");
+        textViewEmail.setText(myEmail);
+
+//        Intent intent = getIntent();
+//        email = intent.getExtras().getString("email");
+//        textViewEmail.setText(email);
 
         showNextQuestion();
+        getAttempt();
 
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -112,6 +162,18 @@ public class QuizActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public static<T> void FYAlgoShuffle(List<T> list){
+        Random random = new Random();
+        for (int i = list.size() - 1; i >= 1; i--)
+        {
+            int j = random.nextInt(i + 1);
+
+            T obj = list.get(i);
+            list.set(i, list.get(j));
+            list.set(j, obj);
+        }
     }
 
     private void showNextQuestion() {
@@ -132,6 +194,8 @@ public class QuizActivity extends AppCompatActivity {
             rb2.setText(currentQuestion.getOption2());
             rb3.setText(currentQuestion.getOption3());
             rb4.setText(currentQuestion.getOption4());
+
+            Log.d("answer", currentQuestion.getAnswerNr()+"");
 
             questionCounter++;
             textViewQuestionCount.setText("Question: " + questionCounter + "/" + questionCountTotal);
@@ -170,23 +234,25 @@ public class QuizActivity extends AppCompatActivity {
         RadioButton rbSelected = findViewById(rbGroup.getCheckedRadioButtonId());
         int answerNr = rbGroup.indexOfChild(rbSelected) + 1;
 
+        Log.d("answer_nr", answerNr+"");
+        Log.d("correct_answer:", correct_answer +"");
         if (answerNr == currentQuestion.getAnswerNr()) {
             switch (currentQuestion.getAnswerNr()){
                 case 1:
                     currentQuestion.getOption1();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n" +"Answer: " + currentQuestion.getOption1());
+                    askedQuestions.add(currentQuestion.getQuestion()  +"\n\nAnswer: " + currentQuestion.getOption1() + "\n");
                     break;
                 case 2:
                     currentQuestion.getOption2();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n" +"Answer: " + currentQuestion.getOption2());
+                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" +"Answer: " + currentQuestion.getOption2());
                     break;
                 case 3:
                     currentQuestion.getOption3();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n" +"Answer: " + currentQuestion.getOption3());
+                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" +"Answer: " + currentQuestion.getOption3());
                     break;
                 case 4:
                     currentQuestion.getOption4();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n" +"Answer: " + currentQuestion.getOption4());
+                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" +"Answer: " + currentQuestion.getOption4());
                     break;
             }
             score++;
@@ -257,26 +323,26 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     public void toResults(){
-
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDate =  new SimpleDateFormat("EEEE MMMM dd, yyyy");
         String currentDate = simpleDate.format(calendar.getTime());
 
-        String email = "Erin";
         questionCountTotal = questionList.size() - 2;
+
+        int newAttempt = Integer.parseInt(attempt.getText().toString());
+        String myEmail = textViewEmail.getText().toString();
 
         Intent i = new Intent(QuizActivity.this, QuizStatusList.class);
         Bundle bundle = new Bundle();
         bundle.putStringArrayList("askedQuestions", askedQuestions);
         bundle.putInt("score", score);
         bundle.putInt("items", questionCountTotal);
+        bundle.putString("chapter", currentQuestion.getChapter());
+        bundle.putInt("attempt", newAttempt);
+        bundle.putString("myEmail", myEmail);
         i.putExtras(bundle);
         i.putStringArrayListExtra("askedQuestions", askedQuestions);
-        i.putExtra("score", score);
-        i.putExtra("items", questionCountTotal);
-        i.putExtra("email", email);
-        i.putExtra("chapter", currentQuestion.getChapter());
-        i.putExtra("num_of_attempt", num_of_attempt);
+//        i.putExtra("email", email);
         i.putExtra("date_taken", currentDate);
         startActivity(i);
 
@@ -285,6 +351,22 @@ public class QuizActivity extends AppCompatActivity {
     private void finishQuiz() {
         showScore();
     }
+
+    private void getAttempt(){
+
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+        int incAttempt = sp.getInt("attempt", 1);
+        attempt.setText(String.valueOf(incAttempt));
+
+
+//        textViewEmail.setText(myEmail);
+//
+//        Intent intent = getIntent();
+//        int incAttempt = intent.getIntExtra("toQuizActAttempt", 1);
+//        attempt.setText(String.valueOf(incAttempt));
+    }
+
+
 
 
     @Override
@@ -310,8 +392,26 @@ public class QuizActivity extends AppCompatActivity {
         btn_exit_quiz_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(QuizActivity.this, QuizInstructions.class));
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDate =  new SimpleDateFormat("EEEE MMMM dd, yyyy");
+                String currentDate = simpleDate.format(calendar.getTime());
+
+                questionCountTotal = questionList.size() - 2;
+
+                int newAttempt = Integer.parseInt(attempt.getText().toString());
+
+                Intent i = new Intent(QuizActivity.this, QuizStatusList.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("score", 0);
+                bundle.putInt("items", questionCountTotal);
+                bundle.putString("chapter", ("Unfinished Attempt: " + currentQuestion.getChapter()));
+                bundle.putInt("attempt", newAttempt);
+                i.putExtras(bundle);
+                i.putExtra("email", email);
+                i.putExtra("date_taken", currentDate);
+                startActivity(i);
                 finish();
+                endedAttempt = true;
             }
         });
 
@@ -387,7 +487,6 @@ public class QuizActivity extends AppCompatActivity {
         close_exit_popup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                show_score.dismiss();
                 toResults();
                 finish();
             }

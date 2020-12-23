@@ -11,18 +11,18 @@
 
     <TextView
         android:layout_below="@id/toolbar"
-        android:id="@+id/quiz_results"
+        android:id="@+id/chapter_name_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="@string/quiz_results" />
+        android:text="Chapter name" />
 
     <TextView
         android:id="@+id/you_scored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/quiz_results"
+        android:layout_below="@id/chapter_name_result"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:text="@string/you_scored"
@@ -67,13 +67,25 @@
     </ScrollView>
 
     <Button
+        android:id="@+id/btn_unlock"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:text="Unlock next lesson"
+        android:textAllCaps="false"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="25dp"
+        android:layout_margin="16dp"/>
+
+    <Button
         android:id="@+id/btn_review"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:text="@string/review"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="25dp"
-        android:layout_margin="16dp"/>
+        android:layout_margin="16dp"
+        android:textAllCaps="false"/>
 
     <Button
         android:id="@+id/btn_retake"
@@ -83,6 +95,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
+        android:textAllCaps="false"
         android:layout_alignParentRight="true" />
 
 </RelativeLayout>
