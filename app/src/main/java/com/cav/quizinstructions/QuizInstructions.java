@@ -3,7 +3,9 @@ package com.cav.quizinstructions;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,10 +47,8 @@ public class QuizInstructions extends AppCompatActivity {
 
     public static String chapter;
     Button buttonStartQuiz, back_btn;
-    public static TextView data;
     private RequestQueue requestQueue;
 
-    ProgressBar progressBar;
     // Adding HTTP Server URL to string variable.
     private final String QUESTIONS_URL = "https://phportal.net/driverph/get_qa_all.php";
 
@@ -62,11 +62,10 @@ public class QuizInstructions extends AppCompatActivity {
         back_btn = findViewById(R.id.btn_back_to_take_quiz);
         textViewChapter = findViewById(R.id.textview_chapter_title);
         requestQueue = Volley.newRequestQueue(getApplicationContext());
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        chapter = bundle.getString("chapter");
-        textViewChapter.setText(chapter);
-        data = findViewById(R.id.textview_data);
+
+        SharedPreferences sp = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
+        String lessonChap = sp.getString("chapter", "");
+        textViewChapter.setText(lessonChap);
 
         buttonStartQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,7 +96,7 @@ public class QuizInstructions extends AppCompatActivity {
         startActivity(i);
     }
 
-    private void getJSON(final String urlWebService) {
+    public void getJSON(final String urlWebService) {
         class GetJSON extends AsyncTask<Void, Void, String> {
             @Override
             protected void onPreExecute() {

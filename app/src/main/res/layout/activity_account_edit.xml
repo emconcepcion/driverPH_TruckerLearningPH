@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AccountEdit">
+
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <ImageView
+        android:id="@+id/avatar_edit"
+        android:layout_width="159dp"
+        android:layout_height="168dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="92dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:srcCompat="@drawable/avatar1"
+        android:layout_marginRight="92dp" />
+
+    <TextView
+        android:id="@+id/changeavatar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="147dp"
+        android:layout_marginTop="23dp"
+        android:layout_marginEnd="141dp"
+        android:text="Change Avatar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/avatar_edit"
+        android:layout_marginLeft="147dp"
+        android:layout_marginRight="141dp" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout2"
+        android:layout_width="287dp"
+        android:layout_height="205dp"
+        android:layout_marginStart="31dp"
+        android:layout_marginTop="33dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/changeavatar"
+        android:layout_marginLeft="31dp"
+        android:layout_marginRight="30dp">
+
+        <TextView
+            android:id="@+id/firstnamelabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="20dp"
+            android:text="First Name: "
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/lastnamelabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="60dp"
+            android:text="Last Name: "
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tve_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="100dp"
+            android:text="Email: "
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="140dp"
+            android:text="Username: "
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textView16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="180dp"
+            android:text="Password: "
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/et_firstname"
+            android:layout_width="155dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="110dp"
+            android:layout_marginTop="10.5dp"
+            android:text="Juan" />
+
+        <EditText
+            android:id="@+id/et_lastname"
+            android:layout_width="155dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="110dp"
+            android:layout_marginTop="50.5dp"
+            android:text="Dela Cruz" />
+
+        <EditText
+            android:id="@+id/et_email"
+            android:layout_width="155dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="110dp"
+            android:layout_marginTop="90.5dp"
+            android:text="jdelacruz" />
+
+        <EditText
+            android:id="@+id/et_username"
+            android:layout_width="155dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="110dp"
+            android:layout_marginTop="130.5dp"
+            android:text="jdelacruz" />
+
+        <EditText
+            android:id="@+id/et_password"
+            android:layout_width="155dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="110dp"
+            android:layout_marginTop="170.5dp"
+            android:text="jdelacruz" />
+
+    </FrameLayout>
+
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="131dp"
+        android:layout_marginTop="43dp"
+        android:textAllCaps="false"
+        android:text="Save"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2"
+        android:layout_marginLeft="131dp" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="43dp"
+        android:layout_marginEnd="24dp"
+        android:textAllCaps="false"
+        android:text="Cancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameLayout2"
+        android:layout_marginRight="24dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

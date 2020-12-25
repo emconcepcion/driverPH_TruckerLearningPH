@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_dashboard"
+            android:title="Dashboard"/>
+
+        <!-- Activity Group !-->
+        <item android:title="Activity">
+            <menu>
+                <item
+                    android:id="@+id/nav_my_progress"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_my_progress"
+                    android:title="My Progress" />
+                <item
+                    android:id="@+id/nav_advisory"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_advisory"
+                    android:title="Advisory" />
+                <item
+                    android:id="@+id/nav_help"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_help"
+                    android:title="Help" />
+            </menu>
+        </item>
+
+        <!-- Account Group !-->
+        <item android:title="Account">
+            <menu>
+                <item
+                    android:id="@+id/nav_my_account"
+                    android:checkable="true"
+                    android:icon="@drawable/ic_my_account"
+                    android:title="My Account" />
+                <item
+                    android:id="@+id/nav_siso"
+                    android:icon="@drawable/ic_sign_in"
+                    android:title="Sign in" />
+            </menu>
+        </item>
+
+    </group>
+
+</menu>

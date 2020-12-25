@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "553107593550",
+    "project_id": "driverph2020-767d1",
+    "storage_bucket": "driverph2020-767d1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553107593550:android:47e1d33a84d8b783c7e61f",
+        "android_client_info": {
+          "package_name": "com.cav.quizinstructions"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553107593550-pfqndf8h98j00vufkvi0sk6o9iinf9v6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTXde7tFnqvV5VVBEr60ZGFZtX1vuUryY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553107593550-pfqndf8h98j00vufkvi0sk6o9iinf9v6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

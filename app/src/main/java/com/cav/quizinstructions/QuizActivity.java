@@ -124,11 +124,6 @@ public class QuizActivity extends AppCompatActivity {
 
         textColorDefaultRb = rb1.getTextColors();
 
-//        Intent intent = getIntent();
-//        Bundle bundle = intent.getExtras();
-//        String chapter = bundle.getString("chapter");
-//        textViewChapter.setText(chapter);
-
         textViewScore.setVisibility(View.GONE);
         textViewEmail.setVisibility(View.GONE);
         QuizDbHelper dbHelper = new QuizDbHelper(this);
@@ -139,10 +134,6 @@ public class QuizActivity extends AppCompatActivity {
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
         textViewEmail.setText(myEmail);
-
-//        Intent intent = getIntent();
-//        email = intent.getExtras().getString("email");
-//        textViewEmail.setText(email);
 
         showNextQuestion();
         getAttempt();

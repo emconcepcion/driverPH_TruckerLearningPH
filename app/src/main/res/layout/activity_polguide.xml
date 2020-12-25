@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0000"
+    tools:context=".Polguide">
+
+    <include layout="@layout/polandguide_toolbar"
+        android:id="@+id/toolbar"/>
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="210dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="170dp"
+        android:fontFamily="sans-serif"
+        android:text="A person who has achieved this \nQualification is competent to be:"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.527"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        android:layout_marginLeft="184dp"
+        android:layout_marginRight="170dp" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="100dp"
+        android:text="@string/passenger_bus_driver_n_straight_truck_driver"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView10"
+        android:layout_marginRight="100dp" />
+
+    <FrameLayout
+        android:id="@+id/frameLayout"
+        android:layout_width="315dp"
+        android:layout_height="528dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"/>
+
+
+    <ScrollView
+        android:layout_width="292dp"
+        android:layout_height="497dp"
+        android:layout_marginTop="160dp"
+        android:fillViewport="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="\nTRAINING REGULATIONS FOR \nDRIVING (Passenger Bus/Straight Truck) NC II"
+                android:textAlignment="center"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:gravity="center_horizontal"></TextView>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="328dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="20dp"
+                android:text="SECTION 1  DRIVING NC III QUALIFICATION "
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="280dp"
+                android:layout_height="300dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="0dp"
+                android:text="@string/textview_3"
+                android:textAlignment="gravity"></TextView>
+
+            <TextView
+                android:id="@+id/code_no"
+                android:layout_width="280dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/code_no"
+                android:textAlignment="gravity"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="290dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="2dp"
+                android:text="       500311109\t   Lead Workplace\n\t\t\t\t\t\t\t\t\t\t\t\t\t     Communication\n
+      500311110\t   Lead Small Teams\n
+      500311111\t   Develop and Practice \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Negotiation skills\n
+      500311112\t   Solve Problems Related to \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Work Activities\n
+      500311113\t   Use Mathematical Concepts \n\t\t\t\t\t\t\t\t\t\t\t\t\t     and Techniques\n
+      500311114\t   Use Relevant Technologies\n"
+                android:textSize="13sp"></TextView>
+
+            <TextView
+                android:id="@+id/code"
+                android:layout_width="300dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/code"
+                android:textAlignment="gravity"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="290dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="2dp"
+                android:text="       ALT723201\t   Apply Appropriate Sealant/\n\t\t\t\t\t\t\t\t\t\t\t\t\t     Adhesive\n
+      ALT311205\t   Interpret/Draw Technical \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Drawing\n
+      ALT723202\t   Move and Position Vehicle\n
+      ALT311204\t   Perform Job Estimate\n
+      ALT311202\t   Perform Mensuration and \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Calculation\n
+      ALT723203\t   Read, Interpret and Apply\n\t\t\t\t\t\t\t\t\t\t\t\t\t     Specifications and Manuals\n
+      ALT723204\t   Use and Apply Lubricant/\n\t\t\t\t\t\t\t\t\t\t\t\t\t     Coolant\n
+      ALT723205\t   Perform Shop Maintenance\n"
+                android:textSize="13sp"></TextView>
+
+            <TextView
+                android:id="@+id/code_no_1"
+                android:layout_width="280dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/code_no_1"
+                android:textAlignment="gravity"
+                android:textStyle="bold"></TextView>
+
+            <TextView
+                android:id="@+id/tv"
+                android:layout_width="290dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="0dp"
+                android:layout_marginTop="2dp"
+                android:text="       ALT723349\t   Perform Minor Maintenance \n\t\t\t\t\t\t\t\t\t\t\t\t\t     and Servicing on Vehicles \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Classified tunder LTO \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Restriction Codes 3 up to 5\n
+       ALT832305\t   Perform Pre-and Post \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Operation Procedures \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Vehicles Classified under LTO \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Restriction Codes 3 up to 5\n
+       ALT832303\t   Obey and Observe Traffic \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Rules and Regulations\n
+       ALT832309\t   Observe Road Health and \n\t\t\t\t\t\t\t\t\t\t\t\t\t     Safety Practices\n
+       ALT832304\t   Implement and Coordinate\n\t\t\t\t\t\t\t\t\t\t\t\t\t     Accident-Emergency\n\t\t\t\t\t\t\t\t\t\t\t\t\t     Procedures\n
+       ALT832306\t   Drive Passenger Bus\n
+       ALT832307\t   Drive Straight Truck\n"
+                android:textSize="13sp"></TextView>
+        </LinearLayout>
+    </ScrollView>
+    <!--Normal Spacing pagdating sa Android Studio: \n\t\t\t\t   -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
