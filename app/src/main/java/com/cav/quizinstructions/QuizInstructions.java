@@ -17,7 +17,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -47,12 +46,13 @@ public class QuizInstructions extends AppCompatActivity {
 
     public static String chapter;
     Button buttonStartQuiz, back_btn;
-    private RequestQueue requestQueue;
 
     // Adding HTTP Server URL to string variable.
     private final String QUESTIONS_URL = "https://phportal.net/driverph/get_qa_all.php";
 
     private TextView textViewChapter;
+
+    boolean sourceLesson, sourceQuizzes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +61,17 @@ public class QuizInstructions extends AppCompatActivity {
         buttonStartQuiz = findViewById(R.id.btn_start_quiz);
         back_btn = findViewById(R.id.btn_back_to_take_quiz);
         textViewChapter = findViewById(R.id.textview_chapter_title);
-        requestQueue = Volley.newRequestQueue(getApplicationContext());
 
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
-        String lessonChap = sp.getString("chapter", "");
-        textViewChapter.setText(lessonChap);
+        if (Quizzes_menu.isFromQuizMenu){
+            Intent intent = getIntent();
+            Bundle bundle = intent.getExtras();
+            String chapter = bundle.getString("chapter");
+            textViewChapter.setText(chapter);
+        }else{
+            SharedPreferences sp = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
+            String lessonChap = sp.getString("chapter", "");
+            textViewChapter.setText(lessonChap);
+        }
 
         buttonStartQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,7 +112,7 @@ public class QuizInstructions extends AppCompatActivity {
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
                 try {
                     parserQuestionsFromString(s);
                 } catch (Exception e) {

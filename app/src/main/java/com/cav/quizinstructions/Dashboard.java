@@ -95,12 +95,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         cardViewQuizzes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 String email = getIntent().getStringExtra("email");
                 sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putString("email", email);
                 editor.apply();
+
                 Toast.makeText(Dashboard.this, "email was saved", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(Dashboard.this, Quizzes_menu.class);

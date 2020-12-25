@@ -28,12 +28,12 @@ public class Quizzes_menu extends AppCompatActivity {
     TextView tChapter;
     Button btn_leaderBoard;
     Button btn_list_completed_quizzes;
+    public static boolean isFromQuizMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quizzes_menu);
-
 
         tChapter = findViewById(R.id.tChap);
         cardViewBasic = findViewById(R.id.cardView_basic_competencies);
@@ -42,16 +42,15 @@ public class Quizzes_menu extends AppCompatActivity {
         btn_leaderBoard = findViewById(R.id.button5);
         btn_list_completed_quizzes = findViewById(R.id.button6);
 
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
-        String lessonChap = sp.getString("chapter", "");
-        tChapter.setText(lessonChap);
-
-
+//        SharedPreferences sp = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
+//        String lessonChap = sp.getString("chapter", "");
+//        tChapter.setText(lessonChap);
 
         cardViewBasic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                tChapter.setText("Basic Competencies");
+                isFromQuizMenu= true;
+                tChapter.setText("Basic Competencies");
                 String chapTest = tChapter.getText().toString();
                 Intent intent = new Intent(Quizzes_menu.this, QuizInstructions.class);
                 Bundle bundle = new Bundle();
@@ -64,6 +63,7 @@ public class Quizzes_menu extends AppCompatActivity {
         cardViewCommon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isFromQuizMenu= true;
                 tChapter.setText("Common Competencies");
                 String chapTest = tChapter.getText().toString();
                 Intent intent = new Intent(Quizzes_menu.this, QuizInstructions.class);
@@ -77,6 +77,7 @@ public class Quizzes_menu extends AppCompatActivity {
         cardViewCore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                isFromQuizMenu= true;
                 tChapter.setText("Core Competencies");
                 String chapTest = tChapter.getText().toString();
                 Intent intent = new Intent(Quizzes_menu.this, QuizInstructions.class);
