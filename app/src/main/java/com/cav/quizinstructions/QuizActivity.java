@@ -144,7 +144,7 @@ public class QuizActivity extends AppCompatActivity {
         questionList = dbHelper.getAllQuestions();
         questionCountTotal = (questionList.size() - 2);
         FYAlgoShuffle(questionList);
-        timer();
+//        timer();
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
         textViewEmail.setText(myEmail);
