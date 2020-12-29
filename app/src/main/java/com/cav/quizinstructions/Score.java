@@ -6,6 +6,7 @@ import java.util.Date;
 
 public class Score implements Serializable {
 
+    public int user_id;
     public String email;
     public int score;
     public int num_of_items;
@@ -17,7 +18,8 @@ public class Score implements Serializable {
     public Score() {
     }
 
-    public Score(String email, int score, int num_of_items, String chapter, int num_of_attempt, String date_taken, int sync_status) {
+    public Score(int user_id, String email, int score, int num_of_items, String chapter, int num_of_attempt, String date_taken, int sync_status) {
+        this.user_id = user_id;
         this.email = email;
         this.score = score;
         this.num_of_items = num_of_items;
@@ -81,5 +83,13 @@ public class Score implements Serializable {
 
     public void setDate_taken(String date_taken) {
         this.date_taken = date_taken;
+    }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 }

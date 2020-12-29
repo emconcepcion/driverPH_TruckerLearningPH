@@ -16,7 +16,8 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
-        android:text="Chapter name" />
+        android:text="Chapter name"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/you_scored"
@@ -40,11 +41,20 @@
         android:textSize="30sp"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/questionsAttempted"
+        android:layout_below="@id/txt_score_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Note: Only the questions that you attempted to answer will be displayed below:"
+        android:textStyle="bold" />
+
     <ScrollView
         android:layout_width="344dp"
         android:layout_height="530dp"
-        android:layout_below="@id/txt_score_result"
-        android:layout_marginTop="5dp"
+        android:layout_below="@id/questionsAttempted"
+        android:layout_marginTop="0dp"
         android:scrollbars="vertical"
         android:fillViewport="true"
         >
@@ -59,6 +69,7 @@
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#F1F1F1"
                 android:id="@+id/list_view">
 
             </ListView>
@@ -97,5 +108,27 @@
         android:layout_margin="16dp"
         android:textAllCaps="false"
         android:layout_alignParentRight="true" />
+
+    <TextView
+        android:id="@+id/email_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btn_unlock"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="myEmail"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/userId_result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/btn_unlock"
+        android:layout_alignParentBottom="true"
+        android:layout_marginRight="35dp"
+        android:layout_marginBottom="0dp"
+        android:layout_toLeftOf="@id/email_result"
+        android:text="myUserId"
+        android:textStyle="bold" />
 
 </RelativeLayout>

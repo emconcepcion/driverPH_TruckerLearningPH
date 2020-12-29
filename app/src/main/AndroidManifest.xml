@@ -12,17 +12,26 @@
 
     <application
         android:allowBackup="true"
-        android:usesCleartextTraffic="true"
         android:exported="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".CompletedQuizzes" />
-        <activity android:name=".QuizStatusList" />
-        <activity android:name=".Quizzes_menu" />
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true">
+        <activity android:name=".SummarizedScoresServer"></activity>
+        <activity android:name=".Basic_Content" />
+        <activity android:name=".TestListUnavailable" />
+        <activity
+            android:name=".CompletedQuizzes"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".QuizStatusList"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Quizzes_menu"
+            android:screenOrientation="portrait" />
         <activity android:name=".ChangeAvatar" />
         <activity android:name=".AccountEdit" />
         <activity android:name=".Recommendation" />
@@ -32,7 +41,8 @@
             android:parentActivityName=".Dashboard" />
         <activity
             android:name=".VoiceResponse"
-            android:parentActivityName=".Dashboard" />
+            android:parentActivityName=".Dashboard"
+            android:screenOrientation="portrait" />
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -60,7 +70,8 @@
             android:parentActivityName=".Dashboard" />
         <activity
             android:name=".MyProgress"
-            android:parentActivityName=".Dashboard" />
+            android:parentActivityName=".Dashboard"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".Lesson"
             android:parentActivityName=".Dashboard" />
@@ -75,10 +86,12 @@
             android:parentActivityName=".Dashboard" />
         <activity
             android:name=".QuizResults"
-            android:parentActivityName=".Dashboard" />
+            android:parentActivityName=".Dashboard"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".QuizActivity"
-            android:parentActivityName=".Dashboard" />
+            android:parentActivityName=".Dashboard"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".QuizInstructions"
             android:parentActivityName=".Dashboard" />

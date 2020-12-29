@@ -2,17 +2,12 @@ package com.cav.quizinstructions;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Bundle;
+import android.os.Build;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class Database {
 	public static final String DATABASE_NAME= DbContract.ScoresTable.DATABASE_NAME;
@@ -23,7 +18,7 @@ public class Database {
 	//to create a table
 
 	final String SQL_CREATE_QUESTIONS_TABLE = "CREATE TABLE " +
-			QuizContract.QuestionsTable.TABLE_NAME + " ( " +
+			QuizContract.QuestionsTable.TABLE_NAME + "(" +
 			QuizContract.QuestionsTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, " +
 			QuizContract.QuestionsTable.COLUMN_QUESTION + " TEXT UNIQUE, " +
 			QuizContract.QuestionsTable.COLUMN_OPTION1 + " TEXT, " +
@@ -31,23 +26,37 @@ public class Database {
 			QuizContract.QuestionsTable.COLUMN_OPTION3 + " TEXT, " +
 			QuizContract.QuestionsTable.COLUMN_OPTION4 + " TEXT, " +
 			QuizContract.QuestionsTable.COLUMN_ANSWER_NR + " INTEGER, " +
-			QuizContract.QuestionsTable.COLUMN_CHAPTER + " TEXT " +
-			")";
+			QuizContract.QuestionsTable.COLUMN_CHAPTER + " TEXT" +
+			");";
 
 	final String SQL_CREATE_SCORES_TABLE = "CREATE TABLE " +
-			DbContract.ScoresTable.TABLE_NAME_SCORES + " ( " +
+			DbContract.ScoresTable.TABLE_NAME_SCORES + "(" +
 			DbContract.ScoresTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+			DbContract.ScoresTable.COLUMN_NAME_USER_ID + " INTEGER," +
 			DbContract.ScoresTable.COLUMN_NAME_EMAIL + " TEXT, " +
 			DbContract.ScoresTable.COLUMN_NAME_SCORE + " INTEGER," +
 			DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS + " INTEGER," +
-			DbContract.ScoresTable.COLUMN_NAME_CHAPTER + " TEXT," +
+			DbContract.ScoresTable.COLUMN_NAME_CHAPTER + " TEXT UNIQUE," +
 			DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT + " INTEGER," +
 			DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN + " TEXT," +
 			DbContract.ScoresTable.SYNC_STATUS + " INTEGER" +
-			")";
+			");";
+
+	final String SQL_CREATE_SCORES_TABLE_FROM_SERVER = "CREATE TABLE " +
+			DbContract.ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL + "(" +
+			DbContract.ScoresMySQLTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, " +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL + " INTEGER," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL + " TEXT, " +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL + " INTEGER," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL + " INTEGER," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL + " TEXT UNIQUE," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL + " INTEGER," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL + " TEXT," +
+			DbContract.ScoresMySQLTable.SYNC_STATUS_MYSQL + " INTEGER" +
+			");";
 	
 	private Context context;
-	SQLiteDatabase db;	// manipulation with database
+	public static SQLiteDatabase db;	// manipulation with database
 	DatabaseHelper dbhelper;
 	
 	public Database(Context ctx) {
@@ -71,15 +80,25 @@ public class Database {
 			// TODO Auto-generated method stub
 			db.execSQL(SQL_CREATE_QUESTIONS_TABLE);
 			db.execSQL(SQL_CREATE_SCORES_TABLE);
-			Log.d("table is created..","Table is creted...");
+			db.execSQL(SQL_CREATE_SCORES_TABLE_FROM_SERVER);
+			Log.d("table is created..","Table is created...");
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 			// TODO Auto-generated method stub
-			//db.execSQL("DROP TABLE IF EXISTS");
+			db.execSQL("DROP TABLE IF EXISTS tbl_questions");
+			db.execSQL("DROP TABLE IF EXISTS tbl_scores");
+			db.execSQL("DROP TABLE IF EXISTS tbl_scores_server");
 			onCreate(db);
 		}
+
+		@Override
+		public void onOpen(SQLiteDatabase db) {
+			super.onOpen(db);
+			db.disableWriteAheadLogging();
+		}
+
 	}
 
 	public Database Open() throws SQLException
@@ -107,8 +126,25 @@ public class Database {
 			
 			Log.d("inserted... ", question.getQuestion()+"");
 			Log.d("inserted... ", question.getAnswerNr()+"");
-			return db.insertWithOnConflict(TABLE_NAME, null,cv, SQLiteDatabase.CONFLICT_REPLACE);
-		
+			return db.insertWithOnConflict(TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
+	}
+
+	public long addScores(Score score)
+	{
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL, score.getUser_id());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL, score.getEmail());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL, score.getScore());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL, score.getNum_of_items());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL, score.getChapter());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL, score.getNum_of_attempt());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL, score.getDate_taken());
+		contentValues.put(DbContract.ScoresMySQLTable.SYNC_STATUS_MYSQL, score.getSync_status());
+
+		Log.d("inserted... ", score.getUser_id()+"");
+		Log.d("inserted... ", score.getNum_of_attempt()+"");
+		return db.insertWithOnConflict(DbContract.ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
+
 	}
 
 	public void deleteAllQuestion(String studentRoll) {
@@ -117,6 +153,14 @@ public class Database {
 	      
 	        Log.d("Delete Table","Delete Question called.....");
 	        
+	}
+
+	public void deleteAllScores() {
+		// TODO Auto-generated method stub
+		db.delete(DbContract.ScoresTable.TABLE_NAME_SCORES,  null,null);
+
+		Log.d("Delete Table","Delete Scores called.....");
+
 	}
 
 //	public List<Question> getAllQuestions(){

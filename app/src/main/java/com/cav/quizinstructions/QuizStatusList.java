@@ -5,8 +5,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -42,11 +44,15 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 
 public class QuizStatusList extends AppCompatActivity {
 
@@ -59,7 +65,10 @@ public class QuizStatusList extends AppCompatActivity {
     Button btn_view_result;
     Button refresh_list;
     SharedPreferences sp;
+    public static boolean completedQuizzes;
+    public static TextView tv_userId_sList;
 
+    public static int sync_statusForMySQL;
     boolean submittedScore;
     private boolean isRefreshedList = false;
 
@@ -72,6 +81,7 @@ public class QuizStatusList extends AppCompatActivity {
         btn_view_result = findViewById(R.id.btn_view_result);
         recyclerView = findViewById(R.id.recyclerView);
         Email = findViewById(R.id.txt_email);
+        tv_userId_sList =findViewById(R.id.tv_user_id_StatusList);
         Score = findViewById(R.id.txt_score_for_syncing);
         Chapter = findViewById(R.id.txt_chapter_name);
         Num_of_items = findViewById(R.id.txt_numItems_recyView);
@@ -80,16 +90,29 @@ public class QuizStatusList extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
+        Collections.sort(arrayList, new Comparator<Score>() {
+            @Override
+            public int compare(com.cav.quizinstructions.Score o1, com.cav.quizinstructions.Score o2) {
+                return o1.getChapter().compareTo(o2.getChapter());
+            }
+        });
         adapter = new RecyclerAdapter(arrayList);
         recyclerView.setAdapter(adapter);
         readFromLocalStorage();
+//        readFromServer();
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
         Email.setText(myEmail);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+        Dashboard.user_id = sharedPreferences.getString("user_id", "");
+        tv_userId_sList.setText(Dashboard.user_id);
+
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 readFromLocalStorage();
+//                readFromServer();
             }
         };
 
@@ -97,8 +120,11 @@ public class QuizStatusList extends AppCompatActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                if (Chapter.getText().toString().contains("Unfinished Attempt:")) {
-                    btn_view_result.setVisibility(View.INVISIBLE);
+               // if (Chapter.getText().toString().contains("Unfinished Attempt:"))
+                if (QuizActivity.endedAttempt){ //|| (QuizActivity.endedAttempt)
+                    submitScore();
+                    btn_view_result.setVisibility(View.GONE);
+                    refresh_list.setVisibility(View.GONE);
                     Button backToQMenu = findViewById(R.id.btn_backToQMenu);
                     backToQMenu.setVisibility(View.VISIBLE);
                     backToQMenu.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +138,7 @@ public class QuizStatusList extends AppCompatActivity {
                     submittedScore = true;
                     refresh_list.setVisibility(View.INVISIBLE);
                     btn_view_result.setVisibility(View.VISIBLE);
+                    completedQuizzes = true;
                 }
             }
         });
@@ -145,13 +172,34 @@ public class QuizStatusList extends AppCompatActivity {
         Date_Taken.setText(currentDate);
 
         String emailA = Email.getText().toString();
+        int userIdA = Integer.parseInt(tv_userId_sList.getText().toString());
         int scoreA = Integer.parseInt(Score.getText().toString());
         int itemsA = Integer.parseInt(Num_of_items.getText().toString());
         String chapA = Chapter.getText().toString();
         int attemptsA = Integer.parseInt(Num_Of_Attempt.getText().toString());
         String dateTakenA = Date_Taken.getText().toString();
 
-        saveToAppServer(emailA, scoreA, itemsA, chapA, attemptsA, dateTakenA);
+        //user must log in to change its user name from guest to email address for saving
+        if (emailA.equals("guest_user")){
+            AlertDialog alertDialog = new AlertDialog.Builder(QuizStatusList.this).create();
+            alertDialog.setTitle("Log in to Continue");
+            alertDialog.setMessage("Please connect to the internet and log in before clicking \"Start the quiz\"");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(QuizStatusList.this, Login.class));
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
+
+        //save only the score to web server if the user passed the test, else, save only to local db
+        if (QuizActivity.unlocked && checkNetworkConnection()){
+            saveToAppServer(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, dateTakenA);
+        }else{
+            saveToLocalStorage(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, dateTakenA, DbContract.SYNC_STATUS_SAVED);
+        }
     }
 
     public void readFromLocalStorage() {
@@ -165,6 +213,7 @@ public class QuizStatusList extends AppCompatActivity {
         Cursor cursor = dbHelper.readFromLocalDatabase(database);
 
         while (cursor.moveToNext()) {
+            int userId = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_USER_ID));
             String email = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_EMAIL));
             int score = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_SCORE));
             int num_items = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS));
@@ -173,7 +222,8 @@ public class QuizStatusList extends AppCompatActivity {
             String date_Taken = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN));
             int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
 
-            arrayList.add(new Score(email, score, num_items, chap, num_attempt, date_Taken, sync_status));
+
+            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, date_Taken, sync_status));
         }
 
         adapter.notifyDataSetChanged();
@@ -181,7 +231,8 @@ public class QuizStatusList extends AppCompatActivity {
         dbHelper.close();
     }
 
-    public void saveToAppServer(String email, int score, int num_items, String chap,
+
+    public void saveToAppServer(int userId, String email, int score, int num_items, String chap,
                                 int num_of_attempt, String date_taken) {
         if (checkNetworkConnection()) {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.ScoresTable.SERVER_URL,
@@ -194,11 +245,11 @@ public class QuizStatusList extends AppCompatActivity {
                                 String Response = jsonObject.getString("response");
                                 //check response from server
                                 if (Response.equals("OK")) {
-                                    saveToLocalStorage(email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_SAVED);
+                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_SAVED);
                                     StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.synced),
                                             Toast.LENGTH_LONG, R.style.toastStyle).show();
                                 } else { //for server error, unable to save, sav storage to local
-                                    saveToLocalStorage(email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
+                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
                                     StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.sync_error_json),
                                             Toast.LENGTH_LONG, R.style.toastStyle).show();
                                 }
@@ -209,7 +260,7 @@ public class QuizStatusList extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    saveToLocalStorage(email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
+                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
                     StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.sync_error),
                             Toast.LENGTH_LONG, R.style.toastStyle).show();
 
@@ -233,6 +284,7 @@ public class QuizStatusList extends AppCompatActivity {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
+                    params.put("user_id", String.valueOf(userId));
                     params.put("email", email);
                     params.put("score", String.valueOf(score));
                     params.put("num_of_items", String.valueOf(num_items));
@@ -243,28 +295,29 @@ public class QuizStatusList extends AppCompatActivity {
                 }
             };
             MySingleton.getInstance(QuizStatusList.this).addToRequestQueue(stringRequest);
-            saveToLocalStorage(email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_SAVED);
+            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_SAVED);
             StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.saved),
                     Toast.LENGTH_LONG, R.style.toastStyle).show();
-
         } else { // no internet, save to SQLite
-            saveToLocalStorage(email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
+            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
             StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.connect_to_net_to_save),
                     Toast.LENGTH_LONG, R.style.toastStyle).show();
         }
 
     }
 
-    public void saveToLocalStorage(String email, int score, int num_items, String chap,
+    public void saveToLocalStorage(int userId, String email, int score, int num_items, String chap,
                                    int num_of_attempt, String date_taken, int sync_status) {
 
         QuizDbHelper dbHelper = new QuizDbHelper(this);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         //save to sqlite
-        dbHelper.saveToLocalDatabase(email, score, num_items, chap, num_of_attempt, date_taken, sync_status, database);
+        dbHelper.saveToLocalDatabase(userId, email, score, num_items, chap, num_of_attempt, date_taken, sync_status, database);
 
         readFromLocalStorage();
+//        readFromServer();
+
         dbHelper.close();
     }
 
@@ -280,8 +333,9 @@ public class QuizStatusList extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(new NetworkMonitor(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
-        registerReceiver(broadcastReceiver, new IntentFilter(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
+            registerReceiver(new NetworkMonitor(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+            registerReceiver(broadcastReceiver, new IntentFilter(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
+
     }
 
     @Override
@@ -302,8 +356,7 @@ public class QuizStatusList extends AppCompatActivity {
         String chapter = bundle.getString("chapter");
         int nextAttempt = bundle.getInt("attempt");
         String email = bundle.getString("myEmail");
-
-        int allAttempts = Integer.parseInt(Num_Of_Attempt.getText().toString());
+        int userId = bundle.getInt("myUserId");
 
         Intent intent = new Intent(QuizStatusList.this, QuizResults.class);
         intent.putStringArrayListExtra("askedQuestions", arrayList);
@@ -312,6 +365,7 @@ public class QuizStatusList extends AppCompatActivity {
         intent.putExtra("chapter", chapter);
         intent.putExtra("attempt", nextAttempt);
         intent.putExtra("email", email);
+        intent.putExtra("user_id", userId);
         startActivity(intent);
 
     }

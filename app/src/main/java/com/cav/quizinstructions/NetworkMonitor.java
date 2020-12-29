@@ -40,6 +40,7 @@ public class NetworkMonitor extends BroadcastReceiver {
             while (cursor.moveToNext()){
                 int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
                 if (sync_status == DbContract.SYNC_STATUS_FAILED && counter < 1){
+                    int userIdY = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_USER_ID));
                     String emailY = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_EMAIL));
                     int scoreY = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_SCORE));
                     int num_itemsY = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS));
@@ -57,7 +58,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                                         String Response = jsonObject.getString("response");
                                         counter = 1;
                                         if (Response.equals("OK")){
-                                            dbHelper.updateLocalDatabase(emailY,scoreY,num_itemsY,chapterY,num_attemptY,date_takenY, DbContract.SYNC_STATUS_SAVED,database);
+                                            dbHelper.updateLocalDatabase(userIdY,emailY,scoreY,num_itemsY,chapterY,num_attemptY,date_takenY, DbContract.SYNC_STATUS_SAVED,database);
                                             context.sendBroadcast(new Intent(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
 //                                            StyleableToast.makeText(context, context.getString(R.string.updated),
 //                                                    Toast.LENGTH_LONG, R.style.toastStyle).show();
@@ -76,6 +77,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                         @Override
                         protected Map<String, String> getParams() throws AuthFailureError {
                             Map<String, String> params = new HashMap<>();
+                            params.put("user_id", String.valueOf(userIdY));
                             params.put("email", emailY);
                             params.put("score", String.valueOf(scoreY));
                             params.put("num_of_items", String.valueOf(num_itemsY));
@@ -87,7 +89,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                     }
                             ;
                     MySingleton.getInstance(context).addToRequestQueue(stringRequest);
-                    dbHelper.updateLocalDatabase(emailY,scoreY,num_itemsY,chapterY,num_attemptY,date_takenY, DbContract.SYNC_STATUS_SAVED,database);
+                    dbHelper.updateLocalDatabase(userIdY,emailY,scoreY,num_itemsY,chapterY,num_attemptY,date_takenY, DbContract.SYNC_STATUS_SAVED,database);
                     context.sendBroadcast(new Intent(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
                     StyleableToast.makeText(context, context.getString(R.string.updated),
                             Toast.LENGTH_LONG, R.style.toastStyle).show();

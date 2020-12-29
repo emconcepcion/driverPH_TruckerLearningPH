@@ -11,8 +11,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -59,12 +62,16 @@ import java.util.Random;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+import static com.cav.quizinstructions.Dashboard.user_id;
+
 public class QuizActivity extends AppCompatActivity {
 
-    private TextView textViewChapter;
+    public static TextView textViewChapter;
     private TextView textViewQuestion;
     private TextView textViewScore;
-    private TextView textViewEmail;
+    public static TextView textViewEmail;
+    public static TextView textViewUserIdQAct;
     private TextView textViewQuestionCount;
     private TextView textViewCountdown;
     private TextView attempt;
@@ -80,24 +87,28 @@ public class QuizActivity extends AppCompatActivity {
 
     ArrayList<String> askedQuestions = new ArrayList<>();
 
-    private ColorStateList textColorDefaultRb;
+    private ColorStateList textColorDefaultRb, textColorDefaultCd;
+    private ColorStateList csl2, csl;
     private CountDownTimer countDownTimer;
     private long timeLeftInMillis;
 
     private List<Question> questionList;
-    private List<Question> questionDb;
+    private List<Score> scoreList;
     private int questionCounter;
     private int questionCountTotal;
     private Question currentQuestion;
 
+    public static boolean unlocked;
     TextView answer_nr;
     private int score;
     private boolean answered;
     CardView cardViewScore;
     private boolean backPressed;
     String email;
-    private boolean endedAttempt;
+    public static boolean endedAttempt, scoreShown;
     int correct_answer = 0;
+    MediaPlayer mediaPlayer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +132,9 @@ public class QuizActivity extends AppCompatActivity {
         textViewScore = findViewById(R.id.textview_score);
         textViewEmail = findViewById(R.id.textview_email);
         attempt = findViewById(R.id.textview_attempt);
+        textViewUserIdQAct = findViewById(R.id.textview_user_id);
+
+        textColorDefaultRb = textViewCountdown.getTextColors();
 
         textColorDefaultRb = rb1.getTextColors();
 
@@ -130,10 +144,18 @@ public class QuizActivity extends AppCompatActivity {
         questionList = dbHelper.getAllQuestions();
         questionCountTotal = (questionList.size() - 2);
         FYAlgoShuffle(questionList);
-
+        timer();
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
         textViewEmail.setText(myEmail);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+        Dashboard.user_id = sharedPreferences.getString("user_id", "");
+        textViewUserIdQAct.setText(Dashboard.user_id);
+
+        mediaPlayer = MediaPlayer.create(QuizActivity.this, R.raw.bg_music);
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
 
         showNextQuestion();
         getAttempt();
@@ -153,6 +175,24 @@ public class QuizActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mediaPlayer.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mediaPlayer.pause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mediaPlayer.pause();
     }
 
     public static<T> void FYAlgoShuffle(List<T> list){
@@ -180,7 +220,7 @@ public class QuizActivity extends AppCompatActivity {
             currentQuestion = questionList.get(questionCounter);
 
             textViewQuestion.setText(currentQuestion.getQuestion());
-            textViewChapter.setText("Quiz: " + currentQuestion.getChapter());
+            textViewChapter.setText(currentQuestion.getChapter());
             rb1.setText(currentQuestion.getOption1());
             rb2.setText(currentQuestion.getOption2());
             rb3.setText(currentQuestion.getOption3());
@@ -198,22 +238,35 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void timer(){
-        countDownTimer = new CountDownTimer(30000, 1000) {
+        countDownTimer = new CountDownTimer(20000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 int minutes = (int) (millisUntilFinished / 1000) / 60;
                 int seconds = (int) (millisUntilFinished / 1000) % 60;
 
                 String timeRemaining = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
-                textViewCountdown.setText(getString(R.string.time_remaining) +": " + timeRemaining);
+                textViewCountdown.setText(getString(R.string.time_remaining) +" " + timeRemaining);
+
+                if (timeLeftInMillis < 10000) {
+                    textViewCountdown.setTextColor(Color.parseColor("#0235EC"));
+                } else{
+                    textViewCountdown.setTextColor(textColorDefaultRb);
+                }
+
             }
 
             public void onFinish() {
                 textViewCountdown.setText(getString(R.string.time_is_up));
-                Toast toast = Toast.makeText(QuizActivity.this, QuizActivity.this.getString(R.string.time_is_up), Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.FILL, 0, 400);
-                toast.show();
-                finishQuiz();
+//                Toast toast = Toast.makeText(QuizActivity.this, QuizActivity.this.getString(R.string.time_is_up), Toast.LENGTH_SHORT);
+//                toast.setGravity(Gravity.FILL, 0, 400);
+//                toast.show();
+
+                StyleableToast.makeText(getApplicationContext(), QuizActivity.this.getString(R.string.timeUp),
+                        Toast.LENGTH_LONG, R.style.toastStyle).show();
+                mediaPlayer.pause();
+                toResults();
+                finish();
+//                finishQuiz();
             }
         }.start();
     }
@@ -320,6 +373,7 @@ public class QuizActivity extends AppCompatActivity {
 
         questionCountTotal = questionList.size() - 2;
 
+        int myUserId = Integer.parseInt(textViewUserIdQAct.getText().toString());
         int newAttempt = Integer.parseInt(attempt.getText().toString());
         String myEmail = textViewEmail.getText().toString();
 
@@ -331,6 +385,7 @@ public class QuizActivity extends AppCompatActivity {
         bundle.putString("chapter", currentQuestion.getChapter());
         bundle.putInt("attempt", newAttempt);
         bundle.putString("myEmail", myEmail);
+        bundle.putInt("myUserId", myUserId);
         i.putExtras(bundle);
         i.putStringArrayListExtra("askedQuestions", askedQuestions);
 //        i.putExtra("email", email);
@@ -344,10 +399,41 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     private void getAttempt(){
+            int resetAttempt = 1;
+            attempt.setText(String.valueOf(resetAttempt));
+            String currChap = textViewChapter.getText().toString();
+            int currUser = Integer.parseInt(user_id);
+            QuizDbHelper dbHelper = new QuizDbHelper(this);
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+            Cursor cursor = dbHelper.getAttemptFromLocalDatabase(currUser, currChap, db);
+            if (cursor.moveToNext()){
+                int currAttempt = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT));
+                String dbChap = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_CHAPTER));
+                int dbUser = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_USER_ID));
+                if (currChap.equals(dbChap) && (String.valueOf(dbUser).equals(String.valueOf(currUser)))) {
+                        attempt.setText(String.valueOf(++currAttempt));
+                }else{
+                    resetAttempt = 1;
+                    attempt.setText(String.valueOf(resetAttempt));
+                }
+            }
+//        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+//        String chapterForRetake = sp.getString("chapter", null);
+//        textViewChapter.setText(chapterForRetake);
+//
+//        if ((textViewChapter.getText().toString()).equals(currentQuestion.getChapter())){
+//            int incAttempt = sp.getInt("attempt", 1);
+//            attempt.setText(String.valueOf(incAttempt));
+//        }else{
+//            int resetAttempt = 1;
+//            attempt.setText(String.valueOf(resetAttempt));
+//        }
 
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-        int incAttempt = sp.getInt("attempt", 1);
-        attempt.setText(String.valueOf(incAttempt));
+//        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+//        int incAttempt = sp.getInt("attempt", 1);
+//        attempt.setText(String.valueOf(incAttempt));
+//        String chapterForRetake = sp.getString("chapter", null);
+//        textViewChapter.setText(chapterForRetake);
 
 
 //        textViewEmail.setText(myEmail);
@@ -357,11 +443,9 @@ public class QuizActivity extends AppCompatActivity {
 //        attempt.setText(String.valueOf(incAttempt));
     }
 
-
-
-
     @Override
     public void onBackPressed() {
+        mediaPlayer.pause();
         Dialog exit_quiz_popup = new Dialog(this);
         ImageView close_exit_popup;
         Button btn_exit_quiz_yes, btn_exit_quiz_no;
@@ -373,6 +457,7 @@ public class QuizActivity extends AppCompatActivity {
         close_exit_popup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mediaPlayer.start();
                 exit_quiz_popup.dismiss();
             }
         });
@@ -383,22 +468,26 @@ public class QuizActivity extends AppCompatActivity {
         btn_exit_quiz_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mediaPlayer.pause();
                 Calendar calendar = Calendar.getInstance();
                 SimpleDateFormat simpleDate =  new SimpleDateFormat("EEEE MMMM dd, yyyy");
                 String currentDate = simpleDate.format(calendar.getTime());
 
-                questionCountTotal = questionList.size() - 2;
+                questionCountTotal = (questionList.size() - 2);
 
                 int newAttempt = Integer.parseInt(attempt.getText().toString());
+                int myUserId = Integer.parseInt(textViewUserIdQAct.getText().toString());
+                String myEmail = textViewEmail.getText().toString();
 
                 Intent i = new Intent(QuizActivity.this, QuizStatusList.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("score", 0);
                 bundle.putInt("items", questionCountTotal);
-                bundle.putString("chapter", ("Unfinished Attempt: " + currentQuestion.getChapter()));
+                bundle.putString("chapter", currentQuestion.getChapter());
                 bundle.putInt("attempt", newAttempt);
+                bundle.putInt("myUserId", myUserId);
                 i.putExtras(bundle);
-                i.putExtra("email", email);
+                i.putExtra("email", myEmail);
                 i.putExtra("date_taken", currentDate);
                 startActivity(i);
                 finish();
@@ -409,6 +498,7 @@ public class QuizActivity extends AppCompatActivity {
         btn_exit_quiz_no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mediaPlayer.start();
                 exit_quiz_popup.dismiss();
             }
         });
@@ -424,9 +514,11 @@ public class QuizActivity extends AppCompatActivity {
         if (paused) {
             paused = false;
             icon = R.drawable.ic_sound_on;
+            mediaPlayer.pause();
         } else{
             paused = true;
             icon = R.drawable.ic_sound_off;
+            mediaPlayer.start();
         }
 
         button.setImageDrawable(
@@ -435,6 +527,9 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     public void showScore(){
+        onBackPressed();
+        scoreShown = true;
+        mediaPlayer.pause();
         Dialog show_score = new Dialog(this);
         Button btn_view_result;
         show_score.setContentView(R.layout.show_score);
@@ -458,10 +553,11 @@ public class QuizActivity extends AppCompatActivity {
         if(myScore > (myItems * 0.8)){
             pass_fail.setText("Like a Boss!");
             result_icon.setImageResource(R.drawable.ic_cheers);
-
+            unlocked = true;
         }else if(myScore < (myItems * 0.8)){
             pass_fail.setText("Aww, snap!");
             result_icon.setImageResource(R.drawable.ic_sad);
+            unlocked = false;
         }
 
         show_score.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -470,6 +566,7 @@ public class QuizActivity extends AppCompatActivity {
         btn_view_result.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mediaPlayer.pause();
                 toResults();
                 finish();
             }
@@ -478,9 +575,11 @@ public class QuizActivity extends AppCompatActivity {
         close_exit_popup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mediaPlayer.pause();
                 toResults();
                 finish();
             }
         });
+
     }
 }

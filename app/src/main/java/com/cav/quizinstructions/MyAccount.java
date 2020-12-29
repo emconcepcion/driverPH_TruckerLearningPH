@@ -24,7 +24,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MyAccount extends AppCompatActivity {
     FloatingActionButton fabedit;
     public ImageView avatarimage;
-    public TextView tv_fullname, tv_email, tv_username, tv_password;
+    public TextView tv_fullname, tv_email, tv_password;
+    public static TextView tv_username;
     public String email, img_num, fname, lname, id;
     private String retrievedatasUrl="https://phportal.net/driverph/retrievemyaccount.php";
     @Override

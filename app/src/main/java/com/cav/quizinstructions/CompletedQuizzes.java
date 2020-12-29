@@ -9,7 +9,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,24 +21,32 @@ import android.widget.Toast;
 
 import com.muddzdev.styleabletoast.StyleableToast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class CompletedQuizzes extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    TextView Score, Email, Num_of_items, Chapter, Num_Of_Attempt, Date_Taken;
     RecyclerView.LayoutManager layoutManager;
     RecyclerAdapter adapter;
     ArrayList<Score> arrayList = new ArrayList<>();
     BroadcastReceiver broadcastReceiver;
-    Button btn_view_result;
-    Button refresh_list;
+    Button summary_btn;
+    private final String SCORES_URL = "https://phportal.net/driverph/scoresOnline.php";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_completed_quizzes);
 
+        summary_btn = findViewById(R.id.btn_summarized_scorelist);
         recyclerView = findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -42,12 +54,22 @@ public class CompletedQuizzes extends AppCompatActivity {
         adapter = new RecyclerAdapter(arrayList);
         recyclerView.setAdapter(adapter);
         readFromLocalStorage();
+//        readFromServer();
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 readFromLocalStorage();
+//                readFromServer();
             }
         };
+        getJSON(SCORES_URL);
+
+        summary_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(CompletedQuizzes.this, SummarizedScoresServer.class));
+            }
+        });
     }
 
     public void onClick (View v){
@@ -71,6 +93,7 @@ public class CompletedQuizzes extends AppCompatActivity {
         Cursor cursor = dbHelper.readFromLocalDatabase(database);
 
         while(cursor.moveToNext()){
+            int userId = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_USER_ID));
             String email = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_EMAIL));
             int score = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_SCORE));
             int num_items = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS));
@@ -79,11 +102,141 @@ public class CompletedQuizzes extends AppCompatActivity {
             String date_Taken = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN));
             int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
 
-            arrayList.add(new Score(email, score, num_items, chap, num_attempt, date_Taken, sync_status));
+            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, date_Taken, sync_status));
         }
 
         //adapter.notifyDataSetChanged();
         cursor.close();
         dbHelper.close();
+    }
+
+    public void readFromServer(){
+
+        //clear data from arraylist
+        arrayList.clear();
+        QuizDbHelper dbHelper = new QuizDbHelper(this);
+        SQLiteDatabase database = dbHelper.getReadableDatabase();
+
+        //read using cursor
+        Cursor cursor = dbHelper.readFromLocalDatabase(database);
+
+        while(cursor.moveToNext()){
+            int userId = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL));
+            String email = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL));
+            int score = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL));
+            int num_items = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL));
+            String chap = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL));
+            int num_attempt = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL));
+            String date_Taken = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL));
+            int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.SYNC_STATUS_MYSQL));
+
+            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, date_Taken, sync_status));
+        }
+
+//        adapter.notifyDataSetChanged();
+        cursor.close();
+        dbHelper.close();
+    }
+
+    //check for internet connection
+    public boolean checkNetworkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+
+    public void getJSON(final String urlWebService) {
+        class GetJSON extends AsyncTask<Void, Void, String> {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+//                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
+                try {
+                    parserQuestionsFromString(s);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            protected String doInBackground(Void... voids) {
+
+                try {
+                    URL url = new URL(urlWebService);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    StringBuilder sb = new StringBuilder();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+
+                    return sb.toString().trim();
+
+                } catch (Exception e) {
+                    return null;
+                }
+
+            }
+        }
+        GetJSON getJSON = new GetJSON();
+        getJSON.execute();
+    }
+
+    void parserQuestionsFromString(String refjson) {
+        String stringjson = refjson;
+        Database db = new Database(this);
+        db.Open();
+        try {
+            JSONObject jObj = new JSONObject(stringjson);
+
+            JSONArray menuitemArray = jObj.getJSONArray("data");
+
+            for (int i = 0; i < menuitemArray.length(); i++) {
+
+                Log.d("user_id " + i,
+                        menuitemArray.getJSONObject(i).getString("user_id")
+                                .toString());
+                Log.d("email: " + i, menuitemArray.getJSONObject(i)
+                        .getString("email"));
+                Log.d("score: " + i, menuitemArray.getJSONObject(i)
+                        .getString("score"));
+                Log.d("num_of_items: " + i, menuitemArray.getJSONObject(i)
+                        .getString("num_of_items"));
+                Log.d("chapter: " + i, menuitemArray.getJSONObject(i)
+                        .getString("chapter"));
+                Log.d("num_of_attempt: " + i, menuitemArray.getJSONObject(i)
+                        .getString("num_of_attempt"));
+                Log.d("date_taken: " + i, menuitemArray.getJSONObject(i)
+                        .getString("date_taken"));
+                Log.d("sync_status: " + i, menuitemArray.getJSONObject(i)
+                        .getString("sync_status"));
+
+                String userId = menuitemArray.getJSONObject(i).getString("user_id");
+                String email = menuitemArray.getJSONObject(i).getString("email");
+                String score = menuitemArray.getJSONObject(i).getString("score");
+                String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
+                String chap = menuitemArray.getJSONObject(i).getString("chapter");
+                String num_attempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
+                String date_Taken = menuitemArray.getJSONObject(i).getString("date_taken");
+                String sync_status = menuitemArray.getJSONObject(i).getString("sync_status");
+                Score s1 = new Score(Integer.parseInt(userId), email, Integer.parseInt(score),
+                        Integer.parseInt(num_items), chap, Integer.parseInt(num_attempt), date_Taken,
+                        Integer.parseInt(sync_status));
+                db.addScores(s1);
+            }
+
+        } catch (Exception je) {
+
+            Log.d("json error...", je + "");
+        }
+        Log.d("Inside aysnc task", "inside asynctask...");
+        db.close();
     }
 }

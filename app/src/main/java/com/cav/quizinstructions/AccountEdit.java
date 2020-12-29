@@ -20,8 +20,8 @@ import java.util.HashMap;
 
 public class AccountEdit extends AppCompatActivity {
     TextView changeavatar;
-    EditText et_firstname, et_lastname, et_email, et_username, et_password;
-    public String email, img_num, fname, lname,username, password, id;
+    public static EditText et_firstname, et_lastname, et_email, et_username, et_password;
+    public static String email, img_num, fname, lname,username, password, id;
     ImageView avatar_edit;
     Button btnsave, btncancel;
     private String updateUrl= "https://phportal.net/driverph/update_user_information.php";

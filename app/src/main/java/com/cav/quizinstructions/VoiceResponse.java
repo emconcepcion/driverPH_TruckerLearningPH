@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -26,13 +27,17 @@ import androidx.core.content.ContextCompat;
 import java.io.File;
 import java.io.IOException;
 
+import static com.cav.quizinstructions.BackgroundTask.EMAIL;
+import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
+import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+
 public class VoiceResponse extends AppCompatActivity {
 
     MediaRecorder mediaRecorder = null;
     MediaPlayer mediaPlayer = null;
     Button start_rec,  play_rec, btn_back, btn_next;
     //  stop_rec,
-    TextView textView;
+    TextView textView, userName, chapVr;
 
     private final int MIC_PERMISSION_CODE= 1;
 
@@ -52,13 +57,22 @@ public class VoiceResponse extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 //        getSupportActionBar().setTitle("Quick Recap");
+        SharedPreferences sharedPreferences = getSharedPreferences("mySavedAttempt", MODE_PRIVATE);
+        String uname = sharedPreferences.getString("username", "");
+        SharedPreferences spr = getSharedPreferences("SharedPrefChapter", MODE_PRIVATE);
+        String chapter = spr.getString("chapter", "");
 
         start_rec = findViewById(R.id.btn_start_record);
         textView = findViewById(R.id.textView_status);
+        userName = findViewById(R.id.user_name);
         play_rec = findViewById(R.id.btn_playback);
         btn_back = findViewById(R.id.btn_back_to_lesson);
         btn_next = findViewById(R.id.btn_next);
+        chapVr = findViewById(R.id.chapterVR);
 
+        userName.setText("Hi, " + uname);
+//        userName.setText(AccountEdit.fname);
+        chapVr.setText(chapter);
         textView.setVisibility(View.GONE);
 
 
@@ -74,7 +88,14 @@ public class VoiceResponse extends AppCompatActivity {
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Toast.makeText(VoiceResponse.this, "Next button pressed", Toast.LENGTH_SHORT).show();
+                //if (lastModule == true){
+                //    startActivity(new Intent(VoiceResponse.this, QuizInstructions.class));
+//                  }else{
+//                     startActivity(new Intent(VoiceResponse.this, Simulation.class));
+//                  }
+//                SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+//                String user_id = sharedPreferences.getString("user_id", "");
+                String chapVR = chapVr.getText().toString();
                 startActivity(new Intent(VoiceResponse.this, QuizInstructions.class));
             }
         });
@@ -125,7 +146,9 @@ public class VoiceResponse extends AppCompatActivity {
             textView.setVisibility(View.VISIBLE);
             textView.setText(R.string.start_recording);
         } else {
-            stop();
+            if (mediaRecorder != null){
+                stop();
+            }
         }
     }
 

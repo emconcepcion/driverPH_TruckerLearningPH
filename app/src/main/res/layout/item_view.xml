@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="50dp">
+    android:layout_height="80dp"
+    >
 
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="70dp"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="22dp"
         android:layout_marginTop="10dp"
@@ -22,25 +23,39 @@
             android:gravity="center"/>
 
         <TextView
+            android:id="@+id/txt_attempt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="score_result_here"
-            android:id="@+id/txt_score_itemView"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:layout_below="@id/txt_chapter_list"
+            android:layout_marginTop="2dp"
             android:gravity="center"
-            android:layout_below="@id/txt_chapter_list"/>
+            android:text="Attempt #: "
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/txt_numItems_itemView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="total_items_here"
-            android:id="@+id/txt_numItems_itemView"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:gravity="center"
+            android:layout_below="@id/txt_chapter_list"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="21dp"
             android:layout_toRightOf="@id/txt_score_itemView"
-            android:layout_below="@id/txt_chapter_list"/>
+            android:gravity="center"
+            android:text="total_items_here"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_score_itemView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/txt_chapter_list"
+            android:layout_marginTop="21dp"
+            android:gravity="center"
+            android:text="score_result_here"
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <ImageView
             android:id="@+id/img_sync"

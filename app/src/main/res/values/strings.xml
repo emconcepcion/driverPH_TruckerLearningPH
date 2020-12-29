@@ -14,9 +14,8 @@
     <string name="pass">Pass the quiz and unlock the next lesson.</string>
     <string name="time_limit">Time limit: 3 minutes</string>
     <string name="questions_5">Questions: 5</string>
-    <string name="read_questions">Read each question carefully.
-        \nChoose the best answer and click NEXT once you are ready for the next question.
-        \n\nYou cannot go back to the previous question items to change your answers.</string>
+    <string name="read_questions">Read each question carefully. Choose the best answer and click NEXT once
+        you are ready for the next question. You cannot go back to the previous question items to change your answers.</string>
     <string name="start_quiz">START QUIZ</string>
     <string name="hi_name">Hi, Name!</string>
     <string name="recap_msg">What have you learned from our lesson?\n\nPress the mic icon to START recording and tap the mic again to STOP recording.\nGive at least 1 keyword or 1 sentence about our lesson.</string>
@@ -31,7 +30,9 @@
     <string name="question_3">Question 3</string>
     <string name="question_4">Question 4</string>
     <string name="question_5">Question 5</string>
-    <string name="your_quiz_is_not">Your quiz is not yet finished.\nDo you wish to end this attempt?</string>
+    <string name="your_quiz_is_not">Your quiz is not yet finished.
+        You will automatically get zero (0) as your score.
+        Do you wish to end this attempt?</string>
     <string name="oops">Oops!</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -58,6 +59,7 @@
     <string name="please_select_an_answer">Please select an answer.</string>
     <string name="saved">Test score has been saved!</string>
     <string name="synced">Sync successful!</string>
+    <string name="timeUp">Time is up! Test has been submitted.</string>
     <string name="check_net">Checking your internet connection...</string>
     <string name="check_update">Connecting to update your scores...</string>
     <string name="updated">Updated scores successfully!</string>
@@ -66,7 +68,7 @@
     <string name="list_updated">Showing list of tests taken.</string>
     <string name="cant_update">Check your internet connection.</string>
     <string name="connect_to_net_to_save">To save the test results, please connect to the internet.</string>
-    <string name="time_remaining">Time Remaining</string>
+    <string name="time_remaining">Time left:</string>
     <string name="time_is_up">Time is up!</string>
     <string name="option_4">Option 4</string>
 

@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Quiz: Chapter"
+            android:text="Chapter"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/textview_chapter"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="5dp"
             android:text="Instructions:"
             android:textColor="@android:color/black"
             android:textSize="16sp"
@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/linearLayout"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
             android:background="@drawable/border"
@@ -118,7 +118,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="0dp"
                 android:background="@android:color/darker_gray" />
             <TextView
                 android:id="@+id/txt_question"
@@ -159,7 +159,7 @@
                 <RadioButton
                     android:id="@+id/radio_btn_option1"
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="35dp"
                     android:freezesText="true"
                     android:text=""
                     android:textColor="@android:color/black"
@@ -169,7 +169,7 @@
                 <RadioButton
                     android:id="@+id/radio_btn_option2"
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="35dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
                     android:text=""
@@ -180,7 +180,7 @@
                 <RadioButton
                     android:id="@+id/radio_btn_option3"
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="35dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
                     android:text=""
@@ -191,7 +191,7 @@
                 <RadioButton
                     android:id="@+id/radio_btn_option4"
                     android:layout_width="match_parent"
-                    android:layout_height="45dp"
+                    android:layout_height="35dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
                     android:text=""
@@ -239,6 +239,17 @@
                     android:textStyle="bold"
                     android:visibility="gone"/>
 
+                <TextView
+                    android:id="@+id/textview_user_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="user_id"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
         </LinearLayout>
@@ -247,13 +258,14 @@
     <Button
         android:id="@+id/btn_next"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="40dp"
         android:layout_margin="20dp"
         android:layout_alignParentBottom="true"
+        android:background="#A82196F3"
         android:freezesText="true"
         android:text="NEXT"
-        android:textColor="@android:color/black"
-        android:textSize="16sp" />
+        android:textColor="@android:color/white"
+        android:textSize="20sp" />
 
     <ImageButton
         android:id="@+id/btn_sound"

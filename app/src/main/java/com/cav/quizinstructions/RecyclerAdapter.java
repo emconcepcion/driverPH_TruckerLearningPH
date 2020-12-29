@@ -33,6 +33,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter <RecyclerAdapter.MyVie
         holder.Score.setText("" +arrayList.get(position).getScore());
         holder.Items.setText("/" +arrayList.get(position).getNum_of_items());
         holder.Chapter.setText(arrayList.get(position).getChapter());
+        holder.Attempt.setText("Attempt #:" +arrayList.get(position).getNum_of_attempt());
         int sync_status = arrayList.get(position).getSync_status();
         if (sync_status == DbContract.SYNC_STATUS_SAVED) {
             holder.Sync_status.setImageResource(R.drawable.ic_saved);
@@ -50,7 +51,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter <RecyclerAdapter.MyVie
     public static class MyViewHolder extends RecyclerView.ViewHolder{
 
         ImageView Sync_status;
-        TextView Score, Items, Chapter;
+        TextView Score, Items, Chapter, Attempt;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -58,6 +59,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter <RecyclerAdapter.MyVie
             Score = (TextView)itemView.findViewById(R.id.txt_score_itemView);
             Items = (TextView)itemView.findViewById(R.id.txt_numItems_itemView);
             Chapter = (TextView)itemView.findViewById(R.id.txt_chapter_list);
+            Attempt = (TextView)itemView.findViewById(R.id.txt_attempt);
         }
     }
 }

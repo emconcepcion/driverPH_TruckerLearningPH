@@ -92,6 +92,8 @@
         android:layout_centerHorizontal="true"
         android:textStyle="bold"
         android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:background="#A82196F3"
         />
 
     <Button
@@ -103,15 +105,32 @@
         android:layout_marginBottom="20dp"/>
 
     <TextView
-        android:id="@+id/textview_data"
+        android:id="@+id/myEmailQuizInst"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:text="data"
-        android:textColor="@android:color/black"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/btn_start_quiz"
+        android:layout_marginLeft="135dp"
+        android:layout_marginBottom="35dp"
+        android:layout_toRightOf="@id/btn_back_to_take_quiz"
+        android:text="mEmail"
+        android:textColor="@android:color/black"
         android:textSize="20sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:visibility="invisible"/>
+    <TextView
+        android:id="@+id/myUserIdQuizInst"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="135dp"
+        android:layout_marginBottom="35dp"
+        android:text="userId"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="invisible"/>
+
 
 </RelativeLayout>

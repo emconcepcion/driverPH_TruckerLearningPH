@@ -17,8 +17,13 @@ import android.text.util.Linkify;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import static com.cav.quizinstructions.BackgroundTask.EMAIL;
+import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
+import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 
 public class Quizzes_menu extends AppCompatActivity {
 
@@ -29,6 +34,7 @@ public class Quizzes_menu extends AppCompatActivity {
     Button btn_leaderBoard;
     Button btn_list_completed_quizzes;
     public static boolean isFromQuizMenu;
+    public static TextView myEmailQMenu, userIdQMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,22 +47,37 @@ public class Quizzes_menu extends AppCompatActivity {
         cardViewCore = findViewById(R.id.cardView_core_competencies);
         btn_leaderBoard = findViewById(R.id.button5);
         btn_list_completed_quizzes = findViewById(R.id.button6);
+        myEmailQMenu = findViewById(R.id.email_qMenu);
+        userIdQMenu = findViewById(R.id.txt_userIdQuiz);
 
-//        SharedPreferences sp = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
-//        String lessonChap = sp.getString("chapter", "");
-//        tChapter.setText(lessonChap);
+
+        SharedPreferences sp = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        Dashboard.dashboard_email = sp.getString(EMAIL, "");
+        myEmailQMenu.setText(Dashboard.dashboard_email);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+        Dashboard.user_id = sharedPreferences.getString("user_id", "");
+        userIdQMenu.setText(Dashboard.user_id);
+
+        Lessons_Menu.isFromLessonsMenu = false;
+        isFromQuizMenu= true;
+
 
         cardViewBasic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isFromQuizMenu= true;
+                if (QuizResults.unlocked){
+                    Toast.makeText(Quizzes_menu.this, "You have passed this test and will no longer be able to retake it.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Quizzes_menu.this,Dashboard.class));
+                }
                 tChapter.setText("Basic Competencies");
                 String chapTest = tChapter.getText().toString();
-                Intent intent = new Intent(Quizzes_menu.this, QuizInstructions.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("chapter", chapTest);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                SharedPreferences sp = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("Qchapter", chapTest);
+                editor.apply();
+                startActivity(new Intent(Quizzes_menu.this,QuizInstructions.class));
             }
         });
 
@@ -66,11 +87,11 @@ public class Quizzes_menu extends AppCompatActivity {
                 isFromQuizMenu= true;
                 tChapter.setText("Common Competencies");
                 String chapTest = tChapter.getText().toString();
-                Intent intent = new Intent(Quizzes_menu.this, QuizInstructions.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("chapter", chapTest);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                SharedPreferences sp = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("Qchapter", chapTest);
+                editor.apply();
+                startActivity(new Intent(Quizzes_menu.this,QuizInstructions.class));
             }
         });
 
@@ -80,11 +101,11 @@ public class Quizzes_menu extends AppCompatActivity {
                 isFromQuizMenu= true;
                 tChapter.setText("Core Competencies");
                 String chapTest = tChapter.getText().toString();
-                Intent intent = new Intent(Quizzes_menu.this, QuizInstructions.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("chapter", chapTest);
-                intent.putExtras(bundle);
-                startActivity(intent);
+                SharedPreferences sp = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("Qchapter", chapTest);
+                editor.apply();
+                startActivity(new Intent(Quizzes_menu.this,QuizInstructions.class));
             }
         });
 
@@ -103,7 +124,8 @@ public class Quizzes_menu extends AppCompatActivity {
         btn_list_completed_quizzes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(Quizzes_menu.this, CompletedQuizzes.class));
+                    startActivity(new Intent(Quizzes_menu.this, CompletedQuizzes.class));
+//                    startActivity(new Intent(Quizzes_menu.this, TestListUnavailable.class));
             }
         });
     }

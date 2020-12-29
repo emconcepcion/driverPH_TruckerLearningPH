@@ -38,79 +38,16 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="@+id/view2"
         app:layout_constraintTop_toTopOf="@+id/view2" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="46dp"
-        android:layout_height="72dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="59dp"
-        android:layout_marginEnd="15dp"
-        android:background="@drawable/ic_arrow_left"
-        android:backgroundTint="@android:color/black"
-        app:layout_constraintEnd_toStartOf="@+id/imageView7"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView13"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="15dp" />
-
-    <TextView
-        android:id="@+id/textView13"
-        android:layout_width="304dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="28dp"
-        android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sodales, massa eget rutrum dignissim, ex nulla dapibus est, a pretium ligula nunc sit amet augue. Vivamus convallis libero ut ex volutpat, et imperdiet mi eleifend."
-        android:textColor="@android:color/black"
+    <WebView
+        android:id="@+id/content"
+        android:layout_width="352dp"
+        android:layout_height="504dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
-
-    <ImageView
-        android:id="@+id/imageView7"
-        android:layout_width="207dp"
-        android:layout_height="129dp"
-        android:layout_marginStart="77dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="76dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView13"
-        app:srcCompat="@drawable/dpol_guide"
-        android:layout_marginLeft="77dp"
-        android:layout_marginRight="76dp" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="46dp"
-        android:layout_height="72dp"
-        android:layout_marginStart="14dp"
-        android:layout_marginTop="59dp"
-        android:layout_marginEnd="16dp"
-        android:background="@drawable/ic_arrow_right"
-        android:backgroundTint="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView7"
-        app:layout_constraintTop_toBottomOf="@+id/textView13"
-        android:layout_marginLeft="14dp"
-        android:layout_marginRight="16dp" />
-
-    <TextView
-        android:id="@+id/textView14"
-        android:layout_width="304dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="28dp"
-        android:text="Sed lacinia accumsan ornare. Suspendisse a libero viverra, feugiat dui vestibulum, convallis eros. Donec posuere sodales risus, vitae varius urna gravida non."
-        android:textColor="@android:color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView7" />
 
     <Button
         android:id="@+id/btn_to_voiceR"

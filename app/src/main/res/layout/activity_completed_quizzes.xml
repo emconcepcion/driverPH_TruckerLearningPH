@@ -17,6 +17,17 @@
         android:layout_above="@id/subForm"
         android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/detailed_scoreList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/button6"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Here are all your attempts for the tests:"
+            android:gravity="center_horizontal" />
+
     <LinearLayout
         android:id="@+id/main_linearLayout"
         android:layout_width="match_parent"
@@ -62,7 +73,6 @@
         android:id="@+id/button6"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
         android:background="#A82196F3"
         android:padding="15dp"
         android:text="Reload list"
@@ -71,5 +81,19 @@
         android:textSize="18sp"
         android:layout_alignParentBottom="true"
         android:onClick="onClick"/>
+        <Button
+            android:id="@+id/btn_summarized_scorelist"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="5dp"
+            android:background="#A82196F3"
+            android:padding="15dp"
+            android:text="View summarized list"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
+            android:layout_alignParentBottom="true"
+            android:onClick="onClick"/>
     </LinearLayout>
 </RelativeLayout>

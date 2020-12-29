@@ -34,24 +34,36 @@ import java.util.HashMap;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.cav.quizinstructions.BackgroundTask.EMAIL;
+import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
+
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout drawer;
-    public String email;
+    private long backPressedTime;
+    public static String dashboard_email, user_id;
+    public static TextView navUsername;
+    public static String nameVR;
     private TextView welcome_fname;
     CircleImageView dahsboard_avatar;
     SharedPreferences sp;
+    public static final String Uid_PREFS = "USER_IDPREFS";
+    //    private String retrieveUrl="https://driver-ph.000webhostapp.com/driverphtest/retrieve.php";
     private String retrieveUrl="https://phportal.net/driverph/retrieve.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        email = getIntent().getStringExtra("email");
+//        dashboard_email = getIntent().getStringExtra("email");
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        dashboard_email = sharedPreferences.getString(EMAIL, "");
         welcome_fname = findViewById(R.id.textView_userID);
         dahsboard_avatar = findViewById(R.id.dashboard_avatar);
 
-        retrievedatas(email);
+
+
+        retrievedatas(dashboard_email);
         btnSetter();
 
         Calendar calendar = Calendar.getInstance();
@@ -95,16 +107,19 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         cardViewQuizzes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String email = getIntent().getStringExtra("email");
                 sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString("email", email);
-                editor.apply();
+                SharedPreferences.Editor editor1 = sp.edit();
+                editor1.putString("email", dashboard_email);
+                editor1.putString("username", nameVR);
+                editor1.apply();
 
+                SharedPreferences sp = getApplicationContext().getSharedPreferences(Uid_PREFS, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putString("user_id", user_id);
+                editor.apply();
                 Toast.makeText(Dashboard.this, "email was saved", Toast.LENGTH_SHORT).show();
 
                 Intent intent = new Intent(Dashboard.this, Quizzes_menu.class);
-                intent.putExtra("email", email);
                 startActivity(intent);
             }
         });
@@ -172,6 +187,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         TextView navUsername = (TextView) headerView.findViewById(R.id.textView4);
                         TextView navemail = (TextView) headerView.findViewById(R.id.nav_header_email);
                         CircleImageView navImage = (CircleImageView) headerView.findViewById(R.id.headerimage);
+                        user_id = obj.getString("id");
+                        nameVR = obj.getString("first_name");
                         welcome_fname.setText("Welcome " + obj.getString("first_name"));
                         navUsername.setText(obj.getString("first_name") + " " + obj.getString("last_name"));
                         navemail.setText(obj.getString("email"));
@@ -196,6 +213,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             navImage.setImageDrawable(getResources().getDrawable(R.drawable.avatar6));
                             dahsboard_avatar.setImageDrawable(getResources().getDrawable(R.drawable.avatar6));
                         }
+                        Toast.makeText(Dashboard.this, user_id, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e ){
                     Toast.makeText(Dashboard.this, "Exception: "+e, Toast.LENGTH_SHORT).show();
@@ -208,68 +226,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu_settings,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_change_language:
-                Toast.makeText(this, "Language Changed", Toast.LENGTH_SHORT).show();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-        switch (menuItem.getItemId()) {
-            case R.id.nav_dashboard:
-                startActivity(new Intent(Dashboard.this, Dashboard.class));
-                break;
-            case R.id.nav_my_progress:
-                startActivity(new Intent(Dashboard.this, MyProgress.class));
-                break;
-            case R.id.nav_advisory:
-                startActivity(new Intent(Dashboard.this, Advisory.class));
-                break;
-            case R.id.nav_help:
-                startActivity(new Intent(Dashboard.this, Help.class));
-                break;
-            case R.id.nav_my_account:
-                Intent intent = new Intent(Dashboard.this, MyAccount.class);
-                Bundle extras = new Bundle();
-                extras.putString("email", email);
-                intent.putExtras(extras);
-                startActivity(intent);
-                break;
-            case R.id.nav_siso:
-                Toast.makeText(this, "Sign in/Sign out Activity here", Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public void onBackPressed() {
-        if(drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        }else {
-            startActivity(new Intent(Dashboard.this,Login.class));
-            //super.onBackPressed();
-        }
-
-        /*
-        if(backPressedTime + 2000 > System.currentTimeMillis()){
-            super.onBackPressed();
-            finishAffinity();
-        }else{
-            Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
-        }
-        backPressedTime = System.currentTimeMillis();
-
-         */
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        return false;
     }
 }

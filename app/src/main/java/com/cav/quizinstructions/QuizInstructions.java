@@ -3,10 +3,15 @@ package com.cav.quizinstructions;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,6 +25,7 @@ import android.widget.Toast;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.muddzdev.styleabletoast.StyleableToast;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -42,36 +48,51 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+import static com.cav.quizinstructions.Lessons_Menu.isFromLessonsMenu;
+
+
 public class QuizInstructions extends AppCompatActivity {
 
     public static String chapter;
     Button buttonStartQuiz, back_btn;
 
     // Adding HTTP Server URL to string variable.
-    private final String QUESTIONS_URL = "https://phportal.net/driverph/get_qa_all.php";
+    private final String QUESTIONS_URL = "https://phportal.net/driverph/test.php";
 
     private TextView textViewChapter;
-
-    boolean sourceLesson, sourceQuizzes;
+    public TextView myEmailQuizInst, userIdQInst;
+    SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.quiz_instructions);
+
         buttonStartQuiz = findViewById(R.id.btn_start_quiz);
         back_btn = findViewById(R.id.btn_back_to_take_quiz);
         textViewChapter = findViewById(R.id.textview_chapter_title);
+        myEmailQuizInst = findViewById(R.id.myEmailQuizInst);
+        userIdQInst = findViewById(R.id.myUserIdQuizInst);
 
-        if (Quizzes_menu.isFromQuizMenu){
-            Intent intent = getIntent();
-            Bundle bundle = intent.getExtras();
-            String chapter = bundle.getString("chapter");
-            textViewChapter.setText(chapter);
-        }else{
-            SharedPreferences sp = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
-            String lessonChap = sp.getString("chapter", "");
+        sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+        String myEmail = sp.getString("email", "");
+        myEmailQuizInst.setText(myEmail);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+        Dashboard.user_id = sharedPreferences.getString("user_id", "");
+        userIdQInst.setText(Dashboard.user_id);
+
+        if (QuizResults.unlocked || Lessons_Menu.isFromLessonsMenu) {
+            SharedPreferences sp1 = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
+            String lessonChap = sp1.getString("chapter", "");
             textViewChapter.setText(lessonChap);
+        }else if (Quizzes_menu.isFromQuizMenu){
+            SharedPreferences sp2 = getApplicationContext().getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
+            String qChapter = sp2.getString("Qchapter", "");
+            textViewChapter.setText(qChapter);
         }
+
 
         buttonStartQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,11 +116,32 @@ public class QuizInstructions extends AppCompatActivity {
 
     private void startQuiz() {
         String chapTitle = textViewChapter.getText().toString();
-        Intent i = new Intent(QuizInstructions.this, QuizActivity.class);
-        Bundle b = new Bundle();
-        b.putString("chapter", chapTitle);
-        i.putExtras(b);
-        startActivity(i);
+        if (checkNetworkConnection()) {
+            Intent i = new Intent(QuizInstructions.this, QuizActivity.class);
+            Bundle b = new Bundle();
+            b.putString("chapter", chapTitle);
+            i.putExtras(b);
+            startActivity(i);
+        } else {
+            AlertDialog alertDialog = new AlertDialog.Builder(QuizInstructions.this).create();
+            alertDialog.setTitle("Log in to Continue");
+            alertDialog.setMessage("Please connect to the internet and log in before clicking \"Start the quiz\"");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(QuizInstructions.this, Login.class));
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
+    }
+
+    //check for internet connection
+    public boolean checkNetworkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     public void getJSON(final String urlWebService) {
@@ -113,6 +155,7 @@ public class QuizInstructions extends AppCompatActivity {
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
 //                Toast.makeText(getApplicationContext(), s, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Loading...", Toast.LENGTH_SHORT).show();
                 try {
                     parserQuestionsFromString(s);
                 } catch (Exception e) {
@@ -157,29 +200,29 @@ public class QuizInstructions extends AppCompatActivity {
 
             for (int i = 0; i < menuitemArray.length(); i++) {
 
-                Log.d("question_text " + i,
-                        menuitemArray.getJSONObject(i).getString("question_text")
+                Log.d("questionText " + i,
+                        menuitemArray.getJSONObject(i).getString("questionText")
                                 .toString());
-                Log.d("option1: " + i, menuitemArray.getJSONObject(i)
-                        .getString("option1"));
-                Log.d("option2: " + i, menuitemArray.getJSONObject(i)
-                        .getString("option2"));
-                Log.d("option3: " + i, menuitemArray.getJSONObject(i)
-                        .getString("option3"));
-                Log.d("option4: " + i, menuitemArray.getJSONObject(i)
-                        .getString("option4"));
-                Log.d("answer_nr: " + i, menuitemArray.getJSONObject(i)
-                        .getString("answer_nr"));
-                Log.d("chapter: " + i, menuitemArray.getJSONObject(i)
-                        .getString("chapter"));
+                Log.d("choiceA: " + i, menuitemArray.getJSONObject(i)
+                        .getString("choiceA"));
+                Log.d("choiceB: " + i, menuitemArray.getJSONObject(i)
+                        .getString("choiceB"));
+                Log.d("choiceC: " + i, menuitemArray.getJSONObject(i)
+                        .getString("choiceC"));
+                Log.d("choiceD: " + i, menuitemArray.getJSONObject(i)
+                        .getString("choiceD"));
+                Log.d("answerMob: " + i, menuitemArray.getJSONObject(i)
+                        .getString("answerMob"));
+                Log.d("moduleName: " + i, menuitemArray.getJSONObject(i)
+                        .getString("moduleName"));
 
-                String question = menuitemArray.getJSONObject(i).getString("question_text");
-                String option1 = menuitemArray.getJSONObject(i).getString("option1");
-                String option2 = menuitemArray.getJSONObject(i).getString("option2");
-                String option3 = menuitemArray.getJSONObject(i).getString("option3");
-                String option4 = menuitemArray.getJSONObject(i).getString("option4");
-                String answer_nr = menuitemArray.getJSONObject(i).getString("answer_nr");
-                String chapter = menuitemArray.getJSONObject(i).getString("chapter");
+                String question = menuitemArray.getJSONObject(i).getString("questionText");
+                String option1 = menuitemArray.getJSONObject(i).getString("choiceA");
+                String option2 = menuitemArray.getJSONObject(i).getString("choiceB");
+                String option3 = menuitemArray.getJSONObject(i).getString("choiceC");
+                String option4 = menuitemArray.getJSONObject(i).getString("choiceD");
+                String answer_nr = menuitemArray.getJSONObject(i).getString("answerMob");
+                String chapter = menuitemArray.getJSONObject(i).getString("moduleName");
                 Question q1 = new Question(question, option1, option2, option3, option4, Integer.parseInt(answer_nr), chapter);
                 db.addQuestion(q1);
             }

@@ -28,13 +28,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+
 public class QuizResults extends AppCompatActivity {
 
     ListView listView;
     TextView score_result, chapter_name;
     Button btn_willRetake, btn_willReview, btn_willUnlock;
 
+    public static boolean unlocked;
+    public static boolean isRetake;
     public int attempt;
+    TextView myEmailResult, myUserId;
+    SharedPreferences sp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,16 @@ public class QuizResults extends AppCompatActivity {
         btn_willRetake.setVisibility(View.INVISIBLE);
         btn_willReview.setVisibility(View.INVISIBLE);
         btn_willUnlock.setVisibility(View.INVISIBLE);
+        myEmailResult = findViewById(R.id.email_result);
+        myUserId = findViewById(R.id.userId_result);
+
+        sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+        String myEmail = sp.getString("email", "");
+        myEmailResult.setText(myEmail);
+
+        SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+        Dashboard.user_id = sharedPreferences.getString("user_id", "");
+        myUserId.setText(String.valueOf(Dashboard.user_id));
 
         score_result = findViewById(R.id.txt_score_result);
         chapter_name = findViewById(R.id.chapter_name_result);
@@ -100,6 +116,7 @@ public class QuizResults extends AppCompatActivity {
     }
 
     public void unlock(){
+        unlocked = true;
         startActivity(new Intent(QuizResults.this, Lessons_Menu.class));
     }
     public void review(){
@@ -107,22 +124,24 @@ public class QuizResults extends AppCompatActivity {
     }
     public void retake() {
         //Intent intent = getIntent();
+        isRetake = true;
 
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         int incAttempt = sp.getInt("attempt", 1);
+
 //        attempt.setText(String.valueOf(incAttempt));
 
 //        Bundle bundle = getIntent().getExtras();
 //        int myRetakeAttempt = bundle.getInt("attempt");
-
+        String chapter = chapter_name.getText().toString();
         sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
         editor.putInt("attempt", (++incAttempt));
+        editor.putString("chapter", chapter);
         editor.apply();
-        Toast.makeText(this, "attempt was saved", Toast.LENGTH_SHORT).show();
 
         Intent resultIntent = new Intent(QuizResults.this, QuizActivity.class);
-     //   resultIntent.putExtra("toQuizActAttempt", (++incAttempt));
+//        resultIntent.putExtra("toQuizActAttempt", (++incAttempt));
         startActivity(resultIntent);
     }
 
