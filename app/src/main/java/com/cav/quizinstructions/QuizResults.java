@@ -41,6 +41,7 @@ public class QuizResults extends AppCompatActivity {
     public int attempt;
     TextView myEmailResult, myUserId;
     SharedPreferences sp;
+    int UNLOCK_MOD2, UNLOCK_MOD3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +66,8 @@ public class QuizResults extends AppCompatActivity {
         myEmailResult.setText(myEmail);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
-        Dashboard.user_id = sharedPreferences.getString("user_id", "");
-        myUserId.setText(String.valueOf(Dashboard.user_id));
+        int uid = sharedPreferences.getInt("user_id", 0);
+        myUserId.setText(String.valueOf(uid));
 
         score_result = findViewById(R.id.txt_score_result);
         chapter_name = findViewById(R.id.chapter_name_result);
@@ -117,22 +118,57 @@ public class QuizResults extends AppCompatActivity {
 
     public void unlock(){
         unlocked = true;
-        startActivity(new Intent(QuizResults.this, Lessons_Menu.class));
+        /*to-do:
+        unlock next chapter
+        unlock next quiz
+        lock current quiz
+        */
+
+        //unlock next chapter
+        //unlock next quiz
+        int txt_score_result = getIntent().getExtras().getInt("score");
+        int items_test = getIntent().getExtras().getInt("items");
+
+        SharedPreferences sharedPreferences =
+                getSharedPreferences(getPackageName() + Constant.MY_LEVEL_PREFS, Context.MODE_PRIVATE);
+
+        String unlockNextModule = chapter_name.getText().toString();
+        if (unlockNextModule.equals(Constant.MOD_1)){
+            //module 1 is active and need to unlock mod2
+            UNLOCK_MOD2 = txt_score_result;
+            if (UNLOCK_MOD2 > (items_test * 0.8)){
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("unlockMod2", 1);
+                editor.apply();
+
+                SharedPreferences.Editor editor1 = sharedPreferences.edit();
+                editor1.putString(Constant.MOD_2, "Unlock");
+                editor1.apply();
+            }
+        }else if (unlockNextModule.equals(Constant.MOD_2)){
+            // module 2 is active and need to unlock mod3
+            UNLOCK_MOD3 = txt_score_result;
+            if (UNLOCK_MOD3 > (items_test * 0.8)){
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putInt("unlockMod3", 1);
+                editor.apply();
+
+                SharedPreferences.Editor editor1 = sharedPreferences.edit();
+                editor1.putString(Constant.MOD_3, "Unlock");
+                editor1.apply();
+            }
+        }
+
+        startActivity(new Intent(QuizResults.this, Quizzes_menu.class));
     }
     public void review(){
         startActivity(new Intent(QuizResults.this, Lessons_Basic_Content.class));
     }
     public void retake() {
-        //Intent intent = getIntent();
         isRetake = true;
 
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         int incAttempt = sp.getInt("attempt", 1);
-
-//        attempt.setText(String.valueOf(incAttempt));
-
-//        Bundle bundle = getIntent().getExtras();
-//        int myRetakeAttempt = bundle.getInt("attempt");
         String chapter = chapter_name.getText().toString();
         sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -141,9 +177,15 @@ public class QuizResults extends AppCompatActivity {
         editor.apply();
 
         Intent resultIntent = new Intent(QuizResults.this, QuizActivity.class);
-//        resultIntent.putExtra("toQuizActAttempt", (++incAttempt));
         startActivity(resultIntent);
     }
 
+    public void lockTests(String[] buttonNames) {
+        for (String name : buttonNames) {
+            int id = getResources().getIdentifier(name, "id", getPackageName());
+            Button button = (Button) findViewById(id);
+            button.setEnabled(false);
+        }
+    }
 }
 

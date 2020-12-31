@@ -36,7 +36,7 @@ public class Database {
 			DbContract.ScoresTable.COLUMN_NAME_EMAIL + " TEXT, " +
 			DbContract.ScoresTable.COLUMN_NAME_SCORE + " INTEGER," +
 			DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS + " INTEGER," +
-			DbContract.ScoresTable.COLUMN_NAME_CHAPTER + " TEXT UNIQUE," +
+			DbContract.ScoresTable.COLUMN_NAME_CHAPTER + " TEXT," +
 			DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT + " INTEGER," +
 			DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN + " TEXT," +
 			DbContract.ScoresTable.SYNC_STATUS + " INTEGER" +
@@ -49,7 +49,7 @@ public class Database {
 			DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL + " TEXT, " +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL + " INTEGER," +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL + " INTEGER," +
-			DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL + " TEXT UNIQUE," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL + " TEXT," +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL + " INTEGER," +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL + " TEXT," +
 			DbContract.ScoresMySQLTable.SYNC_STATUS_MYSQL + " INTEGER" +
@@ -162,27 +162,4 @@ public class Database {
 		Log.d("Delete Table","Delete Scores called.....");
 
 	}
-
-//	public List<Question> getAllQuestions(){
-//		List<Question> questionList = new ArrayList<>();
-//
-//		Cursor c = db.rawQuery("SELECT * FROM " + QuizContract.QuestionsTable.TABLE_NAME, null);
-//
-//		if(c.moveToFirst()){
-//			do{
-//				Question question = new Question();
-//				question.setQuestion(c.getString(c.getColumnIndex(QuizContract.QuestionsTable.COLUMN_QUESTION)));
-//				question.setOption1(c.getString(c.getColumnIndex(QuizContract.QuestionsTable.COLUMN_OPTION1)));
-//				question.setOption2(c.getString(c.getColumnIndex(QuizContract.QuestionsTable.COLUMN_OPTION2)));
-//				question.setOption3(c.getString(c.getColumnIndex(QuizContract.QuestionsTable.COLUMN_OPTION3)));
-//				question.setOption4(c.getString(c.getColumnIndex(QuizContract.QuestionsTable.COLUMN_OPTION4)));
-//				question.setAnswerNr(c.getInt(c.getColumnIndex(QuizContract.QuestionsTable.COLUMN_ANSWER_NR)));
-//				question.setChapter(c.getString(c.getColumnIndex(QuizContract.QuestionsTable.COLUMN_CHAPTER)));
-//				questionList.add(question);
-//			}while(c.moveToNext());
-//		}
-//
-//		c.close();
-//		return questionList;
-//	}
 }

@@ -41,7 +41,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     private DrawerLayout drawer;
     private long backPressedTime;
-    public static String dashboard_email, user_id;
+    public static String dashboard_email;
+    public static String user_id;
+    public static int thisUserId;
     public static TextView navUsername;
     public static String nameVR;
     private TextView welcome_fname;
@@ -112,10 +114,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 editor1.putString("email", dashboard_email);
                 editor1.putString("username", nameVR);
                 editor1.apply();
+                createCategories();
 
+                thisUserId = Integer.parseInt(user_id);
                 SharedPreferences sp = getApplicationContext().getSharedPreferences(Uid_PREFS, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sp.edit();
-                editor.putString("user_id", user_id);
+                editor.putInt("user_id", thisUserId);
                 editor.apply();
                 Toast.makeText(Dashboard.this, "email was saved", Toast.LENGTH_SHORT).show();
 
@@ -226,7 +230,92 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        return false;
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_settings,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.action_change_language:
+                Toast.makeText(this, "Language Changed", Toast.LENGTH_SHORT).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.nav_dashboard:
+                startActivity(new Intent(Dashboard.this, Dashboard.class));
+                break;
+            case R.id.nav_my_progress:
+                startActivity(new Intent(Dashboard.this, MyProgress.class));
+                break;
+            case R.id.nav_advisory:
+                startActivity(new Intent(Dashboard.this, Advisory.class));
+                break;
+            case R.id.nav_help:
+                startActivity(new Intent(Dashboard.this, Help.class));
+                break;
+            case R.id.nav_my_account:
+                Intent intent = new Intent(Dashboard.this, MyAccount.class);
+                Bundle extras = new Bundle();
+                extras.putString("email", dashboard_email);
+                intent.putExtras(extras);
+                startActivity(intent);
+                break;
+            case R.id.nav_siso:
+                Toast.makeText(this, "Sign in/Sign out Activity here", Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }else {
+            startActivity(new Intent(Dashboard.this,Login.class));
+            //super.onBackPressed();
+        }
+
+        /*
+        if(backPressedTime + 2000 > System.currentTimeMillis()){
+            super.onBackPressed();
+            finishAffinity();
+        }else{
+            Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
+        }
+        backPressedTime = System.currentTimeMillis();
+
+         */
+    }
+
+    //  1 = unlocked 0 = locked
+    public void createCategories() {
+        SharedPreferences sharedPreferences =
+                getSharedPreferences(getPackageName() + Constant.MY_LEVEL_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("unlockMod1", 1); //by default, level 1 unlocked
+        editor.putString(Constant.MOD_1, "Unlock");
+        editor.apply();
+
+        if (sharedPreferences.getString(Constant.MOD_1, "N/A").equals("Unlock")) {
+            editor.putInt("unlockMod1", 1);
+            editor.putInt("unlockMod2", 0);
+            editor.putInt("unlockMod3", 0);
+        } else if (sharedPreferences.getString(Constant.MOD_2, "N/A").equals("Unlock")) {
+            editor.putInt("unlockMod1", 1);
+            editor.putInt("unlockMod2", 1);
+            editor.putInt("unlockMod3", 0);
+        } else if (sharedPreferences.getString(Constant.MOD_3, "N/A").equals("Unlock")) {
+            editor.putInt("unlockMod1", 1);
+            editor.putInt("unlockMod2", 1);
+            editor.putInt("unlockMod3", 1);
+        }
     }
 }

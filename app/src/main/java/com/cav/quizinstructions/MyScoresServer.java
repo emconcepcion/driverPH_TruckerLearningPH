@@ -8,15 +8,17 @@ public class MyScoresServer {
     public int num_of_items;
     public String chapter;
     public int num_of_attempt;
+    public String duration;
     public String date_taken;
 
-    public MyScoresServer(int user_id, String email, int score, int num_of_items, String chapter, int num_of_attempt, String date_taken) {
+    public MyScoresServer(int user_id, String email, int score, int num_of_items, String chapter, int num_of_attempt, String duration, String date_taken) {
         this.user_id = user_id;
         this.email = email;
         this.score = score;
         this.num_of_items = num_of_items;
         this.chapter = chapter;
         this.num_of_attempt = num_of_attempt;
+        this.duration = duration;
         this.date_taken = date_taken;
     }
 
@@ -66,6 +68,14 @@ public class MyScoresServer {
 
     public void setNum_of_attempt(int num_of_attempt) {
         this.num_of_attempt = num_of_attempt;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
     }
 
     public String getDate_taken() {

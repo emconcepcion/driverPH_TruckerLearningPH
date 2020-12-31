@@ -12,10 +12,11 @@ public class DbContract {
     public static class ScoresTable implements BaseColumns {
 
         //android access to localhost
-        public static final String SERVER_URL = "https://phportal.net/driverph/scores.php";
+//        public static final String SERVER_URL = "https://phportal.net/driverph/scores.php";
+        public static final String SERVER_URL = "https://phportal.net/driverph/xample_score.php";
         public static final String UI_UPDATE_BROADCAST = "com.cav.quizinstructions.uiupdatebroadcast";
 
-        public static final String DATABASE_NAME = "truckerph";
+        public static final String DATABASE_NAME = "truckerdb";
         public static final String TABLE_NAME_SCORES = "tbl_scores";
         public static final String COLUMN_NAME_USER_ID = "user_id";
         public static final String COLUMN_NAME_EMAIL = "email";

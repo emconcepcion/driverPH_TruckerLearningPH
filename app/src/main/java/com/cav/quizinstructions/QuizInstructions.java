@@ -80,8 +80,8 @@ public class QuizInstructions extends AppCompatActivity {
         myEmailQuizInst.setText(myEmail);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
-        Dashboard.user_id = sharedPreferences.getString("user_id", "");
-        userIdQInst.setText(Dashboard.user_id);
+        int uid = sharedPreferences.getInt("user_id", 0);
+        userIdQInst.setText(String.valueOf(uid));
 
         if (QuizResults.unlocked || Lessons_Menu.isFromLessonsMenu) {
             SharedPreferences sp1 = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);

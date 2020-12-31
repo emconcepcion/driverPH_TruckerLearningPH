@@ -63,13 +63,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:padding="10dp"
             android:layout_margin="1dp">
 
             <ListView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="#F1F1F1"
+                android:padding="7dp"
                 android:id="@+id/list_view">
 
             </ListView>

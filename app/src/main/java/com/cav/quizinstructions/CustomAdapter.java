@@ -29,6 +29,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Viewholder
         public TextView chapter;
         public TextView num_of_attempt;
         public TextView date_taken;
+        public TextView duration;
         public ImageView passed_icon;
 
         public Viewholder(@NonNull View itemView) {
@@ -37,6 +38,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Viewholder
             num_of_items = (TextView)itemView.findViewById(R.id.txt_numItems_itemView_summary);
             chapter = (TextView)itemView.findViewById(R.id.txt_chapter_list_summary);
             num_of_attempt = (TextView)itemView.findViewById(R.id.txt_attempt_summary);
+            duration = (TextView)itemView.findViewById(R.id.duration_summary);
             date_taken = (TextView)itemView.findViewById(R.id.date_taken_summary);
             passed_icon = (ImageView)itemView.findViewById(R.id.img_passed);
         }
@@ -53,10 +55,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Viewholder
     @Override
     public void onBindViewHolder(@NonNull CustomAdapter.Viewholder holder, int position) {
 
-        holder.score.setText("" +myScoresServerList.get(position).getScore());
+        holder.score.setText("Score: " +myScoresServerList.get(position).getScore());
         holder.num_of_items.setText("/" +myScoresServerList.get(position).getNum_of_items());
         holder.chapter.setText(myScoresServerList.get(position).getChapter());
-        holder.num_of_attempt.setText("Attempt #:" +myScoresServerList.get(position).getNum_of_attempt());
+        holder.num_of_attempt.setText("Total attempts: " +myScoresServerList.get(position).getNum_of_attempt());
+        holder.duration.setText("Duration: " + myScoresServerList.get(position).getDuration());
         holder.date_taken.setText("Date taken: " + myScoresServerList.get(position).getDate_taken());
 
     }

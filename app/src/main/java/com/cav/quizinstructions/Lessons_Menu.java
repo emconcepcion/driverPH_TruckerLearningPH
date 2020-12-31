@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import static com.cav.quizinstructions.BackgroundTask.EMAIL;
 import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
-import static com.cav.quizinstructions.Constants._1;
+import static com.cav.quizinstructions.Constant._1;
 
 public class Lessons_Menu extends AppCompatActivity {
 

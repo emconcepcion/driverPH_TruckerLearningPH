@@ -50,8 +50,8 @@ public class QuizDbHelper extends SQLiteOpenHelper {
                                     int num_of_attempt, String date_taken, int sync_status,
                                     SQLiteDatabase database) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(ScoresTable.COLUMN_NAME_EMAIL, email);
         contentValues.put(ScoresTable.COLUMN_NAME_USER_ID, user_id);
+        contentValues.put(ScoresTable.COLUMN_NAME_EMAIL, email);
         contentValues.put(ScoresTable.COLUMN_NAME_SCORE, score);
         contentValues.put(ScoresTable.COLUMN_NAME_NUM_ITEMS, num_items);
         contentValues.put(ScoresTable.COLUMN_NAME_CHAPTER, chap);
@@ -71,7 +71,7 @@ public class QuizDbHelper extends SQLiteOpenHelper {
                 ScoresTable.COLUMN_NAME_NUM_ATTEMPT, ScoresTable.COLUMN_NAME_DATE_TAKEN,
                 ScoresTable.SYNC_STATUS};
         String selection = ScoresTable.COLUMN_NAME_USER_ID + " LIKE ?";
-        String[] selection_args = {Dashboard.user_id};
+        String[] selection_args = {String.valueOf(Dashboard.thisUserId)};
         return (database.query(ScoresTable.TABLE_NAME_SCORES, projection, selection, selection_args,
                 null, null, null));
     }
@@ -84,7 +84,7 @@ public class QuizDbHelper extends SQLiteOpenHelper {
                 ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL, ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL,
                 ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL, ScoresMySQLTable.SYNC_STATUS_MYSQL};
         String selection = ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL + " LIKE ?";
-        String[] selection_args = {Dashboard.user_id};
+        String[] selection_args = {String.valueOf(Dashboard.thisUserId)};
         return (database.query(ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL, projection, selection, selection_args,
                 null, null, null));
     }

@@ -51,10 +51,14 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.SQLOutput;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -79,6 +83,7 @@ public class QuizActivity extends AppCompatActivity {
     private RadioButton rb1, rb2, rb3, rb4;
     Button btn_next;
     ImageButton btn_sound;
+    public static String duration;
 
     SharedPreferences sp;
     public int num_of_attempt;
@@ -87,10 +92,12 @@ public class QuizActivity extends AppCompatActivity {
 
     ArrayList<String> askedQuestions = new ArrayList<>();
 
-    private ColorStateList textColorDefaultRb, textColorDefaultCd;
-    private ColorStateList csl2, csl;
+    private ColorStateList textColorDefaultRb;
+    private ColorStateList textcolor;
     private CountDownTimer countDownTimer;
     private long timeLeftInMillis;
+
+
 
     private List<Question> questionList;
     private List<Score> scoreList;
@@ -134,7 +141,7 @@ public class QuizActivity extends AppCompatActivity {
         attempt = findViewById(R.id.textview_attempt);
         textViewUserIdQAct = findViewById(R.id.textview_user_id);
 
-        textColorDefaultRb = textViewCountdown.getTextColors();
+        textViewCountdown.setTextColor(Color.parseColor("#006400"));
 
         textColorDefaultRb = rb1.getTextColors();
 
@@ -144,14 +151,14 @@ public class QuizActivity extends AppCompatActivity {
         questionList = dbHelper.getAllQuestions();
         questionCountTotal = (questionList.size() - 2);
         FYAlgoShuffle(questionList);
-//        timer();
+        timer();
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
         textViewEmail.setText(myEmail);
 
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
-        Dashboard.user_id = sharedPreferences.getString("user_id", "");
-        textViewUserIdQAct.setText(Dashboard.user_id);
+        int uid = sharedPreferences.getInt("user_id", 0);
+        textViewUserIdQAct.setText(String.valueOf(uid));
 
         mediaPlayer = MediaPlayer.create(QuizActivity.this, R.raw.bg_music);
         mediaPlayer.setLooping(true);
@@ -193,6 +200,9 @@ public class QuizActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mediaPlayer.pause();
+        if (countDownTimer != null){
+            countDownTimer.cancel();
+        }
     }
 
     public static<T> void FYAlgoShuffle(List<T> list){
@@ -245,21 +255,31 @@ public class QuizActivity extends AppCompatActivity {
                 int seconds = (int) (millisUntilFinished / 1000) % 60;
 
                 String timeRemaining = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
-                textViewCountdown.setText(getString(R.string.time_remaining) +" " + timeRemaining);
+                textViewCountdown.setText(String.valueOf(timeRemaining));
+
+
+//                long remTime = (millisUntilFinished / 1000);
 
                 if (timeLeftInMillis < 10000) {
-                    textViewCountdown.setTextColor(Color.parseColor("#0235EC"));
+                    textViewCountdown.setTextColor(Color.RED);
                 } else{
-                    textViewCountdown.setTextColor(textColorDefaultRb);
+                    textViewCountdown.setTextColor(Color.parseColor("#006400"));
                 }
 
+                //convert to time format
+                SimpleDateFormat dateFormat = new SimpleDateFormat("hmmaa");
+                SimpleDateFormat dateFormat2 = new SimpleDateFormat("hh:mm aa");
+                try {
+                    Date date = dateFormat.parse(timeRemaining);
+                    String out = dateFormat2.format(date);
+                    Log.e("Time", out);
+                } catch (ParseException e) {
+                }
             }
 
             public void onFinish() {
                 textViewCountdown.setText(getString(R.string.time_is_up));
-//                Toast toast = Toast.makeText(QuizActivity.this, QuizActivity.this.getString(R.string.time_is_up), Toast.LENGTH_SHORT);
-//                toast.setGravity(Gravity.FILL, 0, 400);
-//                toast.show();
+                timeLeftInMillis = 0;
 
                 StyleableToast.makeText(getApplicationContext(), QuizActivity.this.getString(R.string.timeUp),
                         Toast.LENGTH_LONG, R.style.toastStyle).show();
@@ -267,6 +287,9 @@ public class QuizActivity extends AppCompatActivity {
                 toResults();
                 finish();
 //                finishQuiz();
+                if( countDownTimer != null){
+                    countDownTimer.cancel();
+                }
             }
         }.start();
     }
@@ -373,9 +396,13 @@ public class QuizActivity extends AppCompatActivity {
 
         questionCountTotal = questionList.size() - 2;
 
+        String timeSet = "00:20";
+        String timeLeft = textViewCountdown.getText().toString();
+
         int myUserId = Integer.parseInt(textViewUserIdQAct.getText().toString());
         int newAttempt = Integer.parseInt(attempt.getText().toString());
         String myEmail = textViewEmail.getText().toString();
+
 
         Intent i = new Intent(QuizActivity.this, QuizStatusList.class);
         Bundle bundle = new Bundle();
@@ -386,6 +413,24 @@ public class QuizActivity extends AppCompatActivity {
         bundle.putInt("attempt", newAttempt);
         bundle.putString("myEmail", myEmail);
         bundle.putInt("myUserId", myUserId);
+        SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+        try {
+            Date start = sdf.parse(timeSet);
+            Date finish = sdf.parse(timeLeft);
+
+            long difference = start.getTime() - finish.getTime();
+            int totalTime = (int) difference;
+
+            int minutes = (totalTime / 1000) / 60;
+            int seconds = (totalTime / 1000) % 60;
+
+            String timeConsumed = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
+            String timeTaken = String.valueOf(timeConsumed);
+            duration = "00:" + timeTaken;
+            bundle.putString("duration", duration);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         i.putExtras(bundle);
         i.putStringArrayListExtra("askedQuestions", askedQuestions);
 //        i.putExtra("email", email);
@@ -417,30 +462,6 @@ public class QuizActivity extends AppCompatActivity {
                     attempt.setText(String.valueOf(resetAttempt));
                 }
             }
-//        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-//        String chapterForRetake = sp.getString("chapter", null);
-//        textViewChapter.setText(chapterForRetake);
-//
-//        if ((textViewChapter.getText().toString()).equals(currentQuestion.getChapter())){
-//            int incAttempt = sp.getInt("attempt", 1);
-//            attempt.setText(String.valueOf(incAttempt));
-//        }else{
-//            int resetAttempt = 1;
-//            attempt.setText(String.valueOf(resetAttempt));
-//        }
-
-//        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-//        int incAttempt = sp.getInt("attempt", 1);
-//        attempt.setText(String.valueOf(incAttempt));
-//        String chapterForRetake = sp.getString("chapter", null);
-//        textViewChapter.setText(chapterForRetake);
-
-
-//        textViewEmail.setText(myEmail);
-//
-//        Intent intent = getIntent();
-//        int incAttempt = intent.getIntExtra("toQuizActAttempt", 1);
-//        attempt.setText(String.valueOf(incAttempt));
     }
 
     @Override
@@ -554,6 +575,7 @@ public class QuizActivity extends AppCompatActivity {
             pass_fail.setText("Like a Boss!");
             result_icon.setImageResource(R.drawable.ic_cheers);
             unlocked = true;
+
         }else if(myScore < (myItems * 0.8)){
             pass_fail.setText("Aww, snap!");
             result_icon.setImageResource(R.drawable.ic_sad);

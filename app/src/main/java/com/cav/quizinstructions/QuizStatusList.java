@@ -18,6 +18,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -57,7 +58,7 @@ import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 public class QuizStatusList extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    TextView Score, Email, Num_of_items, Chapter, Num_Of_Attempt, Date_Taken;
+    TextView Score, Email, Num_of_items, Chapter, Num_Of_Attempt, Duration, Date_Taken;
     RecyclerView.LayoutManager layoutManager;
     RecyclerAdapter adapter;
     ArrayList<Score> arrayList = new ArrayList<>();
@@ -71,6 +72,7 @@ public class QuizStatusList extends AppCompatActivity {
     public static int sync_statusForMySQL;
     boolean submittedScore;
     private boolean isRefreshedList = false;
+    public static int uId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +83,7 @@ public class QuizStatusList extends AppCompatActivity {
         btn_view_result = findViewById(R.id.btn_view_result);
         recyclerView = findViewById(R.id.recyclerView);
         Email = findViewById(R.id.txt_email);
+        Duration = findViewById(R.id.tv_duration_StatusList);
         tv_userId_sList =findViewById(R.id.tv_user_id_StatusList);
         Score = findViewById(R.id.txt_score_for_syncing);
         Chapter = findViewById(R.id.txt_chapter_name);
@@ -104,9 +107,11 @@ public class QuizStatusList extends AppCompatActivity {
         String myEmail = sp.getString("email", "");
         Email.setText(myEmail);
 
+
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
-        Dashboard.user_id = sharedPreferences.getString("user_id", "");
-        tv_userId_sList.setText(Dashboard.user_id);
+        int uid = sharedPreferences.getInt("user_id", 0);
+        tv_userId_sList.setText(String.valueOf(uid));
+
 
         broadcastReceiver = new BroadcastReceiver() {
             @Override
@@ -157,18 +162,20 @@ public class QuizStatusList extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
-        int txt_score_result = intent.getExtras().getInt("score");
-        int txt_item_result = intent.getExtras().getInt("items");
-//        String email_result = intent.getExtras().getString("myEmail");
-        String chap_result = intent.getExtras().getString("chapter");
-        int txt_attempt_result = intent.getExtras().getInt("attempt");
-        String currentDate = intent.getExtras().getString("date_taken");
+        int txt_score_result = bundle.getInt("score");
+        int txt_item_result = bundle.getInt("items");
+        String chap_result = bundle.getString("chapter");
+        int txt_attempt_result = bundle.getInt("attempt");
+        String testDuration = bundle.getString("duration");
+        String currentDate = bundle.getString("date_taken");
+
 
         // Email.setText(email_result);
         Score.setText("" + txt_score_result);
         Num_of_items.setText("" + txt_item_result);
         Chapter.setText(chap_result);
         Num_Of_Attempt.setText("" + txt_attempt_result);
+        Duration.setText(testDuration);
         Date_Taken.setText(currentDate);
 
         String emailA = Email.getText().toString();
@@ -177,6 +184,7 @@ public class QuizStatusList extends AppCompatActivity {
         int itemsA = Integer.parseInt(Num_of_items.getText().toString());
         String chapA = Chapter.getText().toString();
         int attemptsA = Integer.parseInt(Num_Of_Attempt.getText().toString());
+        String durationA = Duration.getText().toString();
         String dateTakenA = Date_Taken.getText().toString();
 
         //user must log in to change its user name from guest to email address for saving
@@ -241,6 +249,7 @@ public class QuizStatusList extends AppCompatActivity {
                         public void onResponse(String response) {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
+
                                 //get response from jsonobject
                                 String Response = jsonObject.getString("response");
                                 //check response from server
@@ -284,12 +293,17 @@ public class QuizStatusList extends AppCompatActivity {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
-                    params.put("user_id", String.valueOf(userId));
+//                    String time = "00:02:15";
+                  //  String time = QuizActivity.duration;
+                    Intent intent = getIntent();
+                    Bundle bundle = intent.getExtras();
+                    String testDuration = bundle.getString("duration");
                     params.put("email", email);
                     params.put("score", String.valueOf(score));
                     params.put("num_of_items", String.valueOf(num_items));
                     params.put("chapter", chap);
                     params.put("num_of_attempt", String.valueOf(num_of_attempt));
+                    params.put("duration", testDuration);
                     params.put("date_taken", date_taken);
                     return params;
                 }
@@ -316,7 +330,6 @@ public class QuizStatusList extends AppCompatActivity {
         dbHelper.saveToLocalDatabase(userId, email, score, num_items, chap, num_of_attempt, date_taken, sync_status, database);
 
         readFromLocalStorage();
-//        readFromServer();
 
         dbHelper.close();
     }
@@ -373,29 +386,11 @@ public class QuizStatusList extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     @Override
     public void onBackPressed() { {
-//            submitScore();
-//            btn_view_result.setVisibility(View.INVISIBLE);
-//            refresh_list.setVisibility(View.GONE);
             TextView backAgain = findViewById(R.id.need_refresh);
             backAgain.setVisibility(View.VISIBLE);
             backAgain.setText("Please press the button to proceed.");
 //            finish();
         }
-//            TextView backAgain = findViewById(R.id.need_refresh);
-//            backAgain.setText("Press the back button again to exit this screen.");
-//
-//            int attemptsA = Integer.parseInt(Num_Of_Attempt.getText().toString());
-//
-//            Intent intent = new Intent(QuizStatusList.this, Quizzes_menu.class);
-//            Bundle bundle = new Bundle();
-//            bundle.putInt("myAttempt", ++attemptsA);
-//            intent.putExtras(bundle);
-//            startActivity(intent);
-//            sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-//            SharedPreferences.Editor editor = sp.edit();
-//            editor.putInt("myAttempt", ++attemptsA);
-//            editor.apply();
-//            Toast.makeText(this, "attempt was saved", Toast.LENGTH_SHORT).show();
-//            super.onBackPressed();
+
     }
 }
