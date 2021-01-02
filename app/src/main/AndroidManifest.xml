@@ -20,7 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SummarizedScoresServer"></activity>
+        <activity android:name=".PrepareForTest"></activity>
+        <activity android:name=".SummarizedScoresServer" />
         <activity android:name=".Basic_Content" />
         <activity android:name=".TestListUnavailable" />
         <activity

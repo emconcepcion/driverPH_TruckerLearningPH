@@ -38,23 +38,45 @@ public class Database {
 			DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS + " INTEGER," +
 			DbContract.ScoresTable.COLUMN_NAME_CHAPTER + " TEXT," +
 			DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT + " INTEGER," +
+			DbContract.ScoresTable.COLUMN_NAME_DURATION + " TEXT," +
 			DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN + " TEXT," +
+			DbContract.ScoresTable.COLUMN_NAME_IS_LOCKED + " INTEGER," +
+			DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED + " INTEGER," +
 			DbContract.ScoresTable.SYNC_STATUS + " INTEGER" +
 			");";
 
+	//for displaying all passed tests
 	final String SQL_CREATE_SCORES_TABLE_FROM_SERVER = "CREATE TABLE " +
 			DbContract.ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL + "(" +
-			DbContract.ScoresMySQLTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, " +
+			DbContract.ScoresMySQLTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL + " INTEGER," +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL + " TEXT, " +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL + " INTEGER," +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL + " INTEGER," +
-			DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL + " TEXT," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL + " TEXT UNIQUE," +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL + " INTEGER," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_DURATION_MYSQL + " TEXT," +
 			DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL + " TEXT," +
-			DbContract.ScoresMySQLTable.SYNC_STATUS_MYSQL + " INTEGER" +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL + " INTEGER," +
+			DbContract.ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL + " INTEGER" +
 			");";
-	
+
+	//for retrieval of attempts, unlock and updating
+	final String SQL_CREATE_SCORES_ALL_ATTEMPTS_TABLE_FROM_SERVER = "CREATE TABLE " +
+			DbContract.AllAttemptsMySQLTable.TABLE_NAME_SCORES_ALL + "(" +
+			DbContract.AllAttemptsMySQLTable._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_USER_ID_ALL + " INTEGER," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_EMAIL_ALL + " TEXT, " +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_SCORE_ALL + " INTEGER," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_NUM_ITEMS_ALL + " INTEGER," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_CHAPTER_ALL + " TEXT UNIQUE," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_NUM_ATTEMPT_ALL + " INTEGER," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_DURATION_ALL + " TEXT," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_DATE_TAKEN_ALL + " TEXT," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_IS_LOCKED_ALL + " INTEGER," +
+			DbContract.AllAttemptsMySQLTable.COLUMN_NAME_IS_COMPLETED_ALL + " INTEGER" +
+			");";
+
 	private Context context;
 	public static SQLiteDatabase db;	// manipulation with database
 	DatabaseHelper dbhelper;
@@ -81,6 +103,7 @@ public class Database {
 			db.execSQL(SQL_CREATE_QUESTIONS_TABLE);
 			db.execSQL(SQL_CREATE_SCORES_TABLE);
 			db.execSQL(SQL_CREATE_SCORES_TABLE_FROM_SERVER);
+			db.execSQL(SQL_CREATE_SCORES_ALL_ATTEMPTS_TABLE_FROM_SERVER);
 			Log.d("table is created..","Table is created...");
 		}
 
@@ -90,6 +113,7 @@ public class Database {
 			db.execSQL("DROP TABLE IF EXISTS tbl_questions");
 			db.execSQL("DROP TABLE IF EXISTS tbl_scores");
 			db.execSQL("DROP TABLE IF EXISTS tbl_scores_server");
+			db.execSQL("DROP TABLE IF EXISTS tbl_scores_all_attempts");
 			onCreate(db);
 		}
 
@@ -129,20 +153,42 @@ public class Database {
 			return db.insertWithOnConflict(TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
 	}
 
-	public long addScores(Score score)
+	public long addAllAttempts(Score score)
 	{
 		ContentValues contentValues = new ContentValues();
-		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL, score.getUser_id());
-		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL, score.getEmail());
-		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL, score.getScore());
-		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL, score.getNum_of_items());
-		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL, score.getChapter());
-		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL, score.getNum_of_attempt());
-		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL, score.getDate_taken());
-		contentValues.put(DbContract.ScoresMySQLTable.SYNC_STATUS_MYSQL, score.getSync_status());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_USER_ID, score.getUser_id());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_EMAIL, score.getEmail());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_SCORE, score.getScore());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS, score.getNum_of_items());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_CHAPTER, score.getChapter());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT, score.getNum_of_attempt());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_DURATION, score.getDuration());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN, score.getDate_taken());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_IS_LOCKED, score.getIsLocked());
+		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED, score.getIsCompleted());
 
 		Log.d("inserted... ", score.getUser_id()+"");
 		Log.d("inserted... ", score.getNum_of_attempt()+"");
+		return db.insertWithOnConflict(DbContract.ScoresTable.TABLE_NAME_SCORES, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
+
+	}
+
+	public long addScoresServer(MyScoresServer scoresServer)
+	{
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL, scoresServer.getUser_id());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL, scoresServer.getEmail());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL, scoresServer.getScore());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL, scoresServer.getNum_of_items());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL, scoresServer.getChapter());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL, scoresServer.getNum_of_attempt());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_DURATION_MYSQL, scoresServer.getDuration());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL, scoresServer.getDate_taken());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL, scoresServer.getIsLocked());
+		contentValues.put(DbContract.ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL, scoresServer.getIsCompleted());
+
+		Log.d("inserted... ", scoresServer.getUser_id()+"");
+		Log.d("inserted... ", scoresServer.getNum_of_attempt()+"");
 		return db.insertWithOnConflict(DbContract.ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
 
 	}

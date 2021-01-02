@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +23,10 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -49,6 +54,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+import static com.cav.quizinstructions.Dashboard.dashboard_email;
 import static com.cav.quizinstructions.Lessons_Menu.isFromLessonsMenu;
 
 
@@ -59,6 +65,7 @@ public class QuizInstructions extends AppCompatActivity {
 
     // Adding HTTP Server URL to string variable.
     private final String QUESTIONS_URL = "https://phportal.net/driverph/test.php";
+    private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
 
     private TextView textViewChapter;
     public TextView myEmailQuizInst, userIdQInst;
@@ -83,16 +90,17 @@ public class QuizInstructions extends AppCompatActivity {
         int uid = sharedPreferences.getInt("user_id", 0);
         userIdQInst.setText(String.valueOf(uid));
 
-        if (QuizResults.unlocked || Lessons_Menu.isFromLessonsMenu) {
-            SharedPreferences sp1 = getApplicationContext().getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
+        if (Lessons_Menu.isFromLessonsMenu) {
+            SharedPreferences sp1 = getApplicationContext()
+                    .getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
             String lessonChap = sp1.getString("chapter", "");
             textViewChapter.setText(lessonChap);
         }else if (Quizzes_menu.isFromQuizMenu){
-            SharedPreferences sp2 = getApplicationContext().getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
+            SharedPreferences sp2 = getApplicationContext()
+                    .getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
             String qChapter = sp2.getString("Qchapter", "");
             textViewChapter.setText(qChapter);
         }
-
 
         buttonStartQuiz.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,4 +242,5 @@ public class QuizInstructions extends AppCompatActivity {
         Log.d("Inside aysnc task", "inside asynctask...");
         db.close();
     }
+
 }

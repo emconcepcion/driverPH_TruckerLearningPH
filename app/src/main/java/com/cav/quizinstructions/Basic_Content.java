@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -29,12 +30,15 @@ public class Basic_Content extends AppCompatActivity {
     String module;
     ListView content;
     List<String> al;
+    public static String currentLesson;
+    public static TextView currLesson;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basic__content);
 
         content = findViewById(R.id.listview);
+        currLesson = findViewById(R.id.currLessonBasic);
 
         module = getIntent().getStringExtra("module");
         //Toast.makeText(Basic_Content.this, module, Toast.LENGTH_LONG).show();
@@ -50,6 +54,12 @@ public class Basic_Content extends AppCompatActivity {
                 extras.putString("course", al.get(position));
                 intent.putExtras(extras);
                 startActivity(intent);
+
+                currentLesson = al.get(position);
+                currLesson.setText(String.valueOf(currentLesson));
+                Dashboard.recentModule.setText(currentLesson);
+
+
             }
         });
     }
@@ -59,7 +69,6 @@ public class Basic_Content extends AppCompatActivity {
         String value = module;
 
         String url = Config5.DATA_URL + value;
-
 
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
@@ -95,9 +104,7 @@ public class Basic_Content extends AppCompatActivity {
                 employees.put(Config5.KEY_TITLE, title);
 
                 list.add(employees);
-
             }
-
 
         } catch (JSONException e) {
             e.printStackTrace();

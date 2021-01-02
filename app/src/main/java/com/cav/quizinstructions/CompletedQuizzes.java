@@ -36,6 +36,7 @@ public class CompletedQuizzes extends AppCompatActivity {
     RecyclerView.LayoutManager layoutManager;
     RecyclerAdapter adapter;
     ArrayList<Score> arrayList = new ArrayList<>();
+    ArrayList<MyScoresServer> myScoresServerArrayList = new ArrayList<>();
     BroadcastReceiver broadcastReceiver;
     Button summary_btn;
     private final String SCORES_URL = "https://phportal.net/driverph/scoresOnline.php";
@@ -99,10 +100,14 @@ public class CompletedQuizzes extends AppCompatActivity {
             int num_items = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS));
             String chap = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_CHAPTER));
             int num_attempt = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT));
+            String duration = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_DURATION));
             String date_Taken = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN));
+            int isLocked = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_LOCKED));
+            int isCompleted = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED));
             int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
 
-            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, date_Taken, sync_status));
+            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, duration,
+                    date_Taken, isLocked, isCompleted, sync_status));
         }
 
         //adapter.notifyDataSetChanged();
@@ -113,7 +118,7 @@ public class CompletedQuizzes extends AppCompatActivity {
     public void readFromServer(){
 
         //clear data from arraylist
-        arrayList.clear();
+        myScoresServerArrayList.clear();
         QuizDbHelper dbHelper = new QuizDbHelper(this);
         SQLiteDatabase database = dbHelper.getReadableDatabase();
 
@@ -127,10 +132,12 @@ public class CompletedQuizzes extends AppCompatActivity {
             int num_items = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL));
             String chap = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL));
             int num_attempt = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL));
+            String duration = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_DURATION_MYSQL));
             String date_Taken = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL));
-            int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.SYNC_STATUS_MYSQL));
-
-            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, date_Taken, sync_status));
+            int isLocked = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL));
+            int isCompleted = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL));
+            myScoresServerArrayList.add(new MyScoresServer(userId,email, score, num_items, chap, num_attempt, duration,
+                    date_Taken, isLocked, isCompleted));
         }
 
 //        adapter.notifyDataSetChanged();
@@ -215,21 +222,25 @@ public class CompletedQuizzes extends AppCompatActivity {
                         .getString("num_of_attempt"));
                 Log.d("date_taken: " + i, menuitemArray.getJSONObject(i)
                         .getString("date_taken"));
-                Log.d("sync_status: " + i, menuitemArray.getJSONObject(i)
-                        .getString("sync_status"));
+                Log.d("isLocked: " + i, menuitemArray.getJSONObject(i)
+                        .getString("isLocked"));
+                Log.d("isCompleted: " + i, menuitemArray.getJSONObject(i)
+                        .getString("isCompleted"));
 
                 String userId = menuitemArray.getJSONObject(i).getString("user_id");
                 String email = menuitemArray.getJSONObject(i).getString("email");
                 String score = menuitemArray.getJSONObject(i).getString("score");
                 String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
                 String chap = menuitemArray.getJSONObject(i).getString("chapter");
-                String num_attempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
-                String date_Taken = menuitemArray.getJSONObject(i).getString("date_taken");
-                String sync_status = menuitemArray.getJSONObject(i).getString("sync_status");
-                Score s1 = new Score(Integer.parseInt(userId), email, Integer.parseInt(score),
-                        Integer.parseInt(num_items), chap, Integer.parseInt(num_attempt), date_Taken,
-                        Integer.parseInt(sync_status));
-                db.addScores(s1);
+                String num_of_attempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
+                String duration = menuitemArray.getJSONObject(i).getString("duration");
+                String date_taken = menuitemArray.getJSONObject(i).getString("date_taken");
+                String isLocked = menuitemArray.getJSONObject(i).getString("isLocked");
+                String isCompleted = menuitemArray.getJSONObject(i).getString("isLocked");
+                MyScoresServer s1 = new MyScoresServer(Integer.parseInt(userId), email, Integer.parseInt(score),
+                        Integer.parseInt(num_items), chap, Integer.parseInt(num_of_attempt), duration,
+                        date_taken, Integer.parseInt(isLocked), Integer.parseInt(isCompleted));
+                db.addScoresServer(s1);
             }
 
         } catch (Exception je) {

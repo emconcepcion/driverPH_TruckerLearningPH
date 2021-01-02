@@ -78,7 +78,7 @@
         android:layout_below="@id/textview_instruction"
         android:text="@string/read_questions"
         android:layout_marginTop="5dp"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textColor="@android:color/black"
         />
 

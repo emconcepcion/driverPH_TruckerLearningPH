@@ -58,7 +58,8 @@ import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 public class QuizStatusList extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    TextView Score, Email, Num_of_items, Chapter, Num_Of_Attempt, Duration, Date_Taken;
+    public static TextView Score, Email, Num_of_items, Chapter, Num_Of_Attempt,
+            Duration, Date_Taken, Is_Locked, Is_Completed;
     RecyclerView.LayoutManager layoutManager;
     RecyclerAdapter adapter;
     ArrayList<Score> arrayList = new ArrayList<>();
@@ -69,7 +70,7 @@ public class QuizStatusList extends AppCompatActivity {
     public static boolean completedQuizzes;
     public static TextView tv_userId_sList;
 
-    public static int sync_statusForMySQL;
+    public static int sync_statusForMySQL, isLockedA, isCompletedA;
     boolean submittedScore;
     private boolean isRefreshedList = false;
     public static int uId;
@@ -89,6 +90,8 @@ public class QuizStatusList extends AppCompatActivity {
         Chapter = findViewById(R.id.txt_chapter_name);
         Num_of_items = findViewById(R.id.txt_numItems_recyView);
         Num_Of_Attempt = findViewById(R.id.txt_attempt_recyView);
+        Is_Locked = findViewById(R.id.tv_isLocked_StatusList);
+        Is_Completed = findViewById(R.id.tv_isCompleted_StatusList);
         Date_Taken = findViewById(R.id.textView_date_of_quiz);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -111,6 +114,10 @@ public class QuizStatusList extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
         int uid = sharedPreferences.getInt("user_id", 0);
         tv_userId_sList.setText(String.valueOf(uid));
+
+//        SharedPreferences sp1 = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
+      //  int lockUnlock = sp1.getInt("unlock", 0);
+//        Is_Locked.setText(String.valueOf(Dashboard.myLatestIsUnlocked));
 
 
         broadcastReceiver = new BroadcastReceiver() {
@@ -168,7 +175,8 @@ public class QuizStatusList extends AppCompatActivity {
         int txt_attempt_result = bundle.getInt("attempt");
         String testDuration = bundle.getString("duration");
         String currentDate = bundle.getString("date_taken");
-
+        int latestUnlocked = bundle.getInt("myLatestUnlocked");
+        int latestCompleted = bundle.getInt("myLatestCompleted");
 
         // Email.setText(email_result);
         Score.setText("" + txt_score_result);
@@ -177,6 +185,8 @@ public class QuizStatusList extends AppCompatActivity {
         Num_Of_Attempt.setText("" + txt_attempt_result);
         Duration.setText(testDuration);
         Date_Taken.setText(currentDate);
+        Is_Locked.setText(String.valueOf(latestUnlocked));
+        Is_Completed.setText(String.valueOf(latestCompleted));
 
         String emailA = Email.getText().toString();
         int userIdA = Integer.parseInt(tv_userId_sList.getText().toString());
@@ -186,6 +196,8 @@ public class QuizStatusList extends AppCompatActivity {
         int attemptsA = Integer.parseInt(Num_Of_Attempt.getText().toString());
         String durationA = Duration.getText().toString();
         String dateTakenA = Date_Taken.getText().toString();
+        isLockedA = Integer.parseInt(Is_Locked.getText().toString());
+        isCompletedA = Integer.parseInt(Is_Completed.getText().toString());
 
         //user must log in to change its user name from guest to email address for saving
         if (emailA.equals("guest_user")){
@@ -202,11 +214,16 @@ public class QuizStatusList extends AppCompatActivity {
             alertDialog.show();
         }
 
-        //save only the score to web server if the user passed the test, else, save only to local db
+        //save the score to web server for all attempts table if there is internet connection
+        if (checkNetworkConnection()){
+            saveAllAttemptsToAppServer(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA, dateTakenA, isLockedA, isCompletedA);
+        }
+        //save the score to web server only if the user passed the test, else, save only to local db
         if (QuizActivity.unlocked && checkNetworkConnection()){
-            saveToAppServer(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, dateTakenA);
+            saveToAppServer(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA, dateTakenA, isLockedA, isCompletedA);
         }else{
-            saveToLocalStorage(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, dateTakenA, DbContract.SYNC_STATUS_SAVED);
+            saveToLocalStorage(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA,
+                    dateTakenA, isLockedA, isCompletedA, DbContract.SYNC_STATUS_SAVED);
         }
     }
 
@@ -227,11 +244,14 @@ public class QuizStatusList extends AppCompatActivity {
             int num_items = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS));
             String chap = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_CHAPTER));
             int num_attempt = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT));
+            String duration = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_DURATION));
             String date_Taken = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN));
+            int isLocked = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_LOCKED));
+            int isCompleted = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED));
             int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
 
-
-            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, date_Taken, sync_status));
+            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, duration,
+                    date_Taken, isLocked, isCompleted, sync_status));
         }
 
         adapter.notifyDataSetChanged();
@@ -241,24 +261,27 @@ public class QuizStatusList extends AppCompatActivity {
 
 
     public void saveToAppServer(int userId, String email, int score, int num_items, String chap,
-                                int num_of_attempt, String date_taken) {
+                                int num_of_attempt, String duration, String date_taken,
+                                int isLocked, int isCompleted) {
         if (checkNetworkConnection()) {
             StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.ScoresTable.SERVER_URL,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             try {
-                                JSONObject jsonObject = new JSONObject(response);
+                                JSONObject jsonObject = new JSONObject("{}");
 
                                 //get response from jsonobject
                                 String Response = jsonObject.getString("response");
                                 //check response from server
                                 if (Response.equals("OK")) {
-                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_SAVED);
+                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                                            date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_SAVED);
                                     StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.synced),
                                             Toast.LENGTH_LONG, R.style.toastStyle).show();
                                 } else { //for server error, unable to save, sav storage to local
-                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
+                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                                            date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_FAILED);
                                     StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.sync_error_json),
                                             Toast.LENGTH_LONG, R.style.toastStyle).show();
                                 }
@@ -269,7 +292,8 @@ public class QuizStatusList extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
+                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                            date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_FAILED);
                     StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.sync_error),
                             Toast.LENGTH_LONG, R.style.toastStyle).show();
 
@@ -293,11 +317,10 @@ public class QuizStatusList extends AppCompatActivity {
                 @Override
                 protected Map<String, String> getParams() throws AuthFailureError {
                     Map<String, String> params = new HashMap<>();
-//                    String time = "00:02:15";
-                  //  String time = QuizActivity.duration;
                     Intent intent = getIntent();
                     Bundle bundle = intent.getExtras();
                     String testDuration = bundle.getString("duration");
+
                     params.put("email", email);
                     params.put("score", String.valueOf(score));
                     params.put("num_of_items", String.valueOf(num_items));
@@ -305,29 +328,103 @@ public class QuizStatusList extends AppCompatActivity {
                     params.put("num_of_attempt", String.valueOf(num_of_attempt));
                     params.put("duration", testDuration);
                     params.put("date_taken", date_taken);
+                    params.put("isUnlocked", String.valueOf(isLocked));
+                    params.put("isCompleted", String.valueOf(isCompleted));
                     return params;
                 }
             };
             MySingleton.getInstance(QuizStatusList.this).addToRequestQueue(stringRequest);
-            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_SAVED);
+            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                    date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_SAVED);
             StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.saved),
                     Toast.LENGTH_LONG, R.style.toastStyle).show();
         } else { // no internet, save to SQLite
-            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, date_taken, DbContract.SYNC_STATUS_FAILED);
+            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                    date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_FAILED);
             StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.connect_to_net_to_save),
                     Toast.LENGTH_LONG, R.style.toastStyle).show();
         }
 
     }
 
+    public void saveAllAttemptsToAppServer(int userId, String email, int score, int num_items, String chap,
+                                int num_of_attempt, String duration, String date_taken,
+                                int isLocked, int isCompleted) {
+        if (checkNetworkConnection()) {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                    DbContract.ScoresTable.SERVER_ALL_ATTEMPTS_URL,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject("{}");
+
+                                //get response from jsonobject
+                                String Response = jsonObject.getString("response");
+                                //check response from server
+                                if (Response.equals("OK")) {
+                                } else { //for server error, unable to save, will be handled by saveToAppServer
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    if (error instanceof TimeoutError) {
+                        Toast.makeText(QuizStatusList.this, "Timeout error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NoConnectionError) {
+                        checkNetworkConnection();
+                        Toast.makeText(QuizStatusList.this, "Network error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof AuthFailureError) {
+                        Toast.makeText(QuizStatusList.this, "Auth error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ServerError) {
+                        Toast.makeText(QuizStatusList.this, "Server error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NetworkError) {
+                        Toast.makeText(QuizStatusList.this, "Network error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ParseError) {
+                        Toast.makeText(QuizStatusList.this, "Parse error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }) {
+                //body of the string request
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    Intent intent = getIntent();
+                    Bundle bundle = intent.getExtras();
+                    String testDuration = bundle.getString("duration");
+
+                    params.put("email", email);
+                    params.put("score", String.valueOf(score));
+                    params.put("num_of_items", String.valueOf(num_items));
+                    params.put("chapter", chap);
+                    params.put("num_of_attempt", String.valueOf(num_of_attempt));
+                    params.put("duration", testDuration);
+                    params.put("date_taken", date_taken);
+                    params.put("isUnlocked", String.valueOf(isLocked));
+                    params.put("isCompleted", String.valueOf(isCompleted));
+                    return params;
+                }
+            };
+            MySingleton.getInstance(QuizStatusList.this).addToRequestQueue(stringRequest);
+            Toast.makeText(this, "Saved to all attempts db.", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     public void saveToLocalStorage(int userId, String email, int score, int num_items, String chap,
-                                   int num_of_attempt, String date_taken, int sync_status) {
+                                   int num_of_attempt, String duration, String date_taken,
+                                   int isLocked, int isCompleted, int sync_status) {
 
         QuizDbHelper dbHelper = new QuizDbHelper(this);
         SQLiteDatabase database = dbHelper.getWritableDatabase();
 
         //save to sqlite
-        dbHelper.saveToLocalDatabase(userId, email, score, num_items, chap, num_of_attempt, date_taken, sync_status, database);
+        dbHelper.saveToLocalDatabase(userId, email, score, num_items, chap, num_of_attempt, duration,
+                date_taken, isLocked, isCompleted, sync_status, database);
 
         readFromLocalStorage();
 
@@ -348,7 +445,6 @@ public class QuizStatusList extends AppCompatActivity {
         super.onStart();
             registerReceiver(new NetworkMonitor(), new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
             registerReceiver(broadcastReceiver, new IntentFilter(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
-
     }
 
     @Override

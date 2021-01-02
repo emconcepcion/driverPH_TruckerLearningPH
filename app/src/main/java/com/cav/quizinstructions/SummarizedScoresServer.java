@@ -79,16 +79,13 @@ public class SummarizedScoresServer extends AppCompatActivity {
     }
 
     private void loadRecyclerViewData() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading data...");
-        progressDialog.show();
 
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.DEPRECATED_GET_OR_POST,
                 Server_Scores_URL,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
-                        progressDialog.dismiss();
+                        Toast.makeText(SummarizedScoresServer.this, "Loading...", Toast.LENGTH_SHORT).show();
                         try {
                             JSONObject jsonObject = new JSONObject(s);
                             JSONArray array = jsonObject.getJSONArray("data");
@@ -99,7 +96,8 @@ public class SummarizedScoresServer extends AppCompatActivity {
                                         o.getString("email"), o.getInt("score"),
                                         o.getInt("num_of_items"), o.getString("chapter"),
                                         o.getInt("num_of_attempt"), o.getString("duration"),
-                                        o.getString("date_taken"));
+                                        o.getString("date_taken"), o.getInt("isUnlocked"),
+                                        o.getInt("isCompleted"));
 
                                 myScoresServerList.add(scoresServer);
                             }
@@ -115,7 +113,6 @@ public class SummarizedScoresServer extends AppCompatActivity {
                 new com.android.volley.Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
-                        progressDialog.dismiss();
                         Toast.makeText(SummarizedScoresServer.this, volleyError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }) {

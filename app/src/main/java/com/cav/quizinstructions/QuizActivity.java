@@ -67,6 +67,8 @@ import java.util.Random;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+import static com.cav.quizinstructions.Dashboard.myLatestIsCompleted;
+import static com.cav.quizinstructions.Dashboard.myLatestIsUnlocked;
 import static com.cav.quizinstructions.Dashboard.user_id;
 
 public class QuizActivity extends AppCompatActivity {
@@ -79,6 +81,7 @@ public class QuizActivity extends AppCompatActivity {
     private TextView textViewQuestionCount;
     private TextView textViewCountdown;
     private TextView attempt;
+    public static TextView isModLocked;
     private RadioGroup rbGroup;
     private RadioButton rb1, rb2, rb3, rb4;
     Button btn_next;
@@ -87,16 +90,15 @@ public class QuizActivity extends AppCompatActivity {
 
     SharedPreferences sp;
     public int num_of_attempt;
+    public int isLocked;
 
     ProgressBar progressBar;
 
     ArrayList<String> askedQuestions = new ArrayList<>();
 
     private ColorStateList textColorDefaultRb;
-    private ColorStateList textcolor;
     private CountDownTimer countDownTimer;
     private long timeLeftInMillis;
-
 
 
     private List<Question> questionList;
@@ -122,7 +124,7 @@ public class QuizActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz);
 
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         cardViewScore = findViewById(R.id.cardView_viewScore);
         textViewQuestion = findViewById(R.id.txt_question);
@@ -140,6 +142,7 @@ public class QuizActivity extends AppCompatActivity {
         textViewEmail = findViewById(R.id.textview_email);
         attempt = findViewById(R.id.textview_attempt);
         textViewUserIdQAct = findViewById(R.id.textview_user_id);
+        isModLocked = findViewById(R.id.textview_isLocked);
 
         textViewCountdown.setTextColor(Color.parseColor("#006400"));
 
@@ -159,6 +162,8 @@ public class QuizActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
         int uid = sharedPreferences.getInt("user_id", 0);
         textViewUserIdQAct.setText(String.valueOf(uid));
+
+        SharedPreferences sp2 = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
 
         mediaPlayer = MediaPlayer.create(QuizActivity.this, R.raw.bg_music);
         mediaPlayer.setLooping(true);
@@ -200,15 +205,14 @@ public class QuizActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mediaPlayer.pause();
-        if (countDownTimer != null){
+        if (countDownTimer != null) {
             countDownTimer.cancel();
         }
     }
 
-    public static<T> void FYAlgoShuffle(List<T> list){
+    public static <T> void FYAlgoShuffle(List<T> list) {
         Random random = new Random();
-        for (int i = list.size() - 1; i >= 1; i--)
-        {
+        for (int i = list.size() - 1; i >= 1; i--) {
             int j = random.nextInt(i + 1);
 
             T obj = list.get(i);
@@ -236,7 +240,7 @@ public class QuizActivity extends AppCompatActivity {
             rb3.setText(currentQuestion.getOption3());
             rb4.setText(currentQuestion.getOption4());
 
-            Log.d("answer", currentQuestion.getAnswerNr()+"");
+            Log.d("answer", currentQuestion.getAnswerNr() + "");
 
             questionCounter++;
             textViewQuestionCount.setText("Question: " + questionCounter + "/" + questionCountTotal);
@@ -247,14 +251,14 @@ public class QuizActivity extends AppCompatActivity {
         }
     }
 
-    private void timer(){
+    private void timer() {
         countDownTimer = new CountDownTimer(20000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 int minutes = (int) (millisUntilFinished / 1000) / 60;
                 int seconds = (int) (millisUntilFinished / 1000) % 60;
 
-                String timeRemaining = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
+                String timeRemaining = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                 textViewCountdown.setText(String.valueOf(timeRemaining));
 
 
@@ -262,7 +266,7 @@ public class QuizActivity extends AppCompatActivity {
 
                 if (timeLeftInMillis < 10000) {
                     textViewCountdown.setTextColor(Color.RED);
-                } else{
+                } else {
                     textViewCountdown.setTextColor(Color.parseColor("#006400"));
                 }
 
@@ -287,7 +291,7 @@ public class QuizActivity extends AppCompatActivity {
                 toResults();
                 finish();
 //                finishQuiz();
-                if( countDownTimer != null){
+                if (countDownTimer != null) {
                     countDownTimer.cancel();
                 }
             }
@@ -295,38 +299,37 @@ public class QuizActivity extends AppCompatActivity {
     }
 
 
-    public void checkAnswer(){
+    public void checkAnswer() {
         answered = true;
 
         RadioButton rbSelected = findViewById(rbGroup.getCheckedRadioButtonId());
         int answerNr = rbGroup.indexOfChild(rbSelected) + 1;
 
-        Log.d("answer_nr", answerNr+"");
-        Log.d("correct_answer:", correct_answer +"");
+        Log.d("answer_nr", answerNr + "");
+        Log.d("correct_answer:", correct_answer + "");
         if (answerNr == currentQuestion.getAnswerNr()) {
-            switch (currentQuestion.getAnswerNr()){
+            switch (currentQuestion.getAnswerNr()) {
                 case 1:
                     currentQuestion.getOption1();
-                    askedQuestions.add(currentQuestion.getQuestion()  +"\n\nAnswer: " + currentQuestion.getOption1() + "\n");
+                    askedQuestions.add(currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption1() + "\n");
                     break;
                 case 2:
                     currentQuestion.getOption2();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" +"Answer: " + currentQuestion.getOption2());
+                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" + "Answer: " + currentQuestion.getOption2());
                     break;
                 case 3:
                     currentQuestion.getOption3();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" +"Answer: " + currentQuestion.getOption3());
+                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" + "Answer: " + currentQuestion.getOption3());
                     break;
                 case 4:
                     currentQuestion.getOption4();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" +"Answer: " + currentQuestion.getOption4());
+                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" + "Answer: " + currentQuestion.getOption4());
                     break;
             }
             score++;
             textViewScore.setText("Score: " + score);
 
-        }
-        else{
+        } else {
             String ansNotAvailable = "Correct answer is hidden.";
             askedQuestions.add(currentQuestion.getQuestion() + "\n" + ansNotAvailable);
         }
@@ -339,14 +342,14 @@ public class QuizActivity extends AppCompatActivity {
         int answerNr = rbGroup.indexOfChild(rbSelected) + 1;
         rbSetEnabledFalse();
 
-        if(answerNr != currentQuestion.getAnswerNr()) {
+        if (answerNr != currentQuestion.getAnswerNr()) {
             textViewQuestion.setText("Wrong Answer.");
             rb1.setTextColor(Color.RED);
             rb2.setTextColor(Color.RED);
             rb3.setTextColor(Color.RED);
             rb4.setTextColor(Color.RED);
             rbGroup.clearCheck();
-        }else {
+        } else {
             switch (currentQuestion.getAnswerNr()) {
                 case 1:
                     rb1.setTextColor(Color.GREEN);
@@ -368,30 +371,31 @@ public class QuizActivity extends AppCompatActivity {
             rbGroup.clearCheck();
         }
 
-            if (questionCounter < questionCountTotal) {
-                btn_next.setText("Next");
-            } else {
-                btn_next.setText("Submit Quiz");
-            }
+        if (questionCounter < questionCountTotal) {
+            btn_next.setText("Next");
+        } else {
+            btn_next.setText("Submit Quiz");
+        }
 
     }
 
-    public void rbSetEnabledFalse(){
+    public void rbSetEnabledFalse() {
         rb1.setEnabled(false);
         rb2.setEnabled(false);
         rb3.setEnabled(false);
         rb4.setEnabled(false);
     }
-    public void rbSetEnabledTrue(){
+
+    public void rbSetEnabledTrue() {
         rb1.setEnabled(true);
         rb2.setEnabled(true);
         rb3.setEnabled(true);
         rb4.setEnabled(true);
     }
 
-    public void toResults(){
+    public void toResults() {
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat simpleDate =  new SimpleDateFormat("EEEE MMMM dd, yyyy");
+        SimpleDateFormat simpleDate = new SimpleDateFormat("EEEE MMMM dd, yyyy");
         String currentDate = simpleDate.format(calendar.getTime());
 
         questionCountTotal = questionList.size() - 2;
@@ -399,10 +403,10 @@ public class QuizActivity extends AppCompatActivity {
         String timeSet = "00:20";
         String timeLeft = textViewCountdown.getText().toString();
 
+
         int myUserId = Integer.parseInt(textViewUserIdQAct.getText().toString());
         int newAttempt = Integer.parseInt(attempt.getText().toString());
         String myEmail = textViewEmail.getText().toString();
-
 
         Intent i = new Intent(QuizActivity.this, QuizStatusList.class);
         Bundle bundle = new Bundle();
@@ -413,6 +417,8 @@ public class QuizActivity extends AppCompatActivity {
         bundle.putInt("attempt", newAttempt);
         bundle.putString("myEmail", myEmail);
         bundle.putInt("myUserId", myUserId);
+        bundle.putInt("myLatestUnlocked", Integer.parseInt(myLatestIsUnlocked));
+        bundle.putInt("myLatestCompleted", Integer.parseInt(myLatestIsCompleted));
         SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
         try {
             Date start = sdf.parse(timeSet);
@@ -424,7 +430,7 @@ public class QuizActivity extends AppCompatActivity {
             int minutes = (totalTime / 1000) / 60;
             int seconds = (totalTime / 1000) % 60;
 
-            String timeConsumed = String.format(Locale.getDefault(),"%02d:%02d", minutes, seconds);
+            String timeConsumed = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
             String timeTaken = String.valueOf(timeConsumed);
             duration = "00:" + timeTaken;
             bundle.putString("duration", duration);
@@ -433,7 +439,6 @@ public class QuizActivity extends AppCompatActivity {
         }
         i.putExtras(bundle);
         i.putStringArrayListExtra("askedQuestions", askedQuestions);
-//        i.putExtra("email", email);
         i.putExtra("date_taken", currentDate);
         startActivity(i);
 
@@ -443,26 +448,28 @@ public class QuizActivity extends AppCompatActivity {
         showScore();
     }
 
-    private void getAttempt(){
-            int resetAttempt = 1;
+    private void getAttempt() {
+        int resetAttempt = 1;
+        attempt.setText(String.valueOf(resetAttempt));
+        int currUser = Integer.parseInt(textViewUserIdQAct.getText().toString());
+        int dbUser = Dashboard.thisUserId;
+        int currAttempt = Integer.parseInt(Dashboard.myLatestAttempt);
+        boolean sameUser = String.valueOf(dbUser).equals(String.valueOf(currUser));
+        String currChap = textViewChapter.getText().toString();
+        String dbChap = Dashboard.myLatestChapter;
+
+        if (currAttempt >=1 && sameUser && currChap.equals(dbChap)){
+            attempt.setText(String.valueOf(++currAttempt));
+        }else{
+            resetAttempt = 1;
             attempt.setText(String.valueOf(resetAttempt));
-            String currChap = textViewChapter.getText().toString();
-            int currUser = Integer.parseInt(user_id);
-            QuizDbHelper dbHelper = new QuizDbHelper(this);
-            SQLiteDatabase db = dbHelper.getReadableDatabase();
-            Cursor cursor = dbHelper.getAttemptFromLocalDatabase(currUser, currChap, db);
-            if (cursor.moveToNext()){
-                int currAttempt = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT));
-                String dbChap = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_CHAPTER));
-                int dbUser = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_USER_ID));
-                if (currChap.equals(dbChap) && (String.valueOf(dbUser).equals(String.valueOf(currUser)))) {
-                        attempt.setText(String.valueOf(++currAttempt));
-                }else{
-                    resetAttempt = 1;
-                    attempt.setText(String.valueOf(resetAttempt));
-                }
-            }
-    }
+        }
+        if (QuizResults.isRetake && sameUser && currChap.equals(dbChap)) {
+            int retakeAttempt = ++currAttempt;
+            attempt.setText(String.valueOf(retakeAttempt));
+        }
+        }
+
 
     @Override
     public void onBackPressed() {
@@ -491,7 +498,7 @@ public class QuizActivity extends AppCompatActivity {
             public void onClick(View view) {
                 mediaPlayer.pause();
                 Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat simpleDate =  new SimpleDateFormat("EEEE MMMM dd, yyyy");
+                SimpleDateFormat simpleDate = new SimpleDateFormat("EEEE MMMM dd, yyyy");
                 String currentDate = simpleDate.format(calendar.getTime());
 
                 questionCountTotal = (questionList.size() - 2);
@@ -536,7 +543,7 @@ public class QuizActivity extends AppCompatActivity {
             paused = false;
             icon = R.drawable.ic_sound_on;
             mediaPlayer.pause();
-        } else{
+        } else {
             paused = true;
             icon = R.drawable.ic_sound_off;
             mediaPlayer.start();
@@ -547,8 +554,10 @@ public class QuizActivity extends AppCompatActivity {
 
     }
 
-    public void showScore(){
-        onBackPressed();
+    public void showScore() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         scoreShown = true;
         mediaPlayer.pause();
         Dialog show_score = new Dialog(this);
@@ -556,7 +565,7 @@ public class QuizActivity extends AppCompatActivity {
         show_score.setContentView(R.layout.show_score);
         ImageView result_icon, fail_icon, close_exit_popup;
         close_exit_popup = show_score.findViewById(R.id.close_imgview);
-        btn_view_result = (Button)show_score.findViewById(R.id.view_result);
+        btn_view_result = (Button) show_score.findViewById(R.id.view_result);
         TextView pass_fail, textview_show_score, textview_show_items;
         pass_fail = show_score.findViewById(R.id.passed_failed);
         result_icon = show_score.findViewById(R.id.pass_fail_icon);
@@ -571,12 +580,13 @@ public class QuizActivity extends AppCompatActivity {
         int myItems = Integer.parseInt(textview_show_items.getText().toString());
 
 
-        if(myScore > (myItems * 0.8)){
+        if (myScore > (myItems * 0.8)) {
             pass_fail.setText("Like a Boss!");
             result_icon.setImageResource(R.drawable.ic_cheers);
             unlocked = true;
+            myLatestIsCompleted = String.valueOf(1);
 
-        }else if(myScore < (myItems * 0.8)){
+        } else if (myScore < (myItems * 0.8)) {
             pass_fail.setText("Aww, snap!");
             result_icon.setImageResource(R.drawable.ic_sad);
             unlocked = false;

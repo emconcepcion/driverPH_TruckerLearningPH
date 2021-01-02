@@ -10,8 +10,11 @@ public class MyScoresServer {
     public int num_of_attempt;
     public String duration;
     public String date_taken;
+    public int isLocked;
+    public int isCompleted;
 
-    public MyScoresServer(int user_id, String email, int score, int num_of_items, String chapter, int num_of_attempt, String duration, String date_taken) {
+    public MyScoresServer(int user_id, String email, int score, int num_of_items, String chapter,
+                          int num_of_attempt, String duration, String date_taken, int isLocked, int isCompleted) {
         this.user_id = user_id;
         this.email = email;
         this.score = score;
@@ -20,6 +23,12 @@ public class MyScoresServer {
         this.num_of_attempt = num_of_attempt;
         this.duration = duration;
         this.date_taken = date_taken;
+        this.isLocked = isLocked;
+        this.isCompleted = isCompleted;
+    }
+
+    public MyScoresServer() {
+
     }
 
     public int getUser_id() {
@@ -84,5 +93,21 @@ public class MyScoresServer {
 
     public void setDate_taken(String date_taken) {
         this.date_taken = date_taken;
+    }
+
+    public int getIsLocked() {
+        return isLocked;
+    }
+
+    public void setIsLocked(int isLocked) {
+        this.isLocked = isLocked;
+    }
+
+    public int getIsCompleted() {
+        return isCompleted;
+    }
+
+    public void setIsCompleted(int isCompleted) {
+        this.isCompleted = isCompleted;
     }
 }

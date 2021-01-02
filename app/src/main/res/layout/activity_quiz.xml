@@ -250,6 +250,17 @@
                     android:textStyle="bold"
                     android:visibility="gone"/>
 
+                <TextView
+                    android:id="@+id/textview_isLocked"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="locked?"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:visibility="gone"/>
+
             </LinearLayout>
 
         </LinearLayout>

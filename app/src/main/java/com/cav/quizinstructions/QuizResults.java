@@ -2,6 +2,7 @@ package com.cav.quizinstructions;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -11,6 +12,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
@@ -22,13 +25,29 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.cav.quizinstructions.QuizActivity.*;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+import static com.cav.quizinstructions.Dashboard.thisUserId;
 
 public class QuizResults extends AppCompatActivity {
 
@@ -36,8 +55,9 @@ public class QuizResults extends AppCompatActivity {
     TextView score_result, chapter_name;
     Button btn_willRetake, btn_willReview, btn_willUnlock;
 
-    public static boolean unlocked;
+    public static boolean unlocked, unlockedForQuizMenu;
     public static boolean isRetake;
+    public static boolean M1isPassed, M2isPassed, M3isPassed;
     public int attempt;
     TextView myEmailResult, myUserId;
     SharedPreferences sp;
@@ -77,7 +97,7 @@ public class QuizResults extends AppCompatActivity {
         showResult();
     }
 
-    public void showResult(){
+    public void showResult() {
         ArrayList<String> arrayList = new ArrayList<>();
         arrayList = (ArrayList<String>) getIntent().getSerializableExtra("askedQuestions");
         int txt_score_result = getIntent().getExtras().getInt("score");
@@ -88,82 +108,80 @@ public class QuizResults extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
 
 
-        if(txt_score_result > (items_test * 0.8)){
-           btn_willUnlock.setVisibility(View.VISIBLE);
-           btn_willUnlock.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   unlock();
-               }
-           });
-        }else if(txt_score_result < (items_test * 0.8)){
-           btn_willRetake.setVisibility(View.VISIBLE);
-           btn_willRetake.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   retake();
-               }
-           });
+        if (txt_score_result > (items_test * 0.8)) {
+            btn_willUnlock.setVisibility(View.VISIBLE);
+            btn_willUnlock.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    unlock();
+                }
+            });
+        } else if (txt_score_result < (items_test * 0.8)) {
+            btn_willRetake.setVisibility(View.VISIBLE);
+            btn_willRetake.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    retake();
+                }
+            });
 
-           btn_willReview.setVisibility(View.VISIBLE);
-           btn_willReview.setOnClickListener(new View.OnClickListener() {
-               @Override
-               public void onClick(View v) {
-                   review();
-               }
-           });
+            btn_willReview.setVisibility(View.VISIBLE);
+            btn_willReview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    review();
+                }
+            });
         }
 
     }
 
-    public void unlock(){
+    public void unlock() {
         unlocked = true;
-        /*to-do:
-        unlock next chapter
-        unlock next quiz
-        lock current quiz
-        */
-
-        //unlock next chapter
-        //unlock next quiz
+        unlockedForQuizMenu = true;
         int txt_score_result = getIntent().getExtras().getInt("score");
         int items_test = getIntent().getExtras().getInt("items");
-
-        SharedPreferences sharedPreferences =
-                getSharedPreferences(getPackageName() + Constant.MY_LEVEL_PREFS, Context.MODE_PRIVATE);
-
         String unlockNextModule = chapter_name.getText().toString();
-        if (unlockNextModule.equals(Constant.MOD_1)){
+
+        if (unlockNextModule.equals(Constant.MOD_1)) {
             //module 1 is active and need to unlock mod2
             UNLOCK_MOD2 = txt_score_result;
-            if (UNLOCK_MOD2 > (items_test * 0.8)){
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("unlockMod2", 1);
-                editor.apply();
-
-                SharedPreferences.Editor editor1 = sharedPreferences.edit();
-                editor1.putString(Constant.MOD_2, "Unlock");
-                editor1.apply();
+            if (UNLOCK_MOD2 > (items_test * 0.8)) {
+                updateUnlockedModuleToServer(thisUserId, Constant.MOD_1, 1, 1);
+                M1isPassed = true;
+            }else if (UNLOCK_MOD2 < (items_test * 0.8)){
+                updateUnlockedModuleToServer(thisUserId, Constant.MOD_1, 1, 0);
+                M1isPassed = false;
             }
-        }else if (unlockNextModule.equals(Constant.MOD_2)){
+        } else if (unlockNextModule.equals(Constant.MOD_2)) {
             // module 2 is active and need to unlock mod3
             UNLOCK_MOD3 = txt_score_result;
-            if (UNLOCK_MOD3 > (items_test * 0.8)){
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putInt("unlockMod3", 1);
-                editor.apply();
-
-                SharedPreferences.Editor editor1 = sharedPreferences.edit();
-                editor1.putString(Constant.MOD_3, "Unlock");
-                editor1.apply();
+            if (UNLOCK_MOD3 > (items_test * 0.8)) {
+                updateUnlockedModuleToServer(thisUserId, Constant.MOD_2, 0, 1);
+                M2isPassed = true;
+                Quizzes_menu.cardViewMod3.setClickable(true);
+            }else if  (UNLOCK_MOD3 < (items_test * 0.8)){
+                updateUnlockedModuleToServer(thisUserId, Constant.MOD_2, 1, 0);
+                M2isPassed = false;
+            }
+        } else if (unlockNextModule.equals(Constant.MOD_3)){
+            // module 3 is active and need to lock all
+            UNLOCK_MOD3 = txt_score_result;
+            if (UNLOCK_MOD3 > (items_test * 0.8)) {
+                updateUnlockedModuleToServer(thisUserId, Constant.MOD_3, 0, 1);
+                M3isPassed = true;
+            }else if (UNLOCK_MOD3 < (items_test * 0.8)){
+                updateUnlockedModuleToServer(thisUserId, Constant.MOD_3, 1, 0);
+                M3isPassed = false;
             }
         }
-
         startActivity(new Intent(QuizResults.this, Quizzes_menu.class));
     }
-    public void review(){
-        startActivity(new Intent(QuizResults.this, Lessons_Basic_Content.class));
+
+    public void review() {
+        startActivity(new Intent(QuizResults.this, Lessons_Menu.class));
     }
+
     public void retake() {
         isRetake = true;
 
@@ -180,12 +198,69 @@ public class QuizResults extends AppCompatActivity {
         startActivity(resultIntent);
     }
 
-    public void lockTests(String[] buttonNames) {
-        for (String name : buttonNames) {
-            int id = getResources().getIdentifier(name, "id", getPackageName());
-            Button button = (Button) findViewById(id);
-            button.setEnabled(false);
+    public void updateUnlockedModuleToServer(int userId, String chap, int isUnLocked, int isCompleted) {
+        if (checkNetworkConnection()) {
+            StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                    DbContract.ScoresTable.SERVER_UPDATE_PROGRESS,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response);
+
+                                //get response from jsonobject
+                                String Response = jsonObject.getString("response");
+                                //check response from server
+                                if (Response.equals("OK")) {
+                                } else { //for server error, unable to save, will be handled by saveToAppServer
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                    if (error instanceof TimeoutError) {
+                        Toast.makeText(QuizResults.this, "Timeout error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NoConnectionError) {
+                        checkNetworkConnection();
+                        Toast.makeText(QuizResults.this, "Network error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof AuthFailureError) {
+                        Toast.makeText(QuizResults.this, "Auth error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ServerError) {
+                        Toast.makeText(QuizResults.this, "Server error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof NetworkError) {
+                        Toast.makeText(QuizResults.this, "Network error", Toast.LENGTH_SHORT).show();
+                    } else if (error instanceof ParseError) {
+                        Toast.makeText(QuizResults.this, "Parse error", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }) {
+                //body of the string request
+                @Override
+                protected Map<String, String> getParams() throws AuthFailureError {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("email", Dashboard.dashboard_email);
+                    params.put("chapter", chap);
+                    params.put("isLocked", String.valueOf(isUnLocked));
+                    params.put("isCompleted", String.valueOf(isCompleted));
+                    return params;
+                }
+            };
+            MySingleton.getInstance(QuizResults.this).addToRequestQueue(stringRequest);
+            Toast.makeText(this, "Updated unlocked modules.", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+    //check for internet connection
+    public boolean checkNetworkConnection() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+
 }
 
