@@ -108,7 +108,7 @@ public class QuizResults extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
 
 
-        if (txt_score_result > (items_test * 0.8)) {
+        if (txt_score_result > (items_test * 0.5)) {
             btn_willUnlock.setVisibility(View.VISIBLE);
             btn_willUnlock.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -116,7 +116,7 @@ public class QuizResults extends AppCompatActivity {
                     unlock();
                 }
             });
-        } else if (txt_score_result < (items_test * 0.8)) {
+        } else if (txt_score_result < (items_test * 0.5)) {
             btn_willRetake.setVisibility(View.VISIBLE);
             btn_willRetake.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -146,36 +146,31 @@ public class QuizResults extends AppCompatActivity {
         if (unlockNextModule.equals(Constant.MOD_1)) {
             //module 1 is active and need to unlock mod2
             UNLOCK_MOD2 = txt_score_result;
-            if (UNLOCK_MOD2 > (items_test * 0.8)) {
-                updateUnlockedModuleToServer(thisUserId, Constant.MOD_1, 1, 1);
-                M1isPassed = true;
-            }else if (UNLOCK_MOD2 < (items_test * 0.8)){
+            if (UNLOCK_MOD2 > (items_test * 0.5)) {
+                updateUnlockedModuleToServer(thisUserId, Constant.MOD_1, 0, 1);
+            }else if (UNLOCK_MOD2 < (items_test * 0.5)){
                 updateUnlockedModuleToServer(thisUserId, Constant.MOD_1, 1, 0);
-                M1isPassed = false;
             }
         } else if (unlockNextModule.equals(Constant.MOD_2)) {
             // module 2 is active and need to unlock mod3
             UNLOCK_MOD3 = txt_score_result;
-            if (UNLOCK_MOD3 > (items_test * 0.8)) {
+            if (UNLOCK_MOD3 > (items_test * 0.5)) {
                 updateUnlockedModuleToServer(thisUserId, Constant.MOD_2, 0, 1);
-                M2isPassed = true;
-                Quizzes_menu.cardViewMod3.setClickable(true);
-            }else if  (UNLOCK_MOD3 < (items_test * 0.8)){
+            }else if  (UNLOCK_MOD3 <= (items_test * 0.5)){
                 updateUnlockedModuleToServer(thisUserId, Constant.MOD_2, 1, 0);
-                M2isPassed = false;
             }
         } else if (unlockNextModule.equals(Constant.MOD_3)){
             // module 3 is active and need to lock all
             UNLOCK_MOD3 = txt_score_result;
-            if (UNLOCK_MOD3 > (items_test * 0.8)) {
+            if (UNLOCK_MOD3 > (items_test * 0.5)) {
                 updateUnlockedModuleToServer(thisUserId, Constant.MOD_3, 0, 1);
                 M3isPassed = true;
-            }else if (UNLOCK_MOD3 < (items_test * 0.8)){
+            }else if (UNLOCK_MOD3 < (items_test * 0.5)){
                 updateUnlockedModuleToServer(thisUserId, Constant.MOD_3, 1, 0);
                 M3isPassed = false;
             }
         }
-        startActivity(new Intent(QuizResults.this, Quizzes_menu.class));
+        startActivity(new Intent(QuizResults.this, Dashboard.class));
     }
 
     public void review() {
@@ -185,16 +180,17 @@ public class QuizResults extends AppCompatActivity {
     public void retake() {
         isRetake = true;
 
-        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-        int incAttempt = sp.getInt("attempt", 1);
-        String chapter = chapter_name.getText().toString();
-        sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        editor.putInt("attempt", (++incAttempt));
-        editor.putString("chapter", chapter);
-        editor.apply();
+//        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+//        int incAttempt = sp.getInt("attempt", 1);
+//        String chapter = chapter_name.getText().toString();
+//        sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sp.edit();
+//        editor.putInt("attempt", (++incAttempt));
+//        editor.putString("chapter", chapter);
+//        editor.apply();
 
-        Intent resultIntent = new Intent(QuizResults.this, QuizActivity.class);
+        Intent resultIntent = new Intent(QuizResults.this, PrepareForTest.class);
+//        resultIntent.putExtra("retakeAttempt", Integer.parseInt(Dashboard.myLatestAttempt));
         startActivity(resultIntent);
     }
 

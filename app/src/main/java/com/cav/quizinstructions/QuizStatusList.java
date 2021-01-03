@@ -115,16 +115,10 @@ public class QuizStatusList extends AppCompatActivity {
         int uid = sharedPreferences.getInt("user_id", 0);
         tv_userId_sList.setText(String.valueOf(uid));
 
-//        SharedPreferences sp1 = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
-      //  int lockUnlock = sp1.getInt("unlock", 0);
-//        Is_Locked.setText(String.valueOf(Dashboard.myLatestIsUnlocked));
-
-
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 readFromLocalStorage();
-//                readFromServer();
             }
         };
 
@@ -142,7 +136,7 @@ public class QuizStatusList extends AppCompatActivity {
                     backToQMenu.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            startActivity(new Intent(QuizStatusList.this, Quizzes_menu.class));
+                            startActivity(new Intent(QuizStatusList.this, Dashboard.class));
                         }
                     });
                 }else{

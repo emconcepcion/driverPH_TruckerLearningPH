@@ -138,7 +138,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
                 android:background="#A82196F3"
-                android:text="Back to Tests menu"
+                android:text="Back to Dashboard"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
                 android:textSize="20sp"

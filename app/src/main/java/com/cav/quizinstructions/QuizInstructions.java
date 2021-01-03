@@ -64,7 +64,7 @@ public class QuizInstructions extends AppCompatActivity {
     Button buttonStartQuiz, back_btn;
 
     // Adding HTTP Server URL to string variable.
-    private final String QUESTIONS_URL = "https://phportal.net/driverph/test.php";
+    private final String QUESTIONS_URL = "https://phportal.net/driverph/questions.php";
     private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
 
     private TextView textViewChapter;
@@ -75,6 +75,8 @@ public class QuizInstructions extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.quiz_instructions);
+
+        Dashboard.getmInstanceActivity().loadDataAllAttemptsAndLevels();
 
         buttonStartQuiz = findViewById(R.id.btn_start_quiz);
         back_btn = findViewById(R.id.btn_back_to_take_quiz);
@@ -219,8 +221,8 @@ public class QuizInstructions extends AppCompatActivity {
                         .getString("choiceC"));
                 Log.d("choiceD: " + i, menuitemArray.getJSONObject(i)
                         .getString("choiceD"));
-                Log.d("answerMob: " + i, menuitemArray.getJSONObject(i)
-                        .getString("answerMob"));
+                Log.d("correctAnswer: " + i, menuitemArray.getJSONObject(i)
+                        .getString("correctAnswer"));
                 Log.d("moduleName: " + i, menuitemArray.getJSONObject(i)
                         .getString("moduleName"));
 
@@ -229,7 +231,7 @@ public class QuizInstructions extends AppCompatActivity {
                 String option2 = menuitemArray.getJSONObject(i).getString("choiceB");
                 String option3 = menuitemArray.getJSONObject(i).getString("choiceC");
                 String option4 = menuitemArray.getJSONObject(i).getString("choiceD");
-                String answer_nr = menuitemArray.getJSONObject(i).getString("answerMob");
+                String answer_nr = menuitemArray.getJSONObject(i).getString("correctAnswer");
                 String chapter = menuitemArray.getJSONObject(i).getString("moduleName");
                 Question q1 = new Question(question, option1, option2, option3, option4, Integer.parseInt(answer_nr), chapter);
                 db.addQuestion(q1);
@@ -240,7 +242,7 @@ public class QuizInstructions extends AppCompatActivity {
             Log.d("json error...", je + "");
         }
         Log.d("Inside aysnc task", "inside asynctask...");
-        db.close();
+     //   db.close();
     }
 
 }

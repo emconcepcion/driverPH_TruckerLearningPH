@@ -22,11 +22,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class Basic_Content extends AppCompatActivity {
+    public static WeakReference<Basic_Content> weakActivity;
     String module;
     ListView content;
     List<String> al;
@@ -36,6 +38,7 @@ public class Basic_Content extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basic__content);
+        weakActivity = new WeakReference<>(Basic_Content.this);
 
         content = findViewById(R.id.listview);
         currLesson = findViewById(R.id.currLessonBasic);
@@ -57,14 +60,13 @@ public class Basic_Content extends AppCompatActivity {
 
                 currentLesson = al.get(position);
                 currLesson.setText(String.valueOf(currentLesson));
-                Dashboard.recentModule.setText(currentLesson);
-
-
+                Dashboard.activeLesson.setText(currentLesson);
+                Dashboard.activeModule.setText(Constant._1);
             }
         });
     }
 
-    private void getData() {
+    public void getData() {
 
         String value = module;
 
@@ -116,5 +118,9 @@ public class Basic_Content extends AppCompatActivity {
 
         content.setAdapter(adapter);
 
+    }
+
+    public static Basic_Content getmInstanceActivity() {
+        return weakActivity.get();
     }
 }

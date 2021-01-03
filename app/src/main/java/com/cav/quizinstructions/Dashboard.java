@@ -16,12 +16,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +40,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DateFormat;
@@ -54,15 +59,13 @@ import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
 import static com.cav.quizinstructions.Basic_Content.currLesson;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    public static WeakReference<Dashboard> weakActivity;
 
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
-    private List<MyScoresServer> myScoresServerList;
-    private TextView myUSerId, myEmailSum;
     private DrawerLayout drawer;
+    Button resumeLesson;
     private long backPressedTime;
     public static String dashboard_email;
-    public static TextView recentModule;
+    public static TextView recentModule, activeModule, activeLesson;
     public static String user_id;
     public static int thisUserId, uidFromDb;
     public static TextView isModuleLocked, isModuleCompleted;
@@ -72,9 +75,14 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public static String myLatestIsUnlocked;
     public static String myLatestIsCompleted;
     public static String nameVR;
+    public static String user_idPassedTests;
     private TextView welcome_fname;
+    public static TextView myEmailForAttempts;
+    public static boolean emptyUserIdFromDb;
+    public static String emailForAttempts;
     CircleImageView dahsboard_avatar;
     SharedPreferences sp;
+    SharedPreferences sharedPreferences;
     public static final String Uid_PREFS = "USER_IDPREFS";
     //    private String retrieveUrl="https://driver-ph.000webhostapp.com/driverphtest/retrieve.php";
     private final String retrieveUrl = "https://phportal.net/driverph/retrieve.php";
@@ -86,22 +94,37 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
+        weakActivity = new WeakReference<>(Dashboard.this);
 
-        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        dashboard_email = sharedPreferences.getString(EMAIL, "");
+//        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+//        dashboard_email = sharedPreferences.getString(EMAIL, "");
+        dashboard_email = getIntent().getStringExtra("email");
         welcome_fname = findViewById(R.id.textView_userID);
         dahsboard_avatar = findViewById(R.id.dashboard_avatar);
         isModuleLocked = findViewById(R.id.isModLocked);
         isModuleCompleted = findViewById(R.id.isModCompleted);
         recentModule = findViewById(R.id.myprogresslesson);
+        activeModule = findViewById(R.id.Module);
+        activeLesson = findViewById(R.id.Lesson);
+        resumeLesson = findViewById(R.id.resume);
+        myEmailForAttempts = findViewById(R.id.emailForAttempts);
+        myEmailForAttempts.setText(emailForAttempts);
 
+        resumeLesson.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resumeModule();
+            }
+        });
+
+        //if no record yet from the database
         if (myLatestUserId == null || myLatestIsUnlocked == null ||
                 myLatestIsCompleted == null || myLatestAttempt == null || myLatestChapter == null) {
-            myLatestIsUnlocked = String.valueOf(1);
+            myLatestUserId = "0";
+            myLatestIsUnlocked = "1";
             myLatestIsCompleted = "0";
             myLatestAttempt = "0";
             myLatestChapter = Constant._1;
-            myLatestUserId = String.valueOf(thisUserId);
         } else {
             isModuleLocked.setText(myLatestIsUnlocked);
             isModuleCompleted.setText(myLatestIsCompleted);
@@ -124,10 +147,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        //setTitle("Driver.PH");
-
-        //getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-        //getSupportActionBar().setCustomView(R.layout.action_bar_layout);
 
         drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -140,6 +159,25 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     }
 
+    private void resumeModule() {
+        String module= activeModule.getText().toString();
+        switch (module){
+            case Constant._1:
+                startActivity(new Intent(Dashboard.this, Lessons_Basic_Content.class));
+                break;
+            case Constant._2:
+                startActivity(new Intent(Dashboard.this, Basic_Content.class));
+                break;
+        }
+
+
+
+
+    }
+
+    public static Dashboard getmInstanceActivity() {
+        return weakActivity.get();
+    }
 
     public void btnSetter() {
 
@@ -162,15 +200,21 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 editor1.apply();
 
                 thisUserId = Integer.parseInt(user_id);
-                uidFromDb = Integer.parseInt(myLatestUserId);
                 SharedPreferences sp = getApplicationContext().getSharedPreferences(Uid_PREFS, Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sp.edit();
                 editor.putInt("user_id", thisUserId);
-                editor.putInt("uidFromServer", uidFromDb);
                 editor.apply();
-                Toast.makeText(Dashboard.this, "User ID was saved", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Dashboard.this, "Dashboard User id: " + thisUserId, Toast.LENGTH_SHORT).show();
 
+              //  uidFromDb = Integer.parseInt(myLatestUserId);
                 Intent intent = new Intent(Dashboard.this, Quizzes_menu.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("user_idFromServer", Integer.parseInt(myLatestUserId));
+                bundle.putInt("user_idFromDashboard", thisUserId);
+                bundle.putInt("myLatestIsUnlocked", Integer.parseInt(myLatestIsUnlocked));
+                bundle.putInt("myLatestIsCompleted", Integer.parseInt(myLatestIsCompleted));
+                bundle.putString("myLatestChapter", myLatestChapter);
+                intent.putExtras(bundle);
                 startActivity(intent);
             }
         });
@@ -264,7 +308,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             navImage.setImageDrawable(getResources().getDrawable(R.drawable.avatar6));
                             dahsboard_avatar.setImageDrawable(getResources().getDrawable(R.drawable.avatar6));
                         }
-                        Toast.makeText(Dashboard.this, user_id, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Dashboard.this, "Fetched from user table: " + user_id, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {
                     Toast.makeText(Dashboard.this, "Exception: " + e, Toast.LENGTH_SHORT).show();
@@ -315,7 +359,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 startActivity(intent);
                 break;
             case R.id.nav_siso:
-                Toast.makeText(this, "Sign in/Sign out Activity here", Toast.LENGTH_SHORT).show();
+                this.getSharedPreferences(SHARED_PREFS, 0).edit().clear().apply();
+                this.getSharedPreferences(Uid_PREFS, 0).edit().clear().apply();
+                this.getSharedPreferences("mySavedAttempt", 0).edit().clear().apply();
+                finish();
+                Intent logout = new Intent(Dashboard.this, Login.class);
+                startActivity(logout);
+                Toast.makeText(this, "Log Out Success", Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;
@@ -327,7 +377,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             drawer.closeDrawer(GravityCompat.START);
         } else {
             startActivity(new Intent(Dashboard.this, Login.class));
-            //super.onBackPressed();
+            finish();
         }
     }
 
@@ -373,7 +423,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 Log.d("isCompleted: " + i, menuitemArray.getJSONObject(i)
                                         .getString("isCompleted"));
 
-                                String user_id = menuitemArray.getJSONObject(i).getString("user_id");
+
+                                user_idPassedTests = menuitemArray.getJSONObject(i).getString("user_id");
                                 String email = menuitemArray.getJSONObject(i).getString("email");
                                 String score = menuitemArray.getJSONObject(i).getString("score");
                                 String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
@@ -383,11 +434,13 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 String date_taken = menuitemArray.getJSONObject(i).getString("date_taken");
                                 String isLocked = menuitemArray.getJSONObject(i).getString("isUnlocked");
                                 String isCompleted = menuitemArray.getJSONObject(i).getString("isCompleted");
-                                MyScoresServer mS1 = new MyScoresServer(Integer.parseInt(user_id), email, Integer.parseInt(score),
+                                MyScoresServer mS1 = new MyScoresServer(Integer.parseInt(user_idPassedTests), email, Integer.parseInt(score),
                                         Integer.parseInt(num_items), chapter, Integer.parseInt(num_of_attempt), duration,
                                         date_taken, Integer.parseInt(isLocked), Integer.parseInt(isCompleted));
                                 db.addScoresServer(mS1);
                             }
+                            Toast.makeText(Dashboard.this, "Fetched from passed tests: " + user_idPassedTests, Toast.LENGTH_SHORT).show();
+
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -483,8 +536,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         .getString("choiceC"));
                 Log.d("choiceD: " + i, menuitemArray.getJSONObject(i)
                         .getString("choiceD"));
-                Log.d("answerMob: " + i, menuitemArray.getJSONObject(i)
-                        .getString("answerMob"));
+                Log.d("correctAnswer: " + i, menuitemArray.getJSONObject(i)
+                        .getString("correctAnswer"));
                 Log.d("moduleName: " + i, menuitemArray.getJSONObject(i)
                         .getString("moduleName"));
 
@@ -493,7 +546,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 String option2 = menuitemArray.getJSONObject(i).getString("choiceB");
                 String option3 = menuitemArray.getJSONObject(i).getString("choiceC");
                 String option4 = menuitemArray.getJSONObject(i).getString("choiceD");
-                String answer_nr = menuitemArray.getJSONObject(i).getString("answerMob");
+                String answer_nr = menuitemArray.getJSONObject(i).getString("correctAnswer");
                 String chapter = menuitemArray.getJSONObject(i).getString("moduleName");
                 Question q1 = new Question(question, option1, option2, option3, option4, Integer.parseInt(answer_nr), chapter);
                 db.addQuestion(q1);
@@ -508,7 +561,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     }
 
     //load all data attempts and unlocked modules from web
-    private void loadDataAllAttemptsAndLevels() {
+    public void loadDataAllAttemptsAndLevels() {
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading data...");
         progressDialog.show();
@@ -566,6 +619,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 db.addScoresServer(mS1);
                             }
 
+                            Toast.makeText(Dashboard.this, "Fetched from attempts: " + myLatestUserId, Toast.LENGTH_SHORT).show();
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -583,9 +638,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 String initialChapter = recentModule.getText().toString();
+                String myEmailUnlock = myEmailForAttempts.getText().toString();
                 params.put("email", dashboard_email);
                 params.put("chapter", initialChapter);
-                Log.d("email", dashboard_email + "");
+                Log.d("email", myEmailUnlock + "");
                 Log.d("yes", "successful...");
                 return params;
             }

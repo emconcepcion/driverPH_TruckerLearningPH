@@ -72,7 +72,7 @@
             android:layout_marginStart="21dp"
             android:layout_marginTop="26dp"
             android:ems="10"
-            android:text="concep"
+            android:text="Concep"
             android:inputType="textPassword"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/login_username"
@@ -132,6 +132,17 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view" />
+
+    <TextView
+        android:id="@+id/textView_fgtpassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="127dp"
+        android:text="Forgot password"
+        android:textColor="@color/dark_blue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_guest" />
 
     <TextView
         android:id="@+id/textView7"

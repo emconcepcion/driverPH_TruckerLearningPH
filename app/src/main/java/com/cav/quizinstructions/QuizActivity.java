@@ -117,6 +117,7 @@ public class QuizActivity extends AppCompatActivity {
     public static boolean endedAttempt, scoreShown;
     int correct_answer = 0;
     MediaPlayer mediaPlayer;
+    public static int testResultUnlock, testResultCompleted;
 
 
     @Override
@@ -155,6 +156,7 @@ public class QuizActivity extends AppCompatActivity {
         questionCountTotal = (questionList.size() - 2);
         FYAlgoShuffle(questionList);
         timer();
+
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
         textViewEmail.setText(myEmail);
@@ -417,8 +419,8 @@ public class QuizActivity extends AppCompatActivity {
         bundle.putInt("attempt", newAttempt);
         bundle.putString("myEmail", myEmail);
         bundle.putInt("myUserId", myUserId);
-        bundle.putInt("myLatestUnlocked", Integer.parseInt(myLatestIsUnlocked));
-        bundle.putInt("myLatestCompleted", Integer.parseInt(myLatestIsCompleted));
+        bundle.putInt("myLatestUnlocked", testResultUnlock);
+        bundle.putInt("myLatestCompleted", testResultCompleted);
         SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
         try {
             Date start = sdf.parse(timeSet);
@@ -437,9 +439,9 @@ public class QuizActivity extends AppCompatActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        i.putExtras(bundle);
         i.putStringArrayListExtra("askedQuestions", askedQuestions);
         i.putExtra("date_taken", currentDate);
+        i.putExtras(bundle);
         startActivity(i);
 
     }
@@ -457,6 +459,10 @@ public class QuizActivity extends AppCompatActivity {
         boolean sameUser = String.valueOf(dbUser).equals(String.valueOf(currUser));
         String currChap = textViewChapter.getText().toString();
         String dbChap = Dashboard.myLatestChapter;
+        Intent retakeIntent = getIntent();
+        Bundle b = retakeIntent.getExtras();
+        int retakeAtt = b.getInt("retakeAtt");
+       // int retakeAtt = Integer.parseInt(PrepareForTest.myLatestAttempt);
 
         if (currAttempt >=1 && sameUser && currChap.equals(dbChap)){
             attempt.setText(String.valueOf(++currAttempt));
@@ -464,9 +470,11 @@ public class QuizActivity extends AppCompatActivity {
             resetAttempt = 1;
             attempt.setText(String.valueOf(resetAttempt));
         }
-        if (QuizResults.isRetake && sameUser && currChap.equals(dbChap)) {
-            int retakeAttempt = ++currAttempt;
-            attempt.setText(String.valueOf(retakeAttempt));
+        if (QuizResults.isRetake && currAttempt >=1 && sameUser && currChap.equals(dbChap)) {
+//            Intent intent = getIntent();
+            //            int retakeAttempt = ++retakeAtt;
+            attempt.setText(String.valueOf(currAttempt));
+//            int retakeAttempt = intent.getIntExtra("retakeAttempt", 0);
         }
         }
 
@@ -503,6 +511,9 @@ public class QuizActivity extends AppCompatActivity {
 
                 questionCountTotal = (questionList.size() - 2);
 
+                String timeSet = "00:20";
+                String timeLeft = textViewCountdown.getText().toString();
+
                 int newAttempt = Integer.parseInt(attempt.getText().toString());
                 int myUserId = Integer.parseInt(textViewUserIdQAct.getText().toString());
                 String myEmail = textViewEmail.getText().toString();
@@ -516,7 +527,30 @@ public class QuizActivity extends AppCompatActivity {
                 bundle.putInt("myUserId", myUserId);
                 i.putExtras(bundle);
                 i.putExtra("email", myEmail);
+                bundle.putInt("myUserId", myUserId);
+                bundle.putInt("myLatestUnlocked", 1);
+                bundle.putInt("myLatestCompleted", 0);
+                SimpleDateFormat sdf = new SimpleDateFormat("mm:ss");
+                try {
+                    Date start = sdf.parse(timeSet);
+                    Date finish = sdf.parse(timeLeft);
+
+                    long difference = start.getTime() - finish.getTime();
+                    int totalTime = (int) difference;
+
+                    int minutes = (totalTime / 1000) / 60;
+                    int seconds = (totalTime / 1000) % 60;
+
+                    String timeConsumed = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+                    String timeTaken = String.valueOf(timeConsumed);
+                    duration = "00:" + timeTaken;
+                    bundle.putString("duration", duration);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 i.putExtra("date_taken", currentDate);
+                i.putStringArrayListExtra("askedQuestions", askedQuestions);
+                i.putExtras(bundle);
                 startActivity(i);
                 finish();
                 endedAttempt = true;
@@ -580,20 +614,24 @@ public class QuizActivity extends AppCompatActivity {
         int myItems = Integer.parseInt(textview_show_items.getText().toString());
 
 
-        if (myScore > (myItems * 0.8)) {
+        if (myScore > (myItems * 0.5)) {
             pass_fail.setText("Like a Boss!");
             result_icon.setImageResource(R.drawable.ic_cheers);
             unlocked = true;
-            myLatestIsCompleted = String.valueOf(1);
+            testResultUnlock = 0;
+            testResultCompleted = 1;
 
-        } else if (myScore < (myItems * 0.8)) {
+        } else if (myScore < (myItems * 0.5)) {
             pass_fail.setText("Aww, snap!");
             result_icon.setImageResource(R.drawable.ic_sad);
             unlocked = false;
+            testResultUnlock = 1;
+            testResultCompleted = 0;
         }
 
         show_score.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         show_score.show();
+        show_score.setCancelable(false);
 
         btn_view_result.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -612,6 +650,7 @@ public class QuizActivity extends AppCompatActivity {
                 finish();
             }
         });
+
 
     }
 }

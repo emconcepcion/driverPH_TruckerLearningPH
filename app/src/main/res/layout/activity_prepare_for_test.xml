@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    tools:context=".PrepareForTest">
+
+    <TextView
+        android:id="@+id/textview_module_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/course_title"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        />
+
+    <View
+        android:id="@+id/divider_up"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="25dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/textview_module_title"/>
+
+
+    <View
+        android:id="@+id/divider_down"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:layout_marginTop="5dp"
+        android:background="?android:attr/listDivider"
+        android:layout_below="@id/divider_up"/>
+
+
+    <TextView
+        android:id="@+id/textview_instruct_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/divider_down"
+        android:text="@string/prepForTest"
+        android:layout_marginTop="60dp"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:textColor="@android:color/black"
+        />
+
+    <Button
+        android:id="@+id/btn_start_myTest"
+        android:layout_width="230dp"
+        android:layout_height="60dp"
+        android:layout_below="@id/textview_instruct_msg"
+        android:text="@string/letsGo"
+        android:layout_marginTop="30dp"
+        android:layout_centerHorizontal="true"
+        android:textAllCaps="false"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@android:color/white"
+        android:background="@color/yellow"
+        />
+
+    <Button
+        android:id="@+id/btn_back_to_quizMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Maybe later"
+        android:background="#A82196F3"
+        android:padding="10dp"
+        android:textColor="@android:color/white"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"/>
+
+
+
+    <TextView
+        android:id="@+id/myEmailPrepTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="135dp"
+        android:layout_marginBottom="35dp"
+        android:layout_toRightOf="@id/btn_back_to_quizMenu"
+        android:text="mEmail"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="invisible"/>
+    <TextView
+        android:id="@+id/myUserIdPrepTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="135dp"
+        android:layout_marginBottom="35dp"
+        android:text="userId"
+        android:textColor="@android:color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:visibility="invisible"/>
+
+
+</RelativeLayout>
