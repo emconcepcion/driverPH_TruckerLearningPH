@@ -14,6 +14,8 @@ import android.widget.TextView;
 import static com.cav.quizinstructions.BackgroundTask.EMAIL;
 import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
 import static com.cav.quizinstructions.Constant._1;
+import static com.cav.quizinstructions.Constant._2;
+import static com.cav.quizinstructions.Constant._3;
 
 public class Lessons_Menu extends AppCompatActivity {
 
@@ -36,8 +38,8 @@ public class Lessons_Menu extends AppCompatActivity {
         cardViewCore = findViewById(R.id.cardView_core_competencies);
         Button btnEvaluation = findViewById(R.id.button5);
         myEmailLesson = findViewById(R.id.email_lesson);
-        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-        Dashboard.dashboard_email = sharedPreferences.getString(EMAIL, "");
+//        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+//        String emailLesson = sharedPreferences.getString(EMAIL, "");
         myEmailLesson.setText(Dashboard.dashboard_email);
         Quizzes_menu.isFromQuizMenu = false;
         isFromLessonsMenu=true;
@@ -54,7 +56,6 @@ public class Lessons_Menu extends AppCompatActivity {
                 startActivity(new Intent(Lessons_Menu.this,Lessons_Basic_Content.class));
 
                 String compe = "1";
-//                Toast.makeText(Lessons_Menu.this, email_in_lm, Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(Lessons_Menu.this, Basic_Content.class);
                 Bundle extras = new Bundle();
                 extras.putString("module", compe);
@@ -67,7 +68,7 @@ public class Lessons_Menu extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 isFromLessonsMenu=true;
-                tChapter.setText("Common Competencies");
+                tChapter.setText(_2);
                 String chapTest = tChapter.getText().toString();
                 sp = getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sp.edit();
@@ -80,7 +81,7 @@ public class Lessons_Menu extends AppCompatActivity {
         cardViewCore.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tChapter.setText("Core Competencies");
+                tChapter.setText(_3);
                 String chapTest = tChapter.getText().toString();
                 sp = getSharedPreferences("SharedPrefChapter", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sp.edit();
@@ -100,6 +101,10 @@ public class Lessons_Menu extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(Lessons_Menu.this,Dashboard.class));
+        Intent intent = new Intent(Lessons_Menu.this, Dashboard.class);
+        Bundle extras = new Bundle();
+        extras.putString("email", myEmailLesson.getText().toString());
+        intent.putExtras(extras);
+        startActivity(intent);
     }
 }

@@ -87,13 +87,14 @@
         android:layout_width="230dp"
         android:layout_height="60dp"
         android:layout_below="@id/textview_instruct_msg"
-        android:text="@string/start_quiz"
+        android:text="Begin"
         android:layout_marginTop="30dp"
         android:layout_centerHorizontal="true"
         android:textStyle="bold"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:textColor="@android:color/white"
-        android:background="#A82196F3"
+        android:textAllCaps="false"
+        android:background="@drawable/rounded_login_button"
         />
 
     <Button
@@ -102,6 +103,10 @@
         android:layout_height="wrap_content"
         android:text="Back"
         android:layout_alignParentBottom="true"
+        android:textColor="#4C4C4C"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:background="@drawable/yellow_button"
         android:layout_marginBottom="20dp"/>
 
     <TextView

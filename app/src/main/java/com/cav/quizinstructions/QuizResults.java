@@ -55,10 +55,8 @@ public class QuizResults extends AppCompatActivity {
     TextView score_result, chapter_name;
     Button btn_willRetake, btn_willReview, btn_willUnlock;
 
-    public static boolean unlocked, unlockedForQuizMenu;
+    public static boolean unlocked;
     public static boolean isRetake;
-    public static boolean M1isPassed, M2isPassed, M3isPassed;
-    public int attempt;
     TextView myEmailResult, myUserId;
     SharedPreferences sp;
     int UNLOCK_MOD2, UNLOCK_MOD3;
@@ -108,7 +106,7 @@ public class QuizResults extends AppCompatActivity {
         listView.setAdapter(arrayAdapter);
 
 
-        if (txt_score_result > (items_test * 0.5)) {
+        if (txt_score_result > (items_test * 0.8)) {
             btn_willUnlock.setVisibility(View.VISIBLE);
             btn_willUnlock.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -116,7 +114,7 @@ public class QuizResults extends AppCompatActivity {
                     unlock();
                 }
             });
-        } else if (txt_score_result < (items_test * 0.5)) {
+        } else if (txt_score_result < (items_test * 0.8)) {
             btn_willRetake.setVisibility(View.VISIBLE);
             btn_willRetake.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -138,39 +136,43 @@ public class QuizResults extends AppCompatActivity {
 
     public void unlock() {
         unlocked = true;
-        unlockedForQuizMenu = true;
         int txt_score_result = getIntent().getExtras().getInt("score");
         int items_test = getIntent().getExtras().getInt("items");
         String unlockNextModule = chapter_name.getText().toString();
 
-        if (unlockNextModule.equals(Constant.MOD_1)) {
-            //module 1 is active and need to unlock mod2
-            UNLOCK_MOD2 = txt_score_result;
-            if (UNLOCK_MOD2 > (items_test * 0.5)) {
-                updateUnlockedModuleToServer(thisUserId, Constant.MOD_1, 0, 1);
-            }else if (UNLOCK_MOD2 < (items_test * 0.5)){
-                updateUnlockedModuleToServer(thisUserId, Constant.MOD_1, 1, 0);
-            }
-        } else if (unlockNextModule.equals(Constant.MOD_2)) {
-            // module 2 is active and need to unlock mod3
-            UNLOCK_MOD3 = txt_score_result;
-            if (UNLOCK_MOD3 > (items_test * 0.5)) {
-                updateUnlockedModuleToServer(thisUserId, Constant.MOD_2, 0, 1);
-            }else if  (UNLOCK_MOD3 <= (items_test * 0.5)){
-                updateUnlockedModuleToServer(thisUserId, Constant.MOD_2, 1, 0);
-            }
-        } else if (unlockNextModule.equals(Constant.MOD_3)){
-            // module 3 is active and need to lock all
-            UNLOCK_MOD3 = txt_score_result;
-            if (UNLOCK_MOD3 > (items_test * 0.5)) {
-                updateUnlockedModuleToServer(thisUserId, Constant.MOD_3, 0, 1);
-                M3isPassed = true;
-            }else if (UNLOCK_MOD3 < (items_test * 0.5)){
-                updateUnlockedModuleToServer(thisUserId, Constant.MOD_3, 1, 0);
-                M3isPassed = false;
-            }
+        switch (unlockNextModule) {
+            case Constant._1:
+                //module 1 is active and need to unlock mod2
+                Dashboard.recentModule.setText(Constant._2);
+                UNLOCK_MOD2 = txt_score_result;
+                if (UNLOCK_MOD2 > (items_test * 0.8)) {
+                    updateUnlockedModuleToServer(thisUserId, Constant._1, 0, 1);
+                } else if (UNLOCK_MOD2 < (items_test * 0.8)) {
+                    updateUnlockedModuleToServer(thisUserId, Constant._1, 1, 0);
+                }
+                break;
+            case Constant._2:
+                // module 2 is active and need to unlock mod3
+                Dashboard.recentModule.setText(Constant._3);
+                UNLOCK_MOD3 = txt_score_result;
+                if (UNLOCK_MOD3 > (items_test * 0.8)) {
+                    updateUnlockedModuleToServer(thisUserId, Constant._2, 0, 1);
+                } else if (UNLOCK_MOD3 <= (items_test * 0.8)) {
+                    updateUnlockedModuleToServer(thisUserId, Constant._2, 1, 0);
+                }
+                break;
+            case Constant._3:
+                // module 3 is active and need to lock all
+                Dashboard.recentModule.setText(Constant._3);
+                UNLOCK_MOD3 = txt_score_result;
+                if (UNLOCK_MOD3 > (items_test * 0.8)) {
+                    updateUnlockedModuleToServer(thisUserId, Constant._3, 0, 1);
+                } else if (UNLOCK_MOD3 < (items_test * 0.8)) {
+                    updateUnlockedModuleToServer(thisUserId, Constant._3, 1, 0);
+                }
+                break;
         }
-        startActivity(new Intent(QuizResults.this, Dashboard.class));
+        startActivity(new Intent(QuizResults.this, Quizzes_menu.class));
     }
 
     public void review() {
@@ -180,17 +182,7 @@ public class QuizResults extends AppCompatActivity {
     public void retake() {
         isRetake = true;
 
-//        SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-//        int incAttempt = sp.getInt("attempt", 1);
-//        String chapter = chapter_name.getText().toString();
-//        sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sp.edit();
-//        editor.putInt("attempt", (++incAttempt));
-//        editor.putString("chapter", chapter);
-//        editor.apply();
-
         Intent resultIntent = new Intent(QuizResults.this, PrepareForTest.class);
-//        resultIntent.putExtra("retakeAttempt", Integer.parseInt(Dashboard.myLatestAttempt));
         startActivity(resultIntent);
     }
 
@@ -203,7 +195,6 @@ public class QuizResults extends AppCompatActivity {
                         public void onResponse(String response) {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
-
                                 //get response from jsonobject
                                 String Response = jsonObject.getString("response");
                                 //check response from server
@@ -249,7 +240,6 @@ public class QuizResults extends AppCompatActivity {
             Toast.makeText(this, "Updated unlocked modules.", Toast.LENGTH_SHORT).show();
         }
     }
-
 
     //check for internet connection
     public boolean checkNetworkConnection() {

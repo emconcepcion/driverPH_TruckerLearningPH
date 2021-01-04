@@ -14,11 +14,11 @@
     <string name="pass">Pass the quiz and unlock the next lesson.</string>
     <string name="time_limit">Time limit: 3 minutes</string>
     <string name="questions_5">Questions: 5</string>
-    <string name="prepForTest">We believe in second chances, too. <br></br> <br></br>
+    <string name="prepForTest">We believe in second chances, too.
         Take a deep breath and take the test again.</string>
     <string name="read_questions">Read each question carefully. Choose the best answer and click NEXT once
         you are ready for the next question. You cannot go back to the previous question items to change your answers.</string>
-    <string name="start_quiz">START THE TEST</string>
+    <string name="start_quiz">Start the test</string>
     <string name="letsGo">Retake the test</string>
     <string name="hi_name">Hi, Name!</string>
     <string name="recap_msg">What have you learned from our lesson?\n\nPress the mic icon to START recording and tap the mic again to STOP recording.\nGive at least 1 keyword or 1 sentence about our lesson.</string>

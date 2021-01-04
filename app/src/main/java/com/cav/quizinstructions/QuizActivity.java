@@ -87,10 +87,7 @@ public class QuizActivity extends AppCompatActivity {
     Button btn_next;
     ImageButton btn_sound;
     public static String duration;
-
-    SharedPreferences sp;
     public int num_of_attempt;
-    public int isLocked;
 
     ProgressBar progressBar;
 
@@ -100,20 +97,15 @@ public class QuizActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private long timeLeftInMillis;
 
-
     private List<Question> questionList;
-    private List<Score> scoreList;
     private int questionCounter;
     private int questionCountTotal;
     private Question currentQuestion;
 
     public static boolean unlocked;
-    TextView answer_nr;
     private int score;
     private boolean answered;
     CardView cardViewScore;
-    private boolean backPressed;
-    String email;
     public static boolean endedAttempt, scoreShown;
     int correct_answer = 0;
     MediaPlayer mediaPlayer;
@@ -164,8 +156,6 @@ public class QuizActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
         int uid = sharedPreferences.getInt("user_id", 0);
         textViewUserIdQAct.setText(String.valueOf(uid));
-
-        SharedPreferences sp2 = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
 
         mediaPlayer = MediaPlayer.create(QuizActivity.this, R.raw.bg_music);
         mediaPlayer.setLooping(true);
@@ -263,13 +253,10 @@ public class QuizActivity extends AppCompatActivity {
                 String timeRemaining = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                 textViewCountdown.setText(String.valueOf(timeRemaining));
 
-
-//                long remTime = (millisUntilFinished / 1000);
-
                 if (timeLeftInMillis < 10000) {
-                    textViewCountdown.setTextColor(Color.RED);
-                } else {
                     textViewCountdown.setTextColor(Color.parseColor("#006400"));
+                } else {
+                    textViewCountdown.setTextColor(Color.RED);
                 }
 
                 //convert to time format
@@ -405,7 +392,6 @@ public class QuizActivity extends AppCompatActivity {
         String timeSet = "00:20";
         String timeLeft = textViewCountdown.getText().toString();
 
-
         int myUserId = Integer.parseInt(textViewUserIdQAct.getText().toString());
         int newAttempt = Integer.parseInt(attempt.getText().toString());
         String myEmail = textViewEmail.getText().toString();
@@ -459,24 +445,17 @@ public class QuizActivity extends AppCompatActivity {
         boolean sameUser = String.valueOf(dbUser).equals(String.valueOf(currUser));
         String currChap = textViewChapter.getText().toString();
         String dbChap = Dashboard.myLatestChapter;
-        Intent retakeIntent = getIntent();
-        Bundle b = retakeIntent.getExtras();
-        int retakeAtt = b.getInt("retakeAtt");
-       // int retakeAtt = Integer.parseInt(PrepareForTest.myLatestAttempt);
 
-        if (currAttempt >=1 && sameUser && currChap.equals(dbChap)){
+        if (currAttempt >= 1 && sameUser && currChap.equals(dbChap)) {
             attempt.setText(String.valueOf(++currAttempt));
-        }else{
+        } else {
             resetAttempt = 1;
             attempt.setText(String.valueOf(resetAttempt));
         }
-        if (QuizResults.isRetake && currAttempt >=1 && sameUser && currChap.equals(dbChap)) {
-//            Intent intent = getIntent();
-            //            int retakeAttempt = ++retakeAtt;
+        if (QuizResults.isRetake && currAttempt >= 1 && sameUser && currChap.equals(dbChap)) {
             attempt.setText(String.valueOf(currAttempt));
-//            int retakeAttempt = intent.getIntExtra("retakeAttempt", 0);
         }
-        }
+    }
 
 
     @Override
@@ -614,14 +593,14 @@ public class QuizActivity extends AppCompatActivity {
         int myItems = Integer.parseInt(textview_show_items.getText().toString());
 
 
-        if (myScore > (myItems * 0.5)) {
+        if (myScore > (myItems * 0.8)) {
             pass_fail.setText("Like a Boss!");
             result_icon.setImageResource(R.drawable.ic_cheers);
             unlocked = true;
             testResultUnlock = 0;
             testResultCompleted = 1;
 
-        } else if (myScore < (myItems * 0.5)) {
+        } else if (myScore < (myItems * 0.8)) {
             pass_fail.setText("Aww, snap!");
             result_icon.setImageResource(R.drawable.ic_sad);
             unlocked = false;

@@ -27,21 +27,11 @@
         android:background="?android:attr/listDivider"
         android:layout_below="@id/textview_module_title"/>
 
-
-    <View
-        android:id="@+id/divider_down"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginTop="5dp"
-        android:background="?android:attr/listDivider"
-        android:layout_below="@id/divider_up"/>
-
-
     <TextView
         android:id="@+id/textview_instruct_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/divider_down"
+        android:layout_below="@id/divider_up"
         android:text="@string/prepForTest"
         android:layout_marginTop="60dp"
         android:gravity="center"
@@ -59,9 +49,9 @@
         android:layout_centerHorizontal="true"
         android:textAllCaps="false"
         android:textStyle="bold"
-        android:textSize="16sp"
-        android:textColor="@android:color/white"
-        android:background="@color/yellow"
+        android:textSize="18sp"
+        android:textColor="#5C5C5C"
+        android:background="@drawable/yellow_button"
         />
 
     <Button
@@ -69,8 +59,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Maybe later"
-        android:background="#A82196F3"
-        android:padding="10dp"
+        android:background="@drawable/rounded_login_button"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:textColor="@android:color/white"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"/>

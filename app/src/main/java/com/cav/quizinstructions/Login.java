@@ -25,7 +25,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Login extends AppCompatActivity {
     EditText username, password1;
-    public String u_name, pword, email, password2;
+    public String u_name, pword, password2;
+    public static String email;
     TextView fgtpassword;
     private String retrievedatasUrl="https://phportal.net/driverph/xample_login.php";
     public static final String SHARED_PREFS = "sharedPrefs";
@@ -110,6 +111,11 @@ public class Login extends AppCompatActivity {
                     //if no error in response
                     if (!obj.getBoolean("error")) {
                         email = obj.getString("email");
+
+//                        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+//                        SharedPreferences.Editor editor = sharedPreferences.edit();
+//                        editor.putString("email", email);
+//                        editor.apply();
 
                         pdLoading.dismiss();
                         Intent intent = new Intent(Login.this, Dashboard.class);

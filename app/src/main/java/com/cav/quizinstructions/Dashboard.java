@@ -88,7 +88,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     private final String retrieveUrl = "https://phportal.net/driverph/retrieve.php";
     private final String QUESTIONS_URL = "https://phportal.net/driverph/questions.php";
     private static final String Server_Scores_URL = "https://phportal.net/driverph/scoresOnline.php";
-    private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
+//    private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
+    public static final String SERVER_DASHBOARD = "https://phportal.net/driverph/dashboard_latest_module.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +97,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         setContentView(R.layout.activity_dashboard);
         weakActivity = new WeakReference<>(Dashboard.this);
 
-//        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-//        dashboard_email = sharedPreferences.getString(EMAIL, "");
         dashboard_email = getIntent().getStringExtra("email");
+//        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putString("email", dashboard_email);
+//        editor.apply();
+//        dashboard_email = sharedPreferences.getString("email", "");
         welcome_fname = findViewById(R.id.textView_userID);
         dahsboard_avatar = findViewById(R.id.dashboard_avatar);
         isModuleLocked = findViewById(R.id.isModLocked);
@@ -108,7 +112,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         activeLesson = findViewById(R.id.Lesson);
         resumeLesson = findViewById(R.id.resume);
         myEmailForAttempts = findViewById(R.id.emailForAttempts);
-        myEmailForAttempts.setText(emailForAttempts);
+        myEmailForAttempts.setText(dashboard_email);
+
+        recentModule.setText(myLatestChapter);
+
 
         resumeLesson.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -124,7 +131,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             myLatestIsUnlocked = "1";
             myLatestIsCompleted = "0";
             myLatestAttempt = "0";
-            myLatestChapter = Constant._1;
+            myLatestChapter = "";
         } else {
             isModuleLocked.setText(myLatestIsUnlocked);
             isModuleCompleted.setText(myLatestIsCompleted);
@@ -169,9 +176,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 startActivity(new Intent(Dashboard.this, Basic_Content.class));
                 break;
         }
-
-
-
 
     }
 
@@ -373,12 +377,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     @Override
     public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            startActivity(new Intent(Dashboard.this, Login.class));
-            finish();
-        }
+//        if (drawer.isDrawerOpen(GravityCompat.START)) {
+//            drawer.closeDrawer(GravityCompat.START);
+//        } else {
+//            startActivity(new Intent(Dashboard.this, Login.class));
+//            finish();
+//        }
     }
 
     //for viewing of passed tests (summarized)
@@ -568,7 +572,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         Database db = new Database(this);
         db.Open();
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.DEPRECATED_GET_OR_POST,
-                Server_All_Attempts_URL,
+                SERVER_DASHBOARD,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
@@ -620,7 +624,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                             }
 
                             Toast.makeText(Dashboard.this, "Fetched from attempts: " + myLatestUserId, Toast.LENGTH_SHORT).show();
-
+                            Toast.makeText(Dashboard.this, "Latest Chapter: " + myLatestChapter, Toast.LENGTH_SHORT).show();
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -637,11 +641,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                String initialChapter = recentModule.getText().toString();
-                String myEmailUnlock = myEmailForAttempts.getText().toString();
                 params.put("email", dashboard_email);
-                params.put("chapter", initialChapter);
-                Log.d("email", myEmailUnlock + "");
+                Log.d("email", Login.email + "");
                 Log.d("yes", "successful...");
                 return params;
             }

@@ -66,11 +66,10 @@ public class QuizStatusList extends AppCompatActivity {
     BroadcastReceiver broadcastReceiver;
     Button btn_view_result;
     Button refresh_list;
-    SharedPreferences sp;
     public static boolean completedQuizzes;
     public static TextView tv_userId_sList;
 
-    public static int sync_statusForMySQL, isLockedA, isCompletedA;
+    public static int isLockedA, isCompletedA;
     boolean submittedScore;
     private boolean isRefreshedList = false;
     public static int uId;
@@ -96,20 +95,13 @@ public class QuizStatusList extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
-        Collections.sort(arrayList, new Comparator<Score>() {
-            @Override
-            public int compare(com.cav.quizinstructions.Score o1, com.cav.quizinstructions.Score o2) {
-                return o1.getChapter().compareTo(o2.getChapter());
-            }
-        });
         adapter = new RecyclerAdapter(arrayList);
         recyclerView.setAdapter(adapter);
         readFromLocalStorage();
-//        readFromServer();
+
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
         Email.setText(myEmail);
-
 
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
         int uid = sharedPreferences.getInt("user_id", 0);
@@ -172,10 +164,23 @@ public class QuizStatusList extends AppCompatActivity {
         int latestUnlocked = bundle.getInt("myLatestUnlocked");
         int latestCompleted = bundle.getInt("myLatestCompleted");
 
-        // Email.setText(email_result);
+        String moduleCode = "";
+        switch(chap_result){
+            case Constant._1:
+                moduleCode = "1";
+                break;
+            case Constant._2:
+                moduleCode = "2";
+                break;
+            case Constant._3:
+                moduleCode = "3";
+                break;
+        }
+
         Score.setText("" + txt_score_result);
         Num_of_items.setText("" + txt_item_result);
-        Chapter.setText(chap_result);
+//        Chapter.setText(chap_result);
+        Chapter.setText(moduleCode);
         Num_Of_Attempt.setText("" + txt_attempt_result);
         Duration.setText(testDuration);
         Date_Taken.setText(currentDate);
@@ -228,7 +233,6 @@ public class QuizStatusList extends AppCompatActivity {
         QuizDbHelper dbHelper = new QuizDbHelper(this);
         SQLiteDatabase database = dbHelper.getReadableDatabase();
 
-        //read using cursor
         Cursor cursor = dbHelper.readFromLocalDatabase(database);
 
         while (cursor.moveToNext()) {
@@ -244,10 +248,24 @@ public class QuizStatusList extends AppCompatActivity {
             int isCompleted = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED));
             int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
 
-            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, duration,
+            String module = "";
+            switch(chap){
+                case "1":
+                    module = Constant._1;
+                    break;
+                case "2":
+                    module = Constant._2;
+                    break;
+                case "3":
+                    module = Constant._3;
+                    break;
+            }
+
+            arrayList.add(new Score(userId,email, score, num_items, module, num_attempt, duration,
                     date_Taken, isLocked, isCompleted, sync_status));
         }
 
+        Collections.reverse(arrayList);
         adapter.notifyDataSetChanged();
         cursor.close();
         dbHelper.close();
@@ -446,7 +464,6 @@ public class QuizStatusList extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(broadcastReceiver);
     }
-
 
     public void goToQuizResults() {
 

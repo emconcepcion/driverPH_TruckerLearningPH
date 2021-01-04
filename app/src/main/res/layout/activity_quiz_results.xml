@@ -47,15 +47,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:textColor="@color/dark_blue"
         android:text="Note: Only the questions that you attempted to answer will be displayed below:"
         android:textStyle="bold" />
 
+<!--    <LinearLayout-->
+<!--        android:id="@+id/linear1"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_below="@id/questionsAttempted"-->
+<!--        android:layout_above="@id/btn_unlock"-->
+<!--        android:orientation="vertical">-->
+
     <ScrollView
-        android:layout_width="344dp"
-        android:layout_height="530dp"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
         android:layout_below="@id/questionsAttempted"
+        android:layout_above="@id/btn_unlock"
         android:layout_marginTop="0dp"
-        android:scrollbars="vertical"
+        android:scrollbarAlwaysDrawVerticalTrack="true"
         android:fillViewport="true"
         >
 
@@ -72,11 +82,12 @@
                 android:background="#F1F1F1"
                 android:padding="7dp"
                 android:id="@+id/list_view">
-
             </ListView>
         </LinearLayout>
 
     </ScrollView>
+
+<!--    </LinearLayout>-->
 
     <Button
         android:id="@+id/btn_unlock"
@@ -87,6 +98,8 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="25dp"
+        android:background="@color/yellow"
+        android:textColor="@android:color/white"
         android:layout_margin="16dp"/>
 
     <Button
@@ -97,6 +110,8 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="25dp"
         android:layout_margin="16dp"
+        android:background="@drawable/rounded_login_button"
+        android:textColor="@android:color/white"
         android:textAllCaps="false"/>
 
     <Button
@@ -108,6 +123,8 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="16dp"
         android:textAllCaps="false"
+        android:background="@drawable/rounded_login_button"
+        android:textColor="@android:color/white"
         android:layout_alignParentRight="true" />
 
     <TextView

@@ -29,6 +29,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class CompletedQuizzes extends AppCompatActivity {
 
@@ -55,12 +56,10 @@ public class CompletedQuizzes extends AppCompatActivity {
         adapter = new RecyclerAdapter(arrayList);
         recyclerView.setAdapter(adapter);
         readFromLocalStorage();
-//        readFromServer();
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 readFromLocalStorage();
-//                readFromServer();
             }
         };
         getJSON(SCORES_URL);
@@ -111,45 +110,9 @@ public class CompletedQuizzes extends AppCompatActivity {
         }
 
         //adapter.notifyDataSetChanged();
+        Collections.reverse(arrayList);
         cursor.close();
         dbHelper.close();
-    }
-
-    public void readFromServer(){
-
-        //clear data from arraylist
-        myScoresServerArrayList.clear();
-        QuizDbHelper dbHelper = new QuizDbHelper(this);
-        SQLiteDatabase database = dbHelper.getReadableDatabase();
-
-        //read using cursor
-        Cursor cursor = dbHelper.readFromLocalDatabase(database);
-
-        while(cursor.moveToNext()){
-            int userId = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL));
-            String email = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL));
-            int score = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL));
-            int num_items = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL));
-            String chap = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL));
-            int num_attempt = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL));
-            String duration = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_DURATION_MYSQL));
-            String date_Taken = cursor.getString(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL));
-            int isLocked = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL));
-            int isCompleted = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL));
-            myScoresServerArrayList.add(new MyScoresServer(userId,email, score, num_items, chap, num_attempt, duration,
-                    date_Taken, isLocked, isCompleted));
-        }
-
-//        adapter.notifyDataSetChanged();
-        cursor.close();
-        dbHelper.close();
-    }
-
-    //check for internet connection
-    public boolean checkNetworkConnection() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
     }
 
     public void getJSON(final String urlWebService) {

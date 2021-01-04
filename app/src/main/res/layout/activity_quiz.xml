@@ -52,9 +52,6 @@
             android:textColor="@android:color/black"
             android:textSize="16sp" />
 
-
-
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -161,8 +158,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="35dp"
                     android:freezesText="true"
-                    android:text=""
+                    android:text="A"
                     android:textColor="@android:color/black"
+                    android:background="#F0F1F1"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -172,8 +170,9 @@
                     android:layout_height="35dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
-                    android:text=""
+                    android:text="B"
                     android:textColor="@android:color/black"
+                    android:background="#F0F1F1"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -183,8 +182,9 @@
                     android:layout_height="35dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
-                    android:text=""
+                    android:text="C"
                     android:textColor="@android:color/black"
+                    android:background="#F0F1F1"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -194,8 +194,9 @@
                     android:layout_height="35dp"
                     android:layout_marginTop="5dp"
                     android:freezesText="true"
-                    android:text=""
+                    android:text="D"
                     android:textColor="@android:color/black"
+                    android:background="#F0F1F1"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -269,10 +270,10 @@
     <Button
         android:id="@+id/btn_next"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_margin="20dp"
         android:layout_alignParentBottom="true"
-        android:background="#A82196F3"
+        android:background="@drawable/rounded_login_button"
         android:freezesText="true"
         android:text="NEXT"
         android:textColor="@android:color/white"
