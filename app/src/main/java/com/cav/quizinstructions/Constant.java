@@ -6,9 +6,9 @@ public class Constant {
     public static final String _2 = "Common Competencies";
     public static final String _3 = "Core Competencies";
 
-    public static final String MOD_1 = "Basic Competencies";
-    public static final String MOD_2 = "Common Competencies";
-    public static final String MOD_3 = "Core Competencies";
+    public static final String MODULE_ID_1 = "1";
+    public static final String MODULE_ID_2 = "2";
+    public static final String MODULE_ID_3 = "3";
 
     public void moduleCode(){
         String module = "";

@@ -57,25 +57,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Viewholder
 
         holder.score.setText("Score: " +myScoresServerList.get(position).getScore());
         holder.num_of_items.setText("/" +myScoresServerList.get(position).getNum_of_items());
-
-        String thisChap = myScoresServerList.get(position).getChapter();
-        String module = "";
-        switch(thisChap){
-            case "1":
-                module = Constant._1;
-                break;
-            case "2":
-                module = Constant._2;
-                break;
-            case "3":
-                module = Constant._3;
-                break;
-        }
-
-        holder.chapter.setText(module);
+        holder.chapter.setText(myScoresServerList.get(position).getChapter());
         holder.num_of_attempt.setText("Total attempts: " +myScoresServerList.get(position).getNum_of_attempt());
         holder.duration.setText("Duration: " + myScoresServerList.get(position).getDuration());
         holder.date_taken.setText("Date taken: " + myScoresServerList.get(position).getDate_taken());
+
     }
 
     @Override

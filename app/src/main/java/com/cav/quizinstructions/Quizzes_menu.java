@@ -51,6 +51,9 @@ import java.util.Map;
 
 import static com.cav.quizinstructions.BackgroundTask.EMAIL;
 import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
+import static com.cav.quizinstructions.Constant.MODULE_ID_1;
+import static com.cav.quizinstructions.Constant.MODULE_ID_2;
+import static com.cav.quizinstructions.Constant.MODULE_ID_3;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 import static com.cav.quizinstructions.Dashboard.dashboard_email;
 import static com.cav.quizinstructions.Dashboard.emptyUserIdFromDb;
@@ -60,7 +63,6 @@ import static com.cav.quizinstructions.Dashboard.user_id;
 public class Quizzes_menu extends AppCompatActivity {
     private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
 
-    private final int REQUEST_CODE = 101;
     public static CardView cardViewMod1;
     public static CardView cardViewMod2;
     public static CardView cardViewMod3;
@@ -76,7 +78,7 @@ public class Quizzes_menu extends AppCompatActivity {
     public static String dash_email;
     @SuppressLint("StaticFieldLeak")
     public static TextView myEmailQMenu, userIdQMenu, uidDb_txt, updatedChapter;
-    public static int  latestUnlocked, latestCompleted;
+    public static int latestUnlocked, latestCompleted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +115,6 @@ public class Quizzes_menu extends AppCompatActivity {
         uidDb_txt.setText(String.valueOf(uidDb));
         userIdQMenu.setText(String.valueOf(uid));
 
-
         Lessons_Menu.isFromLessonsMenu = false;
         isFromQuizMenu = true;
 
@@ -128,8 +129,8 @@ public class Quizzes_menu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isFromQuizMenu = true;
-                tChapter.setText(Constant._1);
-                Dashboard.recentModule.setText(Constant._1);
+                tChapter.setText(MODULE_ID_1);
+                Dashboard.recentModule.setText(MODULE_ID_1);
                 String chapTest1 = tChapter.getText().toString();
                 SharedPreferences sp1 = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor1 = sp1.edit();
@@ -143,8 +144,8 @@ public class Quizzes_menu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isFromQuizMenu = true;
-                tChapter.setText(Constant._2);
-                Dashboard.recentModule.setText(Constant._2);
+                tChapter.setText(MODULE_ID_2);
+                Dashboard.recentModule.setText(MODULE_ID_2);
                 String chapTest2 = tChapter.getText().toString();
                 SharedPreferences sp2 = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor2 = sp2.edit();
@@ -158,8 +159,8 @@ public class Quizzes_menu extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isFromQuizMenu = true;
-                tChapter.setText(Constant._3);
-                Dashboard.recentModule.setText(Constant._3);
+                tChapter.setText(MODULE_ID_3);
+                Dashboard.recentModule.setText(MODULE_ID_3);
                 String chapTest3 = tChapter.getText().toString();
                 SharedPreferences sp3 = getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor3 = sp3.edit();
@@ -200,7 +201,6 @@ public class Quizzes_menu extends AppCompatActivity {
         finish();
     }
 
-
     private void lockAndUnlockModules() {
 
         // locked 0, unlocked 1
@@ -214,41 +214,41 @@ public class Quizzes_menu extends AppCompatActivity {
         latestCompleted = bundle.getInt("myLatestIsCompleted");
         String myLatestChapter = bundle.getString("myLatestChapter");
 
-        //lock all completed quizzes read from database
-        switch (myLatestChapter){
-            case Constant._1:
-                if (sameUser && myLatestChapter.equals(Constant._1)
-                        &&  latestUnlocked == 0 && latestCompleted == 1){
+        //lock all completed quizzes read from database, all converted to Constant - for updating to ids
+        switch (myLatestChapter) {
+            case MODULE_ID_1:
+                if (sameUser && myLatestChapter.equals(MODULE_ID_1)
+                        && latestUnlocked == 0 && latestCompleted == 1) {
                     cardViewMod2.setClickable(true);
                     cardViewMod1.setClickable(false);
                     cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
                     cardViewMod3.setClickable(false);
                     cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
-                }else{
+                } else {
                     cardViewMod2.setClickable(false);
                     cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
-//                    cardViewMod3.setClickable(false);
-//                    cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+                    cardViewMod3.setClickable(false);
+                    cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
                 }
                 break;
-            case Constant._2:
-                if (sameUser && myLatestChapter.equals(Constant._2)
-                        &&  latestUnlocked == 0 && latestCompleted == 1) {
+            case MODULE_ID_2:
+                if (sameUser && myLatestChapter.equals(MODULE_ID_2)
+                        && latestUnlocked == 0 && latestCompleted == 1) {
                     cardViewMod3.setClickable(true);
                     cardViewMod1.setClickable(false);
                     cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
                     cardViewMod2.setClickable(false);
                     cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
-                }else {
+                } else {
                     cardViewMod1.setClickable(false);
                     cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
                     cardViewMod3.setClickable(false);
                     cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
                 }
                 break;
-            case Constant._3:
-                if (sameUser && myLatestChapter.equals(Constant._3)
-                        &&  latestUnlocked == 0 && latestCompleted == 1) {
+            case MODULE_ID_3:
+                if (sameUser && myLatestChapter.equals(MODULE_ID_3)
+                        && latestUnlocked == 0 && latestCompleted == 1) {
                     cardViewMod3.setClickable(false);
                     cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
                     cardViewMod1.setClickable(false);
@@ -259,16 +259,17 @@ public class Quizzes_menu extends AppCompatActivity {
                 break;
         }
 
-        if (sameUser && latestUnlocked == 1 && latestCompleted == 0){
+        if (myLatestChapter.equals("")) {
+            cardViewMod1.setClickable(true);
+            cardViewMod2.setClickable(false);
+            cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+            cardViewMod3.setClickable(false);
+            cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+        }
+
+        if (sameUser && latestUnlocked == 1 && latestCompleted == 0) {
             cardViewMod1.setClickable(true);
         }
-    }
-
-    //check for internet connection
-    public boolean checkNetworkConnection() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
     }
 
     //load all data attempts and unlocked modules from web
@@ -318,19 +319,7 @@ public class Quizzes_menu extends AppCompatActivity {
                                 String email = menuitemArray.getJSONObject(i).getString("email");
                                 String score = menuitemArray.getJSONObject(i).getString("score");
                                 String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
-                                String mLChap =  menuitemArray.getJSONObject(i).getString("chapter");
-                                myLatestChapter = "";
-                                switch (mLChap){
-                                    case "1":
-                                        myLatestChapter = Constant._1;
-                                        break;
-                                    case "2":
-                                        myLatestChapter = Constant._2;
-                                        break;
-                                    case "3":
-                                        myLatestChapter = Constant._3;
-                                        break;
-                                }
+                                myLatestChapter = menuitemArray.getJSONObject(i).getString("chapter");
                                 myLatestAttempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
                                 String duration = menuitemArray.getJSONObject(i).getString("duration");
                                 String date_taken = menuitemArray.getJSONObject(i).getString("date_taken");
@@ -361,19 +350,7 @@ public class Quizzes_menu extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                String curChap = Dashboard.recentModule.getText().toString();
-                String fetchedChap = "";
-                    switch(curChap){
-                        case Constant._1:
-                            fetchedChap = "1";
-                            break;
-                        case Constant._2:
-                            fetchedChap = "2";
-                            break;
-                        case Constant._3:
-                            fetchedChap = "3";
-                            break;
-                    }
+                String fetchedChap = Dashboard.recentModule.getText().toString();
                 params.put("email", dashboard_email);
                 params.put("chapter", fetchedChap);
                 Log.d("email", dashboard_email + "");

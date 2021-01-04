@@ -46,6 +46,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.cav.quizinstructions.Constant.MODULE_ID_1;
+import static com.cav.quizinstructions.Constant.MODULE_ID_2;
+import static com.cav.quizinstructions.Constant.MODULE_ID_3;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 import static com.cav.quizinstructions.Dashboard.thisUserId;
 
@@ -141,34 +144,34 @@ public class QuizResults extends AppCompatActivity {
         String unlockNextModule = chapter_name.getText().toString();
 
         switch (unlockNextModule) {
-            case Constant._1:
+            case MODULE_ID_1:
                 //module 1 is active and need to unlock mod2
-                Dashboard.recentModule.setText(Constant._2);
+                Dashboard.recentModule.setText(MODULE_ID_2);
                 UNLOCK_MOD2 = txt_score_result;
                 if (UNLOCK_MOD2 > (items_test * 0.8)) {
-                    updateUnlockedModuleToServer(thisUserId, Constant._1, 0, 1);
+                    updateUnlockedModuleToServer(thisUserId, MODULE_ID_1, 0, 1);
                 } else if (UNLOCK_MOD2 < (items_test * 0.8)) {
-                    updateUnlockedModuleToServer(thisUserId, Constant._1, 1, 0);
+                    updateUnlockedModuleToServer(thisUserId, MODULE_ID_1, 1, 0);
                 }
                 break;
-            case Constant._2:
+            case MODULE_ID_2:
                 // module 2 is active and need to unlock mod3
-                Dashboard.recentModule.setText(Constant._3);
+                Dashboard.recentModule.setText(MODULE_ID_3);
                 UNLOCK_MOD3 = txt_score_result;
                 if (UNLOCK_MOD3 > (items_test * 0.8)) {
-                    updateUnlockedModuleToServer(thisUserId, Constant._2, 0, 1);
+                    updateUnlockedModuleToServer(thisUserId, MODULE_ID_2, 0, 1);
                 } else if (UNLOCK_MOD3 <= (items_test * 0.8)) {
-                    updateUnlockedModuleToServer(thisUserId, Constant._2, 1, 0);
+                    updateUnlockedModuleToServer(thisUserId, MODULE_ID_2, 1, 0);
                 }
                 break;
-            case Constant._3:
+            case MODULE_ID_3:
                 // module 3 is active and need to lock all
-                Dashboard.recentModule.setText(Constant._3);
+                Dashboard.recentModule.setText(MODULE_ID_3);
                 UNLOCK_MOD3 = txt_score_result;
                 if (UNLOCK_MOD3 > (items_test * 0.8)) {
-                    updateUnlockedModuleToServer(thisUserId, Constant._3, 0, 1);
+                    updateUnlockedModuleToServer(thisUserId, MODULE_ID_3, 0, 1);
                 } else if (UNLOCK_MOD3 < (items_test * 0.8)) {
-                    updateUnlockedModuleToServer(thisUserId, Constant._3, 1, 0);
+                    updateUnlockedModuleToServer(thisUserId, MODULE_ID_3, 1, 0);
                 }
                 break;
         }
@@ -181,7 +184,6 @@ public class QuizResults extends AppCompatActivity {
 
     public void retake() {
         isRetake = true;
-
         Intent resultIntent = new Intent(QuizResults.this, PrepareForTest.class);
         startActivity(resultIntent);
     }

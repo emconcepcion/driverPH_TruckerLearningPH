@@ -63,7 +63,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     private DrawerLayout drawer;
     Button resumeLesson;
-    private long backPressedTime;
     public static String dashboard_email;
     public static TextView recentModule, activeModule, activeLesson;
     public static String user_id;
@@ -176,7 +175,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 startActivity(new Intent(Dashboard.this, Basic_Content.class));
                 break;
         }
-
     }
 
     public static Dashboard getmInstanceActivity() {
@@ -433,6 +431,19 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 String score = menuitemArray.getJSONObject(i).getString("score");
                                 String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
                                 String chapter = menuitemArray.getJSONObject(i).getString("chapter");
+//                                String passedChapter = "";
+//                                switch (chapter){
+//                                    case "1":
+//                                        passedChapter = Constant._1;
+//                                        break;
+//                                    case "2":
+//                                        passedChapter = Constant._2;
+//                                        break;
+//                                    case "3":
+//                                        passedChapter = Constant._3;
+//                                        break;
+//                                }
+
                                 String num_of_attempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
                                 String duration = menuitemArray.getJSONObject(i).getString("duration");
                                 String date_taken = menuitemArray.getJSONObject(i).getString("date_taken");
@@ -542,8 +553,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         .getString("choiceD"));
                 Log.d("correctAnswer: " + i, menuitemArray.getJSONObject(i)
                         .getString("correctAnswer"));
-                Log.d("moduleName: " + i, menuitemArray.getJSONObject(i)
-                        .getString("moduleName"));
+                Log.d("module" + i, menuitemArray.getJSONObject(i)
+                        .getString("module"));
 
                 String question = menuitemArray.getJSONObject(i).getString("questionText");
                 String option1 = menuitemArray.getJSONObject(i).getString("choiceA");
@@ -551,7 +562,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 String option3 = menuitemArray.getJSONObject(i).getString("choiceC");
                 String option4 = menuitemArray.getJSONObject(i).getString("choiceD");
                 String answer_nr = menuitemArray.getJSONObject(i).getString("correctAnswer");
-                String chapter = menuitemArray.getJSONObject(i).getString("moduleName");
+                String chapter = menuitemArray.getJSONObject(i).getString("module");
                 Question q1 = new Question(question, option1, option2, option3, option4, Integer.parseInt(answer_nr), chapter);
                 db.addQuestion(q1);
             }
@@ -611,7 +622,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                 String email = menuitemArray.getJSONObject(i).getString("email");
                                 String score = menuitemArray.getJSONObject(i).getString("score");
                                 String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
-                                myLatestChapter = menuitemArray.getJSONObject(i).getString("chapter");
+                                myLatestChapter= menuitemArray.getJSONObject(i).getString("chapter");
                                 myLatestAttempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
                                 String duration = menuitemArray.getJSONObject(i).getString("duration");
                                 String date_taken = menuitemArray.getJSONObject(i).getString("date_taken");

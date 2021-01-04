@@ -66,25 +66,6 @@ public class QuizDbHelper extends SQLiteOpenHelper {
                 SQLiteDatabase.CONFLICT_REPLACE);
     }
 
-//    public void saveFromMysqlToLocalDatabase(int user_id, String email, int score, int num_items, String chap,
-//                                    int num_of_attempt, String duration, String date_taken,
-//                                    int isLocked, int isCompleted,
-//                                    SQLiteDatabase database) {
-//        ContentValues contentValues = new ContentValues();
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL, user_id);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL, email);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL, score);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL, num_items);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL, chap);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL, num_of_attempt);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_DURATION_MYSQL, duration);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL, date_taken);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL, isLocked);
-//        contentValues.put(ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL, isCompleted);
-//        database.insertWithOnConflict(ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL, null, contentValues,
-//                SQLiteDatabase.CONFLICT_REPLACE);
-//    }
-
 
     public Cursor readFromLocalDatabase(SQLiteDatabase database) {
 
@@ -100,22 +81,6 @@ public class QuizDbHelper extends SQLiteOpenHelper {
                 null, null, null));
     }
 
-    public Cursor readFromServer(SQLiteDatabase database) {
-
-        //projection are the column names
-        String[] projection = {ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL, ScoresMySQLTable.COLUMN_NAME_EMAIL_MYSQL,
-                ScoresMySQLTable.COLUMN_NAME_SCORE_MYSQL, ScoresMySQLTable.COLUMN_NAME_NUM_ITEMS_MYSQL,
-                ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL, ScoresMySQLTable.COLUMN_NAME_NUM_ATTEMPT_MYSQL,
-                ScoresMySQLTable.COLUMN_NAME_DURATION_MYSQL,
-                ScoresMySQLTable.COLUMN_NAME_DATE_TAKEN_MYSQL, ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL,
-                ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL};
-        String selection = ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL + " LIKE ?";
-        String[] selection_args = {String.valueOf(Dashboard.thisUserId)};
-        return (database.query(ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL, projection, selection, selection_args,
-                null, null, null));
-    }
-
-
     public void updateLocalDatabase(int user_id, String email, int score, int num_items, String chap,
                                     int num_of_attempt, String date_taken, int sync_status,
                                     SQLiteDatabase database) {
@@ -127,33 +92,6 @@ public class QuizDbHelper extends SQLiteOpenHelper {
         String[] selection_args = {String.valueOf(score)};
         database.update(ScoresTable.TABLE_NAME_SCORES, contentValues, selection, selection_args);
     }
-
-    public void updateMySQLLocalDatabase(int user_id, String chap, int unlockThis, int passed,
-                                    SQLiteDatabase database) {
-        //update syncstatus based on the score
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL, unlockThis);
-        contentValues.put(ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL, passed);
-        //update table based on the score
-        String selection = ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL + " LIKE ? AND " +
-                            ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL + " LIKE ?";
-        String[] selection_args = {Dashboard.user_id};
-        database.update(ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL, contentValues, selection, selection_args);
-    }
-
-    public void updateMyUnlockedModule(int user_id, String chap, int unlockThis, int passed,
-                                         SQLiteDatabase database) {
-        //update syncstatus based on the score
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(ScoresMySQLTable.COLUMN_NAME_IS_LOCKED_MYSQL, unlockThis);
-        contentValues.put(ScoresMySQLTable.COLUMN_NAME_IS_COMPLETED_MYSQL, passed);
-        //update table based on the score
-        String selection = ScoresMySQLTable.COLUMN_NAME_CHAPTER_MYSQL + " LIKE ? AND " +
-                ScoresMySQLTable.COLUMN_NAME_USER_ID_MYSQL + " LIKE ?";
-        String[] selection_args = {Dashboard.user_id};
-        database.update(ScoresMySQLTable.TABLE_NAME_SCORES_MYSQL, contentValues, selection, selection_args);
-    }
-
 
     public List<Question> getAllQuestions() {
         List<Question> questionList = new ArrayList<>();

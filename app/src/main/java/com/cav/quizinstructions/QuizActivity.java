@@ -87,6 +87,7 @@ public class QuizActivity extends AppCompatActivity {
     Button btn_next;
     ImageButton btn_sound;
     public static String duration;
+
     public int num_of_attempt;
 
     ProgressBar progressBar;
@@ -97,7 +98,9 @@ public class QuizActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private long timeLeftInMillis;
 
+
     private List<Question> questionList;
+    private List<Score> scoreList;
     private int questionCounter;
     private int questionCountTotal;
     private Question currentQuestion;
@@ -253,6 +256,9 @@ public class QuizActivity extends AppCompatActivity {
                 String timeRemaining = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
                 textViewCountdown.setText(String.valueOf(timeRemaining));
 
+
+//                long remTime = (millisUntilFinished / 1000);
+
                 if (timeLeftInMillis < 10000) {
                     textViewCountdown.setTextColor(Color.parseColor("#006400"));
                 } else {
@@ -391,6 +397,7 @@ public class QuizActivity extends AppCompatActivity {
 
         String timeSet = "00:20";
         String timeLeft = textViewCountdown.getText().toString();
+
 
         int myUserId = Integer.parseInt(textViewUserIdQAct.getText().toString());
         int newAttempt = Integer.parseInt(attempt.getText().toString());

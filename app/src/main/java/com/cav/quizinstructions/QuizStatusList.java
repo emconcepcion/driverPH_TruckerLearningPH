@@ -118,7 +118,6 @@ public class QuizStatusList extends AppCompatActivity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-               // if (Chapter.getText().toString().contains("Unfinished Attempt:"))
                 if (QuizActivity.endedAttempt){ //|| (QuizActivity.endedAttempt)
                     submitScore();
                     btn_view_result.setVisibility(View.GONE);
@@ -164,23 +163,23 @@ public class QuizStatusList extends AppCompatActivity {
         int latestUnlocked = bundle.getInt("myLatestUnlocked");
         int latestCompleted = bundle.getInt("myLatestCompleted");
 
-        String moduleCode = "";
-        switch(chap_result){
-            case Constant._1:
-                moduleCode = "1";
-                break;
-            case Constant._2:
-                moduleCode = "2";
-                break;
-            case Constant._3:
-                moduleCode = "3";
-                break;
-        }
+//        String moduleCode = "";
+//        switch(chap_result){
+//            case Constant._1:
+//                moduleCode = "1";
+//                break;
+//            case Constant._2:
+//                moduleCode = "2";
+//                break;
+//            case Constant._3:
+//                moduleCode = "3";
+//                break;
+//        }
 
         Score.setText("" + txt_score_result);
         Num_of_items.setText("" + txt_item_result);
-//        Chapter.setText(chap_result);
-        Chapter.setText(moduleCode);
+        Chapter.setText(chap_result);
+//        Chapter.setText(moduleCode);
         Num_Of_Attempt.setText("" + txt_attempt_result);
         Duration.setText(testDuration);
         Date_Taken.setText(currentDate);
@@ -248,20 +247,20 @@ public class QuizStatusList extends AppCompatActivity {
             int isCompleted = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED));
             int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
 
-            String module = "";
-            switch(chap){
-                case "1":
-                    module = Constant._1;
-                    break;
-                case "2":
-                    module = Constant._2;
-                    break;
-                case "3":
-                    module = Constant._3;
-                    break;
-            }
+//            String module = "";
+//            switch(chap){
+//                case "1":
+//                    module = Constant._1;
+//                    break;
+//                case "2":
+//                    module = Constant._2;
+//                    break;
+//                case "3":
+//                    module = Constant._3;
+//                    break;
+//            }
 
-            arrayList.add(new Score(userId,email, score, num_items, module, num_attempt, duration,
+            arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, duration,
                     date_Taken, isLocked, isCompleted, sync_status));
         }
 

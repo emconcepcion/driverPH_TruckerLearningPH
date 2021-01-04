@@ -18,15 +18,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
         android:layout_below="@id/toolbar"
-        android:textColor="@color/dark_blue"
-        android:text="Details of chapter tests with passing score:"
+        android:text="Showing the summarized result for each chapter test:"
         android:gravity="center_horizontal" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/summarized_scoreList"
-        android:layout_above="@id/tv_email_summary">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -40,8 +33,6 @@
         android:layout_marginLeft="6dp"
         android:layout_marginRight="6dp"
         android:layout_marginTop="5dp" />
-
-    </LinearLayout>
 
     <TextView
         android:id="@+id/tv_user_id_summary"
