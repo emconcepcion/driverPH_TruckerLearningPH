@@ -44,8 +44,8 @@
 
     <WebView
         android:id="@+id/content"
-        android:layout_width="352dp"
-        android:layout_height="504dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/view2" />
 
@@ -70,5 +70,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginLeft="28dp" />
+
+    <TextView
+        android:id="@+id/emailBContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="17dp"
+        android:layout_marginBottom="29dp"
+        android:text="emailBContent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_to_voiceR" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -600,14 +600,14 @@ public class QuizActivity extends AppCompatActivity {
         int myItems = Integer.parseInt(textview_show_items.getText().toString());
 
 
-        if (myScore > (myItems * 0.8)) {
+        if (myScore >= (myItems * 0.8)) {
             pass_fail.setText("Like a Boss!");
             result_icon.setImageResource(R.drawable.ic_cheers);
             unlocked = true;
             testResultUnlock = 0;
             testResultCompleted = 1;
 
-        } else if (myScore < (myItems * 0.8)) {
+        } else if (myScore <= (myItems * 0.8)) {
             pass_fail.setText("Aww, snap!");
             result_icon.setImageResource(R.drawable.ic_sad);
             unlocked = false;
@@ -636,7 +636,5 @@ public class QuizActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-
     }
 }

@@ -17,6 +17,7 @@
         android:textSize="20sp"
         android:textColor="@android:color/black"
         android:textStyle="bold"
+        android:visibility="invisible"
         />
 
     <View

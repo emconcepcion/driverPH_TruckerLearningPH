@@ -68,6 +68,7 @@ public class SummarizedScoresServer extends AppCompatActivity {
                     Toast.LENGTH_LONG, R.style.toastStyle).show();
         }
 
+
         SharedPreferences sharedPreferences = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
         int uid = sharedPreferences.getInt("user_id", 0);
         myUSerId.setText(String.valueOf(uid));
@@ -92,13 +93,12 @@ public class SummarizedScoresServer extends AppCompatActivity {
 
                             for (int i = 0; i < array.length(); i++) {
                                 JSONObject o = array.getJSONObject(i);
-                                MyScoresServer scoresServer = new MyScoresServer(o.getInt("user_id"),
-                                        o.getString("email"), o.getInt("score"),
-                                        o.getInt("num_of_items"), o.getString("chapter"),
-                                        o.getInt("num_of_attempt"), o.getString("duration"),
-                                        o.getString("date_taken"), o.getInt("isUnlocked"),
-                                        o.getInt("isCompleted"));
-
+                                MyScoresServer scoresServer = new MyScoresServer(o.getInt("userId"),
+                                        o.getString("email"), o.getInt("numberOfCorrectAnswers"),
+                                        o.getInt("numberOfQuestions"), o.getString("module"),
+                                        o.getInt("retryCount"), o.getString("minutesToFinish"),
+                                        o.getString("createdOn"), o.getInt("isUnlocked"),
+                                        o.getInt("passed"));
                                 myScoresServerList.add(scoresServer);
                             }
                             adapter = new CustomAdapter(myScoresServerList, getApplicationContext());

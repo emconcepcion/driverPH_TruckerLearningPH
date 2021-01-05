@@ -3,20 +3,25 @@ package com.cav.quizinstructions;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import static com.cav.quizinstructions.Lessons_Menu.myEmailLesson;
+
 public class Lessons_Basic_Content extends AppCompatActivity {
     WebView content;
-    String module, course;
+    String module, course, EmailLesson;
+    public static TextView email_lesson;
     private String retrieveUrl="https://phportal.net/driverph/retrieve_content.php";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +30,11 @@ public class Lessons_Basic_Content extends AppCompatActivity {
 
         //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
         module = getIntent().getStringExtra("module");
         course = getIntent().getStringExtra("course");
+        email_lesson = findViewById(R.id.emailBContent);
+        email_lesson.setText(Dashboard.dashboard_email);
 
         retrievedatas();
         //Toast.makeText(Lessons_Basic_Content.this, module + " " + course, Toast.LENGTH_SHORT).show();

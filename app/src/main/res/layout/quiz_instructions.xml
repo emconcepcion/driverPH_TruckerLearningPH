@@ -8,16 +8,29 @@
     tools:context=".QuizInstructions">
 
     <TextView
-        android:id="@+id/textview_chapter_title"
+        android:id="@+id/textview_moduleTest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="@string/course_title"
+        android:text="Module Test"
         android:layout_marginTop="30dp"
         android:textSize="20sp"
         android:textColor="@android:color/black"
         android:textStyle="bold"
         />
+
+    <TextView
+        android:id="@+id/textview_chapter_title"
+        android:layout_below="@id/textview_moduleTest"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/course_title"
+        android:textSize="20sp"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        />
+
 
     <View
         android:id="@+id/divider_up"
@@ -103,7 +116,7 @@
         android:layout_height="wrap_content"
         android:text="Back"
         android:layout_alignParentBottom="true"
-        android:textColor="#4C4C4C"
+        android:textColor="@android:color/white"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:background="@drawable/yellow_button"

@@ -21,7 +21,7 @@ public class Lesson extends AppCompatActivity {
     ActivityLessonBinding binding;
     String[] descriptionData = {"One", "Two", "Three", "Four", "Five", "Six"};
     int arrSize;
-    TextView arraySize;
+    public static TextView arraySize, progress_Module;
     int current_state = 0;
     Bundle data = new Bundle();
 
@@ -38,6 +38,8 @@ public class Lesson extends AppCompatActivity {
         arraySize = findViewById(R.id.arr_size);
         arrSize = descriptionData.length;
         arraySize.setText(String.valueOf(arrSize));
+        progress_Module = findViewById(R.id.progress_Module);
+        progress_Module.setText(Lesson.progress_Module.getText().toString());
 
         binding.spb.setLabels(descriptionData)
                 .setBarColorIndicator(Color.BLACK)

@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -128,6 +130,7 @@ public class QuizStatusList extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             startActivity(new Intent(QuizStatusList.this, Dashboard.class));
+
                         }
                     });
                 }else{
@@ -147,8 +150,8 @@ public class QuizStatusList extends AppCompatActivity {
                 goToQuizResults();
             }
         });
-
     }
+
 
     public void submitScore() {
 
@@ -163,23 +166,9 @@ public class QuizStatusList extends AppCompatActivity {
         int latestUnlocked = bundle.getInt("myLatestUnlocked");
         int latestCompleted = bundle.getInt("myLatestCompleted");
 
-//        String moduleCode = "";
-//        switch(chap_result){
-//            case Constant._1:
-//                moduleCode = "1";
-//                break;
-//            case Constant._2:
-//                moduleCode = "2";
-//                break;
-//            case Constant._3:
-//                moduleCode = "3";
-//                break;
-//        }
-
         Score.setText("" + txt_score_result);
         Num_of_items.setText("" + txt_item_result);
         Chapter.setText(chap_result);
-//        Chapter.setText(moduleCode);
         Num_Of_Attempt.setText("" + txt_attempt_result);
         Duration.setText(testDuration);
         Date_Taken.setText(currentDate);
@@ -246,19 +235,6 @@ public class QuizStatusList extends AppCompatActivity {
             int isLocked = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_LOCKED));
             int isCompleted = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED));
             int sync_status = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.SYNC_STATUS));
-
-//            String module = "";
-//            switch(chap){
-//                case "1":
-//                    module = Constant._1;
-//                    break;
-//                case "2":
-//                    module = Constant._2;
-//                    break;
-//                case "3":
-//                    module = Constant._3;
-//                    break;
-//            }
 
             arrayList.add(new Score(userId,email, score, num_items, chap, num_attempt, duration,
                     date_Taken, isLocked, isCompleted, sync_status));

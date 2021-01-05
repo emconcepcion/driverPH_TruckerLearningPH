@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
+
 
     <application
         android:allowBackup="true"
@@ -29,7 +31,8 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".QuizStatusList"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+        </activity>
         <activity
             android:name=".Quizzes_menu"
             android:screenOrientation="portrait" />

@@ -5,12 +5,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
+
+import static com.cav.quizinstructions.Constant._1;
+import static com.cav.quizinstructions.Constant._2;
+import static com.cav.quizinstructions.Constant._3;
 
 public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Viewholder> {
 
@@ -57,7 +62,20 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.Viewholder
 
         holder.score.setText("Score: " +myScoresServerList.get(position).getScore());
         holder.num_of_items.setText("/" +myScoresServerList.get(position).getNum_of_items());
-        holder.chapter.setText(myScoresServerList.get(position).getChapter());
+        String passedChap = myScoresServerList.get(position).getChapter();
+        String chap = "";
+        switch (passedChap){
+                case "1":
+                    chap = _1;
+                    break;
+                case "2":
+                    chap = _2;
+                    break;
+                case "3":
+                    chap = _3;
+                    break;
+            }
+        holder.chapter.setText(chap);
         holder.num_of_attempt.setText("Total attempts: " +myScoresServerList.get(position).getNum_of_attempt());
         holder.duration.setText("Duration: " + myScoresServerList.get(position).getDuration());
         holder.date_taken.setText("Date taken: " + myScoresServerList.get(position).getDate_taken());

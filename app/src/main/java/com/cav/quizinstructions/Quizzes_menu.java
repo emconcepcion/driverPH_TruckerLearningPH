@@ -54,6 +54,9 @@ import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
 import static com.cav.quizinstructions.Constant.MODULE_ID_1;
 import static com.cav.quizinstructions.Constant.MODULE_ID_2;
 import static com.cav.quizinstructions.Constant.MODULE_ID_3;
+import static com.cav.quizinstructions.Constant._1;
+import static com.cav.quizinstructions.Constant._2;
+import static com.cav.quizinstructions.Constant._3;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 import static com.cav.quizinstructions.Dashboard.dashboard_email;
 import static com.cav.quizinstructions.Dashboard.emptyUserIdFromDb;
@@ -79,6 +82,7 @@ public class Quizzes_menu extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     public static TextView myEmailQMenu, userIdQMenu, uidDb_txt, updatedChapter;
     public static int latestUnlocked, latestCompleted;
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,12 +110,14 @@ public class Quizzes_menu extends AppCompatActivity {
         mylatestModLocked.setText(Dashboard.myLatestIsUnlocked);
         mylatestModCompleted.setText(Dashboard.myLatestIsCompleted);
 
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        dash_email = sharedPreferences.getString("email", "");
         Intent i = getIntent();
         Bundle b = i.getExtras();
-        dash_email = b.getString("dash_email");
+//        dashboard_email = b.getString("email");
         int uidDb = b.getInt("user_idFromServer");
         int uid = b.getInt("user_idFromDashboard");
-        myEmailQMenu.setText(dashboard_email);
+        myEmailQMenu.setText(dash_email);
         uidDb_txt.setText(String.valueOf(uidDb));
         userIdQMenu.setText(String.valueOf(uid));
 
@@ -270,6 +276,14 @@ public class Quizzes_menu extends AppCompatActivity {
         if (sameUser && latestUnlocked == 1 && latestCompleted == 0) {
             cardViewMod1.setClickable(true);
         }
+
+        if (sameUser && myLatestChapter.equals("")) {
+            cardViewMod1.setClickable(true);
+            cardViewMod2.setClickable(false);
+            cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+            cardViewMod3.setClickable(false);
+            cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+        }
     }
 
     //load all data attempts and unlocked modules from web
@@ -351,9 +365,9 @@ public class Quizzes_menu extends AppCompatActivity {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 String fetchedChap = Dashboard.recentModule.getText().toString();
-                params.put("email", dashboard_email);
+                params.put("email", dash_email);
                 params.put("chapter", fetchedChap);
-                Log.d("email", dashboard_email + "");
+                Log.d("email", dash_email + "");
                 Log.d("yes", "successful...");
                 return params;
             }

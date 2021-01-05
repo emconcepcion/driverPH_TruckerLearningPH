@@ -55,6 +55,9 @@ import java.util.Map;
 
 import static com.cav.quizinstructions.BackgroundTask.EMAIL;
 import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
+import static com.cav.quizinstructions.Constant._1;
+import static com.cav.quizinstructions.Constant._2;
+import static com.cav.quizinstructions.Constant._3;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 import static com.cav.quizinstructions.Dashboard.dashboard_email;
 import static com.cav.quizinstructions.Dashboard.thisUserId;
@@ -71,6 +74,7 @@ public class PrepareForTest extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prepare_for_test);
+
         Dashboard.getmInstanceActivity().loadDataAllAttemptsAndLevels();
 
         buttonStartQuiz = findViewById(R.id.btn_start_myTest);
@@ -119,7 +123,7 @@ public class PrepareForTest extends AppCompatActivity {
         } else {
             AlertDialog alertDialog = new AlertDialog.Builder(PrepareForTest.this).create();
             alertDialog.setTitle("Log in to Continue");
-            alertDialog.setMessage("Please connect to the internet and log in before clicking \"Start the quiz\"");
+            alertDialog.setMessage("Please connect to the internet and log in before clicking \"Retake the Test.\"");
             alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {

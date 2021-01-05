@@ -57,6 +57,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import static com.cav.quizinstructions.BackgroundTask.EMAIL;
 import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
 import static com.cav.quizinstructions.Basic_Content.currLesson;
+import static com.cav.quizinstructions.Basic_Content.currentLesson;
+import static com.cav.quizinstructions.Basic_Content.module;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static WeakReference<Dashboard> weakActivity;
@@ -97,11 +99,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         weakActivity = new WeakReference<>(Dashboard.this);
 
         dashboard_email = getIntent().getStringExtra("email");
-//        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-//        SharedPreferences.Editor editor = sharedPreferences.edit();
-//        editor.putString("email", dashboard_email);
-//        editor.apply();
-//        dashboard_email = sharedPreferences.getString("email", "");
+        sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("email", dashboard_email);
+        editor.apply();
+        dashboard_email = sharedPreferences.getString("email", "");
         welcome_fname = findViewById(R.id.textView_userID);
         dahsboard_avatar = findViewById(R.id.dashboard_avatar);
         isModuleLocked = findViewById(R.id.isModLocked);
@@ -114,7 +116,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         myEmailForAttempts.setText(dashboard_email);
 
         recentModule.setText(myLatestChapter);
-
+        activeModule.setText(module);
+        activeLesson.setText(currentLesson);
 
         resumeLesson.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,7 +171,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     private void resumeModule() {
         String module= activeModule.getText().toString();
         switch (module){
-            case Constant._1:
+            case Constant.MODULE_ID_1:
                 startActivity(new Intent(Dashboard.this, Lessons_Basic_Content.class));
                 break;
             case Constant._2:
@@ -187,7 +190,29 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         cardViewLessons.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(Dashboard.this, Lessons_Menu.class));
+                sp = getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = sp.edit();
+                editor1.putString("email", dashboard_email);
+                editor1.putString("username", nameVR);
+                editor1.apply();
+
+                thisUserId = Integer.parseInt(user_id);
+                SharedPreferences sp = getApplicationContext().getSharedPreferences(Uid_PREFS, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sp.edit();
+                editor.putInt("user_id", thisUserId);
+                editor.apply();
+                Toast.makeText(Dashboard.this, "Dashboard User id: " + thisUserId, Toast.LENGTH_SHORT).show();
+
+                //  uidFromDb = Integer.parseInt(myLatestUserId);
+                Intent intent = new Intent(Dashboard.this, Lessons_Menu.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("user_idFromServer", Integer.parseInt(myLatestUserId));
+                bundle.putInt("user_idFromDashboard", thisUserId);
+                bundle.putInt("myLatestIsUnlocked", Integer.parseInt(myLatestIsUnlocked));
+                bundle.putInt("myLatestIsCompleted", Integer.parseInt(myLatestIsCompleted));
+                bundle.putString("myLatestChapter", myLatestChapter);
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
 
@@ -345,7 +370,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 startActivity(new Intent(Dashboard.this, Dashboard.class));
                 break;
             case R.id.nav_my_progress:
-                startActivity(new Intent(Dashboard.this, MyProgress.class));
+                startActivity(new Intent(Dashboard.this, Lesson.class));
                 break;
             case R.id.nav_advisory:
                 startActivity(new Intent(Dashboard.this, Advisory.class));
@@ -424,7 +449,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                                         .getString("isUnlocked"));
                                 Log.d("isCompleted: " + i, menuitemArray.getJSONObject(i)
                                         .getString("isCompleted"));
-
 
                                 user_idPassedTests = menuitemArray.getJSONObject(i).getString("user_id");
                                 String email = menuitemArray.getJSONObject(i).getString("email");

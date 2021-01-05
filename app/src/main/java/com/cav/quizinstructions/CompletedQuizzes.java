@@ -31,6 +31,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static com.cav.quizinstructions.Dashboard.dashboard_email;
+
 public class CompletedQuizzes extends AppCompatActivity {
 
     RecyclerView recyclerView;
@@ -67,7 +69,11 @@ public class CompletedQuizzes extends AppCompatActivity {
         summary_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(CompletedQuizzes.this, SummarizedScoresServer.class));
+                Intent intent = new Intent(CompletedQuizzes.this, SummarizedScoresServer.class);
+                Bundle extras = new Bundle();
+                extras.putString("email", dashboard_email);
+                intent.putExtras(extras);
+                startActivity(intent);
             }
         });
     }

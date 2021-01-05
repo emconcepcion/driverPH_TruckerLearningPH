@@ -27,6 +27,8 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+
     }
 
     aaptOptions {
@@ -64,19 +66,12 @@ dependencies {
     // For control over item selection of both touch and mouse driven selection
     implementation "androidx.recyclerview:recyclerview-selection:1.1.0-rc03"
     implementation 'com.android.volley:volley:1.1.1'
-    implementation 'com.google.firebase:firebase-core:18.0.0'
-    implementation 'com.google.firebase:firebase-messaging:21.0.1'
-//    implementation 'com.loopj.android:android-async-http:1.4.9'
-//    implementation 'cz.msebera.android:httpclient:4.3.6'
 
     // Circular ImageView https://github.com/hdodenhof/CircleImageView
     implementation 'de.hdodenhof:circleimageview:3.0.1'
 
     // MDC-101 Android: Material Components (MDC) Basics (Java) https://codelabs.developers.google.com/codelabs/mdc-101-java#1
     api 'com.google.android.material:material:1.1.0-alpha06'
-
-    implementation platform('com.google.firebase:firebase-bom:26.1.1')
-    implementation 'com.google.firebase:firebase-analytics'
 
     implementation 'com.google.code.gson:gson:2.8.2'
 

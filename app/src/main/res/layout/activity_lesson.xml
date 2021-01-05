@@ -9,6 +9,10 @@
     <include layout="@layout/toolbar"
         android:id="@+id/toolbar"/>
 
+    <include layout="@layout/summary_list_view"
+        android:id="@+id/passedTestView"
+        android:visibility="invisible"/>
+
     <LinearLayout
         android:layout_below="@id/toolbar"
         android:layout_width="match_parent"
@@ -17,6 +21,7 @@
         android:layout_marginTop="20dp">
 
         <TextView
+            android:id="@+id/progress_Module"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Basic Competencies"
@@ -25,8 +30,6 @@
             android:textColor="#2B2B2B"
             android:textAlignment="center"
             android:gravity="center_horizontal" />
-
-
 
         <com.anton46.stepsview.StepsView
             android:id="@+id/spb"

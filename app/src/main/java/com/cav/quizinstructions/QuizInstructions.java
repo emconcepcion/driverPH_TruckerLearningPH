@@ -53,6 +53,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.cav.quizinstructions.Constant._1;
+import static com.cav.quizinstructions.Constant._2;
+import static com.cav.quizinstructions.Constant._3;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 import static com.cav.quizinstructions.Dashboard.dashboard_email;
 import static com.cav.quizinstructions.Lessons_Menu.isFromLessonsMenu;
@@ -65,9 +68,9 @@ public class QuizInstructions extends AppCompatActivity {
 
     // Adding HTTP Server URL to string variable.
     private final String QUESTIONS_URL = "https://phportal.net/driverph/questions.php";
-    private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
 
     private TextView textViewChapter;
+    public static TextView textViewModuleTitle;
     public TextView myEmailQuizInst, userIdQInst;
     SharedPreferences sp;
 
@@ -83,6 +86,7 @@ public class QuizInstructions extends AppCompatActivity {
         textViewChapter = findViewById(R.id.textview_chapter_title);
         myEmailQuizInst = findViewById(R.id.myEmailQuizInst);
         userIdQInst = findViewById(R.id.myUserIdQuizInst);
+        textViewModuleTitle = findViewById(R.id.textview_moduleTest);
 
         sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
@@ -101,7 +105,7 @@ public class QuizInstructions extends AppCompatActivity {
             SharedPreferences sp2 = getApplicationContext()
                     .getSharedPreferences("ChapFromQuizzes", Context.MODE_PRIVATE);
             String qChapter = sp2.getString("Qchapter", "");
-            textViewChapter.setText(qChapter);
+             textViewChapter.setText(qChapter);
         }
 
         buttonStartQuiz.setOnClickListener(new View.OnClickListener() {

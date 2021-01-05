@@ -29,11 +29,11 @@ import java.util.List;
 
 public class Basic_Content extends AppCompatActivity {
     public static WeakReference<Basic_Content> weakActivity;
-    String module;
+    public static String module;
     ListView content;
     List<String> al;
     public static String currentLesson;
-    public static TextView currLesson;
+    public static TextView currLesson, Email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +42,8 @@ public class Basic_Content extends AppCompatActivity {
 
         content = findViewById(R.id.listview);
         currLesson = findViewById(R.id.currLessonBasic);
+        Email = findViewById(R.id.emailLesson1);
+        Email.setText(Dashboard.dashboard_email);
 
         module = getIntent().getStringExtra("module");
         //Toast.makeText(Basic_Content.this, module, Toast.LENGTH_LONG).show();
@@ -57,13 +59,20 @@ public class Basic_Content extends AppCompatActivity {
                 extras.putString("course", al.get(position));
                 intent.putExtras(extras);
                 startActivity(intent);
-
                 currentLesson = al.get(position);
                 currLesson.setText(String.valueOf(currentLesson));
                 Dashboard.activeLesson.setText(currentLesson);
-                Dashboard.activeModule.setText(Constant._1);
+                Dashboard.activeModule.setText(module);
+                Lesson.progress_Module.setText(module);
             }
         });
+
+
+
+    }
+
+    public void setRecentActivity(){
+
     }
 
     public void getData() {
