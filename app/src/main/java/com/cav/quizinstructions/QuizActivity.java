@@ -148,7 +148,8 @@ public class QuizActivity extends AppCompatActivity {
         textViewEmail.setVisibility(View.GONE);
         QuizDbHelper dbHelper = new QuizDbHelper(this);
         questionList = dbHelper.getAllQuestions();
-        questionCountTotal = (questionList.size() - 2);
+        int tenQuestions = (questionList.size() - 10);
+        questionCountTotal = (questionList.size() - tenQuestions);
         FYAlgoShuffle(questionList);
         timer();
 
@@ -277,7 +278,7 @@ public class QuizActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-                textViewCountdown.setText(getString(R.string.time_is_up));
+                textViewCountdown.setText("00:00");
                 timeLeftInMillis = 0;
 
                 StyleableToast.makeText(getApplicationContext(), QuizActivity.this.getString(R.string.timeUp),
@@ -390,10 +391,16 @@ public class QuizActivity extends AppCompatActivity {
 
     public void toResults() {
         Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat simpleDate = new SimpleDateFormat("EEEE MMMM dd, yyyy");
-        String currentDate = simpleDate.format(calendar.getTime());
+    //    SimpleDateFormat simpleDate = new SimpleDateFormat("EEEE MMMM dd, yyyy");
+        SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss");
+        String currentDate = simpleDate.format(new Date());
+        Log.d("QuizActivity", "Current Timestamp: " + currentDate);
 
-        questionCountTotal = questionList.size() - 2;
+       // String currentDate = simpleDate.format(calendar.getTime());
+
+        int tenQuestions = (questionList.size() - 10);
+        questionCountTotal = (questionList.size() - tenQuestions);
 
         String timeSet = "00:20";
         String timeLeft = textViewCountdown.getText().toString();
@@ -495,7 +502,8 @@ public class QuizActivity extends AppCompatActivity {
                 SimpleDateFormat simpleDate = new SimpleDateFormat("EEEE MMMM dd, yyyy");
                 String currentDate = simpleDate.format(calendar.getTime());
 
-                questionCountTotal = (questionList.size() - 2);
+                int tenQuestions = (questionList.size() - 10);
+                questionCountTotal = (questionList.size() - tenQuestions);
 
                 String timeSet = "00:20";
                 String timeLeft = textViewCountdown.getText().toString();

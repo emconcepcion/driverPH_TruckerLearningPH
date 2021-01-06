@@ -350,7 +350,15 @@ public class QuizStatusList extends AppCompatActivity {
                                 String Response = jsonObject.getString("response");
                                 //check response from server
                                 if (Response.equals("OK")) {
+                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                                            date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_SAVED);
+                                    StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.synced),
+                                            Toast.LENGTH_LONG, R.style.toastStyle).show();
                                 } else { //for server error, unable to save, will be handled by saveToAppServer
+                                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                                            date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_FAILED);
+                                    StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.sync_error_json),
+                                            Toast.LENGTH_LONG, R.style.toastStyle).show();
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -359,6 +367,11 @@ public class QuizStatusList extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+
+                    saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+                            date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_FAILED);
+                    StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.sync_error),
+                            Toast.LENGTH_LONG, R.style.toastStyle).show();
 
                     if (error instanceof TimeoutError) {
                         Toast.makeText(QuizStatusList.this, "Timeout error", Toast.LENGTH_SHORT).show();

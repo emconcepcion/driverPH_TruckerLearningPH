@@ -124,13 +124,6 @@ public class Quizzes_menu extends AppCompatActivity {
         Lessons_Menu.isFromLessonsMenu = false;
         isFromQuizMenu = true;
 
-//        if (allTestsCompleted && QuizActivity.unlocked) {
-//            cardViewMod3.setClickable(false);
-//            cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
-//            StyleableToast.makeText(getApplicationContext(), Quizzes_menu.this.getString(R.string.allTestsDone),
-//                    Toast.LENGTH_LONG, R.style.toastStyle).show();
-//        }
-
         cardViewMod1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

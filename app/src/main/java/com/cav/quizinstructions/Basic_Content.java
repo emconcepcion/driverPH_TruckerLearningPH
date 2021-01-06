@@ -63,12 +63,9 @@ public class Basic_Content extends AppCompatActivity {
                 currLesson.setText(String.valueOf(currentLesson));
                 Dashboard.activeLesson.setText(currentLesson);
                 Dashboard.activeModule.setText(module);
-                Lesson.progress_Module.setText(module);
+//                Lesson.progress_Module.setText(module);
             }
         });
-
-
-
     }
 
     public void setRecentActivity(){

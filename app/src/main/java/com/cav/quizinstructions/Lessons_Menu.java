@@ -20,9 +20,9 @@ import static com.cav.quizinstructions.Constant._3;
 public class Lessons_Menu extends AppCompatActivity {
 
     public static TextView tChapter;
-    public static CardView cardViewBasic;
-    public static CardView cardViewCommon;
-    public static CardView cardViewCore;
+    public static CardView cardViewMod1;
+    public static CardView cardViewMod2;
+    public static CardView cardViewMod3;
     SharedPreferences sp;
     public static TextView myEmailLesson;
     public static boolean isFromLessonsMenu;
@@ -33,9 +33,11 @@ public class Lessons_Menu extends AppCompatActivity {
         setContentView(R.layout.activity_lessons__menu);
 
         tChapter = findViewById(R.id.tChap_Lesson);
-        cardViewBasic = findViewById(R.id.cardView_basic_competencies);
-        cardViewCommon = findViewById(R.id.cardView_common_competencies);
-        cardViewCore = findViewById(R.id.cardView_core_competencies);
+        cardViewMod1 = findViewById(R.id.cardView_basic_competencies);
+        cardViewMod2 = findViewById(R.id.cardView_common_competencies);
+        cardViewMod3 = findViewById(R.id.cardView_core_competencies);
+        cardViewMod1.setClickable(true);
+
         Button btnEvaluation = findViewById(R.id.button5);
         myEmailLesson = findViewById(R.id.email_lesson);
 //        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
@@ -44,7 +46,7 @@ public class Lessons_Menu extends AppCompatActivity {
         Quizzes_menu.isFromQuizMenu = false;
         isFromLessonsMenu=true;
 
-        cardViewBasic.setOnClickListener(new View.OnClickListener() {
+        cardViewMod1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tChapter.setText(_1);
@@ -64,7 +66,7 @@ public class Lessons_Menu extends AppCompatActivity {
             }
         });
 
-        cardViewCommon.setOnClickListener(new View.OnClickListener() {
+        cardViewMod2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 isFromLessonsMenu=true;
@@ -78,7 +80,7 @@ public class Lessons_Menu extends AppCompatActivity {
             }
         });
 
-        cardViewCore.setOnClickListener(new View.OnClickListener() {
+        cardViewMod3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 tChapter.setText(_3);
