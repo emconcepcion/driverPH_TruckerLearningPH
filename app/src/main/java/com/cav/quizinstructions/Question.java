@@ -13,11 +13,13 @@ public class Question implements Serializable {
     private String option4;
     private int answerNr;
     public String chapter;
+    public String moduleName;
 
     public Question() {
     }
 
-    public Question(String question, String option1, String option2, String option3, String option4, int answerNr, String chapter) {
+    public Question(String question, String option1, String option2, String option3, String option4,
+                    int answerNr, String chapter, String moduleName) {
         this.question = question;
         this.option1 = option1;
         this.option2 = option2;
@@ -26,6 +28,7 @@ public class Question implements Serializable {
         this.answerNr = answerNr;
         Log.d("answer", answerNr + "");
         this.chapter = chapter;
+        this.moduleName = moduleName;
     }
 
     public String getQuestion() {
@@ -82,5 +85,13 @@ public class Question implements Serializable {
 
     public void setChapter(String chapter) {
         this.chapter = chapter;
+    }
+
+    public String getModuleName() {
+        return moduleName;
+    }
+
+    public void setModuleName(String moduleName) {
+        this.moduleName = moduleName;
     }
 }

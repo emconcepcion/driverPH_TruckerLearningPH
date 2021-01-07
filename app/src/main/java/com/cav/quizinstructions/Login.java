@@ -20,15 +20,24 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.navigation.NavigationView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
 import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
+import static com.cav.quizinstructions.Constant.SP_LESSONID;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
 
 public class Login extends AppCompatActivity {
@@ -39,7 +48,8 @@ public class Login extends AppCompatActivity {
     private String retrievedatasUrl = "https://phportal.net/driverph/login.php";
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String EMAIL = "text";
-
+    private String retrieveprogress="https://phportal.net/driverph/retrieve_progress.php";
+    public String user_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,25 +94,12 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-//        this.getSharedPreferences(SHARED_PREFS, 0).edit().clear().apply();
-//        this.getSharedPreferences(Uid_PREFS, 0).edit().clear().apply();
-//        this.getSharedPreferences("mySavedAttempt", 0).edit().clear().apply();
-//        Intent intent = new Intent(Intent.ACTION_MAIN);
-//        intent.addCategory(Intent.CATEGORY_HOME);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        startActivity(intent);
-        System.exit(0);
-    }
-
     public void userLogin() {
         final String uname = username.getText().toString().trim();
         final String pass = password1.getText().toString().trim();
 
         class show_prod extends AsyncTask<Void, Void, String> {
             ProgressDialog pdLoading = new ProgressDialog(Login.this);
-
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -125,35 +122,36 @@ public class Login extends AppCompatActivity {
             }
 
             @Override
-            protected void onPostExecute(String s) {
+            protected void onPostExecute(String s){
                 super.onPostExecute(s);
-                try {
+                try{
                     //Converting response to JSON Object
                     JSONObject obj = new JSONObject(s);
 
                     //if no error in response
                     if (!obj.getBoolean("error")) {
                         email = obj.getString("email");
-
-//                        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
-//                        SharedPreferences.Editor editor = sharedPreferences.edit();
-//                        editor.putString("email", email);
-//                        editor.apply();
-
+                        user_id = obj.getString("id");
+                        SharedPreferences sharedPreferences = getSharedPreferences("MySharedPrefForEmail", MODE_PRIVATE);
+                        SharedPreferences.Editor myEdit = sharedPreferences.edit();
+                        myEdit.putString("driver_email", email);
+                        myEdit.putString("driver_password", password1.getText().toString());
+                        myEdit.commit();
                         pdLoading.dismiss();
-                        Intent intent = new Intent(Login.this, Dashboard.class);
-                        Bundle extras = new Bundle();
-                        extras.putString("email", email);
-                        extras.putString("password", pass);
-                        intent.putExtras(extras);
-                        startActivity(intent);
-                    } else {
+                        progress();
+
+//                                Intent intent = new Intent(Login.this, Dashboard.class);
+////                                Bundle extras = new Bundle();
+////                                extras.putString("lessonId", lesson_id);
+////                                intent.putExtras(extras);
+//                                startActivity(intent);
+                    }else{
                         pdLoading.dismiss();
                         Toast.makeText(Login.this, "Incorrect", Toast.LENGTH_SHORT).show();
                     }
 //                            Toast.makeText(Login.this, email, Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(Login.this, "Exception: " + e, Toast.LENGTH_SHORT).show();
+                } catch (Exception e ){
+                    Toast.makeText(Login.this, "Exception: "+e, Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -161,4 +159,62 @@ public class Login extends AppCompatActivity {
         show_prod show = new show_prod();
         show.execute();
     }
+
+    public void progress() {
+        final String uid = user_id;
+
+        class progress_class extends AsyncTask<Void, Void, String> {
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+
+            }
+
+            @Override
+            protected String doInBackground(Void... voids) {
+                //creating request handler object
+                RequestHandler requestHandler = new RequestHandler();
+
+                //creating request parameters
+                HashMap<String, String> params = new HashMap<>();
+                params.put("id", uid);
+
+                //returing the response
+                return requestHandler.sendPostRequest(retrieveprogress, params);
+            }
+
+            @Override
+            protected void onPostExecute(String s){
+                super.onPostExecute(s);
+                try{
+                    //Converting response to JSON Object
+                    JSONObject obj = new JSONObject(s);
+
+                    //if no error in response
+                    if (!obj.getBoolean("error")) {
+                        String lesson_id = obj.getString("lessonId");
+
+                        Intent intent = new Intent(Login.this, Dashboard.class);
+//                        Bundle extras = new Bundle();
+//                        extras.putString("lessonId", lesson_id);
+//                        intent.putExtras(extras);
+                        startActivity(intent);
+
+                        SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
+                        SharedPreferences.Editor myEdit = sharedPreferences.edit();
+                        myEdit.putString("lessonId", lesson_id);
+                        myEdit.apply();
+                    }
+                } catch (Exception e ){
+                    Toast.makeText(Login.this, "Exception: "+e, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        progress_class show = new progress_class();
+        show.execute();
+    }
+
+
 }

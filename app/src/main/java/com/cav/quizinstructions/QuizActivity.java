@@ -73,7 +73,7 @@ import static com.cav.quizinstructions.Dashboard.user_id;
 
 public class QuizActivity extends AppCompatActivity {
 
-    public static TextView textViewChapter;
+    public static TextView textViewChapter, textViewModuleName;
     private TextView textViewQuestion;
     private TextView textViewScore;
     public static TextView textViewEmail;
@@ -104,6 +104,7 @@ public class QuizActivity extends AppCompatActivity {
     private int questionCounter;
     private int questionCountTotal;
     private Question currentQuestion;
+    private String currModuleName;
 
     public static boolean unlocked;
     private int score;
@@ -132,6 +133,7 @@ public class QuizActivity extends AppCompatActivity {
         rb3 = findViewById(R.id.radio_btn_option3);
         rb4 = findViewById(R.id.radio_btn_option4);
         textViewChapter = findViewById(R.id.textview_chapter);
+        textViewModuleName = findViewById(R.id.textview_moduleName);
         btn_next = findViewById(R.id.btn_next);
         btn_sound = findViewById(R.id.btn_sound);
         textViewScore = findViewById(R.id.textview_score);
@@ -141,6 +143,7 @@ public class QuizActivity extends AppCompatActivity {
         isModLocked = findViewById(R.id.textview_isLocked);
 
         textViewCountdown.setTextColor(Color.parseColor("#006400"));
+
 
         textColorDefaultRb = rb1.getTextColors();
 
@@ -231,6 +234,8 @@ public class QuizActivity extends AppCompatActivity {
 
             textViewQuestion.setText(currentQuestion.getQuestion());
             textViewChapter.setText(currentQuestion.getChapter());
+            textViewModuleName.setText(currentQuestion.getModuleName());
+
             rb1.setText(currentQuestion.getOption1());
             rb2.setText(currentQuestion.getOption2());
             rb3.setText(currentQuestion.getOption3());
@@ -307,27 +312,27 @@ public class QuizActivity extends AppCompatActivity {
             switch (currentQuestion.getAnswerNr()) {
                 case 1:
                     currentQuestion.getOption1();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption1() + "\n");
+                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption1() + "\n");
                     break;
                 case 2:
                     currentQuestion.getOption2();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" + "Answer: " + currentQuestion.getOption2());
+                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption2()+ "\n");
                     break;
                 case 3:
                     currentQuestion.getOption3();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" + "Answer: " + currentQuestion.getOption3());
+                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption3()+ "\n");
                     break;
                 case 4:
                     currentQuestion.getOption4();
-                    askedQuestions.add(currentQuestion.getQuestion() + "\n\n" + "Answer: " + currentQuestion.getOption4());
+                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption4()+ "\n");
                     break;
             }
             score++;
             textViewScore.setText("Score: " + score);
 
         } else {
-            String ansNotAvailable = "Correct answer is hidden.";
-            askedQuestions.add(currentQuestion.getQuestion() + "\n" + ansNotAvailable);
+            String ansNotAvailable = "\nCorrect answer is hidden.\n";
+            askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n" + ansNotAvailable);
         }
 
         showSolution();
@@ -390,14 +395,9 @@ public class QuizActivity extends AppCompatActivity {
     }
 
     public void toResults() {
-        Calendar calendar = Calendar.getInstance();
-    //    SimpleDateFormat simpleDate = new SimpleDateFormat("EEEE MMMM dd, yyyy");
         SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy-hh-mm-ss");
         String currentDate = simpleDate.format(new Date());
         Log.d("QuizActivity", "Current Timestamp: " + currentDate);
-
-       // String currentDate = simpleDate.format(calendar.getTime());
 
         int tenQuestions = (questionList.size() - 10);
         questionCountTotal = (questionList.size() - tenQuestions);

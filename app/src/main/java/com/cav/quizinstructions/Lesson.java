@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,8 @@ import android.widget.Toast;
 import com.anton46.stepsview.StepsView;
 import com.cav.quizinstructions.databinding.ActivityLessonBinding;
 import com.muddzdev.styleabletoast.StyleableToast;
+
+import static com.cav.quizinstructions.Constant.SP_LESSONID;
 
 
 public class Lesson extends AppCompatActivity {
@@ -39,7 +42,23 @@ public class Lesson extends AppCompatActivity {
         arrSize = descriptionData.length;
         arraySize.setText(String.valueOf(arrSize));
         progress_Module = findViewById(R.id.progress_Module);
-        progress_Module.setText(Lesson.progress_Module.getText().toString());
+
+        SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
+        String progMod = sharedPreferences.getString("lessonId", "");
+
+        String null_lessonId = "No active modules yet, please click the button to start learning!";
+        if (progMod.equals("null")){
+            progress_Module.setText(null_lessonId);
+        }else{
+            progress_Module.setText(progMod);
+        }
+
+//        String currentModule = Lessons_Basic_Content.module;
+//        if (!currentModule.equals("null")){
+//            progress_Module.setText("Active Module");
+//        }else{
+//            progress_Module.setText(currentModule);
+//        }
 
         binding.spb.setLabels(descriptionData)
                 .setBarColorIndicator(Color.BLACK)
@@ -75,7 +94,6 @@ public class Lesson extends AppCompatActivity {
                     startActivity(new Intent(Lesson.this, VoiceResponse.class));
                 }
 
-//                Log.d("current state = ", current_state + "");
             }
         });
 

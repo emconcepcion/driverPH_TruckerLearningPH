@@ -97,7 +97,7 @@
         android:textAllCaps="false"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="35dp"
         android:background="@color/yellow"
         android:textColor="@android:color/white"
         android:layout_margin="16dp"/>
@@ -105,7 +105,7 @@
     <Button
         android:id="@+id/btn_review"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="@string/review"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="25dp"
@@ -117,7 +117,7 @@
     <Button
         android:id="@+id/btn_retake"
         android:layout_width="100dp"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:text="@string/retake"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"

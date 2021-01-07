@@ -105,7 +105,7 @@ public class BackgroundTask extends AsyncTask<String,Void,String> {
             Toast.makeText(ctx, "Incorrect....", Toast.LENGTH_SHORT).show();
         }else{
             alertDialog.dismiss();
-            SharedPreferences sharedPreferences = ctx.getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
+            SharedPreferences sharedPreferences = ctx.getSharedPreferences("SHARED_PREFS", MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString(EMAIL, email);
             editor.apply();

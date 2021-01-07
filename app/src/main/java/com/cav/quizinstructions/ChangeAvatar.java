@@ -40,7 +40,6 @@ public class ChangeAvatar extends AppCompatActivity {
         lname = getIntent().getStringExtra("last_name");
         email = getIntent().getStringExtra("email");
         username = getIntent().getStringExtra("username");
-        password = getIntent().getStringExtra("password");
         img_num = getIntent().getStringExtra("image");
         oldimage = getIntent().getStringExtra("image");
         id = getIntent().getStringExtra("id");
@@ -169,7 +168,6 @@ public class ChangeAvatar extends AppCompatActivity {
                 extras.putString("last_name", lname);
                 extras.putString("email", email);
                 extras.putString("username", username);
-                extras.putString("password",password);
                 extras.putString("image", img_num);
                 extras.putString("id", id);
                 intent.putExtras(extras);
@@ -186,7 +184,6 @@ public class ChangeAvatar extends AppCompatActivity {
                 extras.putString("last_name", lname);
                 extras.putString("email", email);
                 extras.putString("username", username);
-                extras.putString("password",password);
                 extras.putString("image", oldimage);
                 extras.putString("id", id);
                 intent.putExtras(extras);

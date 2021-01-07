@@ -3,6 +3,7 @@ package com.cav.quizinstructions;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,16 +24,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.ref.WeakReference;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+
+import static com.cav.quizinstructions.Constant.SP_LESSONID;
 
 public class Basic_Content extends AppCompatActivity {
     public static WeakReference<Basic_Content> weakActivity;
     public static String module;
     ListView content;
-    List<String> al;
-    public static String currentLesson;
+    public static List<String> al, lesson_id_key;
+    public static String currentLesson, currLessonId;
     public static TextView currLesson, Email;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,30 +51,48 @@ public class Basic_Content extends AppCompatActivity {
         Email.setText(Dashboard.dashboard_email);
 
         module = getIntent().getStringExtra("module");
-        //Toast.makeText(Basic_Content.this, module, Toast.LENGTH_LONG).show();
         getData();
+//        Lesson.progress_Module.setText(module);
 
         content.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //Toast.makeText(Basic_Content.this, al.get(position), Toast.LENGTH_SHORT).show();
+                SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                String currentDate = simpleDate.format(new Date());
+
                 Intent intent = new Intent(Basic_Content.this, Lessons_Basic_Content.class);
                 Bundle extras = new Bundle();
                 extras.putString("module", "1");
                 extras.putString("course", al.get(position));
+                extras.putString("lessonId", lesson_id_key.get(position));
+                extras.putString("dateStarted", currentDate);
+                extras.putString("dateFinished", currentDate);
+                extras.putInt("status", 1);
+                currLessonId = lesson_id_key.get(position);
+                extras.putString("currLessonId", currLessonId);
                 intent.putExtras(extras);
                 startActivity(intent);
                 currentLesson = al.get(position);
                 currLesson.setText(String.valueOf(currentLesson));
+                SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
+                SharedPreferences.Editor myEdit = sharedPreferences.edit();
+                myEdit.putString("lessonId", currentLesson);
+                myEdit.apply();
                 Dashboard.activeLesson.setText(currentLesson);
                 Dashboard.activeModule.setText(module);
-//                Lesson.progress_Module.setText(module);
             }
         });
     }
 
     public void setRecentActivity(){
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        startActivity(new Intent(Basic_Content.this, Lessons_Menu.class));
+        finish();
     }
 
     public void getData() {
@@ -100,6 +123,7 @@ public class Basic_Content extends AppCompatActivity {
     private void showJSON(String response) {
         ArrayList<HashMap<String, String>> list = new ArrayList<HashMap<String, String>>();
         al = new ArrayList<String>();
+        lesson_id_key = new ArrayList<String>();
         try {
             JSONObject jsonObject = new JSONObject(response);
             JSONArray result = jsonObject.getJSONArray(Config5.JSON_ARRAY);
@@ -107,7 +131,10 @@ public class Basic_Content extends AppCompatActivity {
             for (int i = 0; i < result.length(); i++) {
                 JSONObject jo = result.getJSONObject(i);
                 String title = jo.getString(Config5.KEY_TITLE);
+
                 al.add(jo.getString(Config5.KEY_TITLE));
+                lesson_id_key.add(jo.getString(Config5.KEY_ID));
+
                 final HashMap<String, String> employees = new HashMap<>();
                 employees.put(Config5.KEY_TITLE, title);
 
@@ -119,11 +146,10 @@ public class Basic_Content extends AppCompatActivity {
         }
         ListAdapter adapter = new SimpleAdapter(
                 Basic_Content.this, list, R.layout.my_list,
-                new String[]{Config5.KEY_TITLE},
+                new String[]{Config5.KEY_TITLE, Config5.KEY_ID},
                 new int[]{R.id.title});
 
         content.setAdapter(adapter);
-
     }
 
     public static Basic_Content getmInstanceActivity() {

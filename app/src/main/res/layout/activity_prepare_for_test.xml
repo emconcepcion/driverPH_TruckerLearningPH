@@ -20,19 +20,11 @@
         android:visibility="invisible"
         />
 
-    <View
-        android:id="@+id/divider_up"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginTop="25dp"
-        android:background="?android:attr/listDivider"
-        android:layout_below="@id/textview_module_title"/>
-
     <TextView
         android:id="@+id/textview_instruct_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/divider_up"
+        android:layout_below="@id/textview_module_title"
         android:text="@string/prepForTest"
         android:layout_marginTop="60dp"
         android:gravity="center"

@@ -3,6 +3,7 @@ package com.cav.quizinstructions;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -41,6 +42,7 @@ public class CompletedQuizzes extends AppCompatActivity {
     ArrayList<Score> arrayList = new ArrayList<>();
     ArrayList<MyScoresServer> myScoresServerArrayList = new ArrayList<>();
     BroadcastReceiver broadcastReceiver;
+    SwipeRefreshLayout swipeRefreshLayout;
     Button summary_btn;
     private final String SCORES_URL = "https://phportal.net/driverph/scoresOnline.php";
 
@@ -50,6 +52,7 @@ public class CompletedQuizzes extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_completed_quizzes);
 
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refreshView);
         summary_btn = findViewById(R.id.btn_summarized_scorelist);
         recyclerView = findViewById(R.id.recyclerView);
         layoutManager = new LinearLayoutManager(this);
@@ -66,6 +69,20 @@ public class CompletedQuizzes extends AppCompatActivity {
         };
         getJSON(SCORES_URL);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(false);
+                Intent intent = getIntent();
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+                StyleableToast.makeText(getApplicationContext(), CompletedQuizzes.this.getString(R.string.list_updated),
+                        Toast.LENGTH_LONG, R.style.toastStyle).show();
+            }
+        });
+
         summary_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -76,17 +93,18 @@ public class CompletedQuizzes extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }
 
-    public void onClick (View v){
-        Intent intent = getIntent();
-        finish();
-        overridePendingTransition(0, 0);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
-        StyleableToast.makeText(getApplicationContext(), CompletedQuizzes.this.getString(R.string.list_updated),
-                Toast.LENGTH_LONG, R.style.toastStyle).show();
-    }
+//    public void onClick (View v){
+//        Intent intent = getIntent();
+//        finish();
+//        overridePendingTransition(0, 0);
+//        startActivity(intent);
+//        overridePendingTransition(0, 0);
+//        StyleableToast.makeText(getApplicationContext(), CompletedQuizzes.this.getString(R.string.list_updated),
+//                Toast.LENGTH_LONG, R.style.toastStyle).show();
+//    }
 
     public void readFromLocalStorage(){
 

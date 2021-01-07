@@ -26,7 +26,8 @@ public class Database {
 			QuizContract.QuestionsTable.COLUMN_OPTION3 + " TEXT, " +
 			QuizContract.QuestionsTable.COLUMN_OPTION4 + " TEXT, " +
 			QuizContract.QuestionsTable.COLUMN_ANSWER_NR + " INTEGER, " +
-			QuizContract.QuestionsTable.COLUMN_CHAPTER + " TEXT" +
+			QuizContract.QuestionsTable.COLUMN_CHAPTER + " TEXT," +
+			QuizContract.QuestionsTable.COLUMN_MODULE_NAME + " TEXT" +
 			");";
 
 	final String SQL_CREATE_SCORES_TABLE = "CREATE TABLE " +
@@ -147,30 +148,11 @@ public class Database {
 		cv.put(QuizContract.QuestionsTable.COLUMN_OPTION4, question.getOption4());
 		cv.put(QuizContract.QuestionsTable.COLUMN_ANSWER_NR, question.getAnswerNr());
 		cv.put(QuizContract.QuestionsTable.COLUMN_CHAPTER, question.getChapter());
+		cv.put(QuizContract.QuestionsTable.COLUMN_MODULE_NAME, question.getModuleName());
 			
 			Log.d("inserted... ", question.getQuestion()+"");
 			Log.d("inserted... ", question.getAnswerNr()+"");
 			return db.insertWithOnConflict(TABLE_NAME, null, cv, SQLiteDatabase.CONFLICT_IGNORE);
-	}
-
-	public long addAllAttempts(Score score)
-	{
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_USER_ID, score.getUser_id());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_EMAIL, score.getEmail());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_SCORE, score.getScore());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_NUM_ITEMS, score.getNum_of_items());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_CHAPTER, score.getChapter());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT, score.getNum_of_attempt());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_DURATION, score.getDuration());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN, score.getDate_taken());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_IS_LOCKED, score.getIsLocked());
-		contentValues.put(DbContract.ScoresTable.COLUMN_NAME_IS_COMPLETED, score.getIsCompleted());
-
-		Log.d("inserted... ", score.getUser_id()+"");
-		Log.d("inserted... ", score.getNum_of_attempt()+"");
-		return db.insertWithOnConflict(DbContract.ScoresTable.TABLE_NAME_SCORES, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
-
 	}
 
 	public long addScoresServer(MyScoresServer scoresServer)

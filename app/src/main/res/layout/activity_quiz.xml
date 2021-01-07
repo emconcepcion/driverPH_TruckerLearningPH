@@ -22,6 +22,16 @@
         android:paddingRight="15dp">
 
         <TextView
+            android:id="@+id/textview_moduleName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Module Name"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/textview_chapter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -29,7 +39,9 @@
             android:text="Chapter"
             android:textColor="@android:color/black"
             android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone"
+            />
 
         <TextView
             android:id="@+id/textview_instruction"

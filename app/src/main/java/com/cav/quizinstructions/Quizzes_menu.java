@@ -94,7 +94,6 @@ public class Quizzes_menu extends AppCompatActivity {
         cardViewMod1 = findViewById(R.id.cardView_basic_competencies);
         cardViewMod2 = findViewById(R.id.cardView_common_competencies);
         cardViewMod3 = findViewById(R.id.cardView_core_competencies);
-        cardViewMod1.setClickable(true);
 
         loadDataAllAttemptsAndLevels();
 
@@ -219,64 +218,77 @@ public class Quizzes_menu extends AppCompatActivity {
                 if (sameUser && myLatestChapter.equals(MODULE_ID_1)
                         && latestUnlocked == 0 && latestCompleted == 1) {
                     cardViewMod2.setClickable(true);
-                    cardViewMod1.setClickable(false);
-                    cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
-                    cardViewMod3.setClickable(false);
-                    cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+                    passedLockMod1();
+                    lockedMod3();
                 } else {
-                    cardViewMod2.setClickable(false);
-                    cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
-                    cardViewMod3.setClickable(false);
-                    cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+                    lockedMod2();
+                    lockedMod3();
                 }
                 break;
             case MODULE_ID_2:
                 if (sameUser && myLatestChapter.equals(MODULE_ID_2)
                         && latestUnlocked == 0 && latestCompleted == 1) {
                     cardViewMod3.setClickable(true);
-                    cardViewMod1.setClickable(false);
-                    cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
-                    cardViewMod2.setClickable(false);
-                    cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
+                    passedLockMod1();
+                    passedLockMod2();
                 } else {
-                    cardViewMod1.setClickable(false);
-                    cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
-                    cardViewMod3.setClickable(false);
-                    cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+                    passedLockMod1();
+                    lockedMod3();
                 }
                 break;
             case MODULE_ID_3:
                 if (sameUser && myLatestChapter.equals(MODULE_ID_3)
                         && latestUnlocked == 0 && latestCompleted == 1) {
-                    cardViewMod3.setClickable(false);
-                    cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
-                    cardViewMod1.setClickable(false);
-                    cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
-                    cardViewMod2.setClickable(false);
-                    cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
+                    passedLockMod1();
+                    passedLockMod2();
+                    passedLockMod3();
                 }
                 break;
         }
 
+        if (sameUser && myLatestChapter.equals(MODULE_ID_1) &&
+                latestUnlocked == 1 && latestCompleted == 0) {
+            cardViewMod1.setClickable(true);
+        }
+
         if (myLatestChapter.equals("")) {
-            cardViewMod1.setClickable(true);
-            cardViewMod2.setClickable(false);
-            cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
-            cardViewMod3.setClickable(false);
-            cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+            initialLock();
         }
 
-        if (sameUser && latestUnlocked == 1 && latestCompleted == 0) {
-            cardViewMod1.setClickable(true);
+        if (!sameUser && !myLatestChapter.equals("")) {
+            initialLock();
         }
+    }
 
-        if (sameUser && myLatestChapter.equals("")) {
-            cardViewMod1.setClickable(true);
-            cardViewMod2.setClickable(false);
-            cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
-            cardViewMod3.setClickable(false);
-            cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
-        }
+    public void initialLock(){
+        cardViewMod1.setClickable(true);
+        lockedMod2();
+        lockedMod3();
+    }
+
+    public void passedLockMod1(){
+        cardViewMod1.setClickable(false);
+        cardViewMod1.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
+    }
+
+    public void passedLockMod2(){
+        cardViewMod2.setClickable(false);
+        cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
+    }
+
+    public void passedLockMod3(){
+        cardViewMod3.setClickable(false);
+        cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.passed_locked));
+    }
+
+    public void lockedMod2(){
+        cardViewMod2.setClickable(false);
+        cardViewMod2.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
+    }
+
+    public void lockedMod3(){
+        cardViewMod3.setClickable(false);
+        cardViewMod3.setBackground(ContextCompat.getDrawable(this, R.drawable.mod_lock));
     }
 
     //load all data attempts and unlocked modules from web

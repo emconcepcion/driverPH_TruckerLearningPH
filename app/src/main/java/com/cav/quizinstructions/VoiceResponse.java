@@ -88,7 +88,6 @@ public class VoiceResponse extends AppCompatActivity {
         textView = findViewById(R.id.textView_status);
         userName = findViewById(R.id.user_name);
         play_rec = findViewById(R.id.btn_playback);
-        btn_back = findViewById(R.id.btn_back_to_lesson);
         btn_next = findViewById(R.id.btn_next);
         chapVr = findViewById(R.id.chapterVR);
 
@@ -96,15 +95,6 @@ public class VoiceResponse extends AppCompatActivity {
 //        userName.setText(AccountEdit.fname);
         chapVr.setText(chapter);
         textView.setVisibility(View.GONE);
-
-
-        btn_back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(VoiceResponse.this, Dashboard.class));
-                Toast.makeText(VoiceResponse.this, "back button pressed", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         btn_next.setVisibility(View.INVISIBLE);
         btn_next.setOnClickListener(new View.OnClickListener() {

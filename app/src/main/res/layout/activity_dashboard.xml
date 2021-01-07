@@ -13,7 +13,6 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-
         <include
             android:id="@+id/toolbar"
             layout="@layout/toolbar" />
@@ -67,15 +66,15 @@
                     android:layout_marginRight="16dp"
                     android:src="@drawable/ic_boy"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:background="#A9C8E6FF"
+                android:background="#A9D5EAFB"
                 android:orientation="vertical">
 
                 <TextView
@@ -86,6 +85,7 @@
                     android:layout_marginLeft="10dp"
                     android:text="Your active module is: "
                     android:textStyle="bold"
+                    android:textColor="@color/dark_blue"
                     android:textSize="16dp" />
 
                 <TextView
@@ -94,7 +94,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:layout_gravity="center"
-                    android:text="Basic Competencies"
+                    android:text="Module"
+                    android:textAlignment="center"
+                    android:padding="5dp"
                     android:textStyle="bold"
                     android:textSize="16dp" />
 
@@ -104,8 +106,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:text="Lesson 1"
-                    android:textSize="16dp"
+                    android:padding="5dp"
+                    android:textAlignment="center"
+                    android:text="Lesson"
+                    android:textSize="14dp"
                     android:textStyle="bold" />
 
                 <Button
@@ -113,8 +117,8 @@
                     android:layout_width="150dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
-                    android:layout_margin="15dp"
-                    android:background="@color/blueButton"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/rounded_login_button"
                     android:text="Resume"
                     android:padding="10dp"
                     android:textAllCaps="false"
@@ -127,10 +131,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginTop="0dp"
-                    android:layout_marginEnd="10dp"
                     android:text="1"
-                    android:textSize="18sp"
-                    android:visibility="visible"/>
+                    android:textSize="16sp"
+                    android:visibility="visible"
+                    android:layout_marginRight="10dp" />
 
                 <TextView
                     android:id="@+id/emailForAttempts"
@@ -138,16 +142,16 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:layout_marginTop="5dp"
-                    android:layout_marginBottom="10dp"
+                    android:layout_marginBottom="5dp"
                     android:text="yourEmail"
                     android:textSize="10dp" />
 
 
-            </LinearLayout>
 
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
+
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
@@ -157,6 +161,7 @@
 
 
                     <!--Welcome CARDVIEW!-->
+
 
 
                     <androidx.cardview.widget.CardView
@@ -198,7 +203,8 @@
                                 android:background="@drawable/dlessons_dash_btn"
                                 android:scaleType="centerCrop"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                                app:layout_constraintTop_toTopOf="parent"
+                                android:layout_marginLeft="4dp" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -333,7 +339,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </ScrollView>
-
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

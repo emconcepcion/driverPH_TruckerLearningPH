@@ -87,6 +87,7 @@ public class QuizInstructions extends AppCompatActivity {
         myEmailQuizInst = findViewById(R.id.myEmailQuizInst);
         userIdQInst = findViewById(R.id.myUserIdQuizInst);
         textViewModuleTitle = findViewById(R.id.textview_moduleTest);
+//        textViewModuleTitle.setText();
 
         sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
         String myEmail = sp.getString("email", "");
@@ -229,6 +230,8 @@ public class QuizInstructions extends AppCompatActivity {
                         .getString("correctAnswer"));
                 Log.d("module" + i, menuitemArray.getJSONObject(i)
                         .getString("module"));
+                Log.d("moduleName" + i, menuitemArray.getJSONObject(i)
+                        .getString("moduleName"));
 
                 String question = menuitemArray.getJSONObject(i).getString("questionText");
                 String option1 = menuitemArray.getJSONObject(i).getString("choiceA");
@@ -237,7 +240,9 @@ public class QuizInstructions extends AppCompatActivity {
                 String option4 = menuitemArray.getJSONObject(i).getString("choiceD");
                 String answer_nr = menuitemArray.getJSONObject(i).getString("correctAnswer");
                 String chapter = menuitemArray.getJSONObject(i).getString("module");
-                Question q1 = new Question(question, option1, option2, option3, option4, Integer.parseInt(answer_nr), chapter);
+                String moduleName = menuitemArray.getJSONObject(i).getString("moduleName");
+                Question q1 = new Question(question, option1, option2, option3, option4,
+                        Integer.parseInt(answer_nr), chapter, moduleName);
                 db.addQuestion(q1);
             }
 

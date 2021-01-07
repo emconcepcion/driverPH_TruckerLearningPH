@@ -59,12 +59,14 @@ import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
 import static com.cav.quizinstructions.Basic_Content.currLesson;
 import static com.cav.quizinstructions.Basic_Content.currentLesson;
 import static com.cav.quizinstructions.Basic_Content.module;
+import static com.cav.quizinstructions.Constant.MODULE_ID_1;
+import static com.cav.quizinstructions.Constant.SP_LESSONID;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static WeakReference<Dashboard> weakActivity;
 
     private DrawerLayout drawer;
-    Button resumeLesson;
+    static Button resumeLesson;
     public static String dashboard_email;
     public static TextView recentModule, activeModule, activeLesson;
     public static String user_id;
@@ -75,12 +77,18 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public static String myLatestChapter;
     public static String myLatestIsUnlocked;
     public static String myLatestIsCompleted;
+    public static String myProgressUserId;
+    public static String myProgressChapter;
+    public static String myProgressLessonId;
+    public static String myProgressStatus;
+    public static String myProgressDateStarted;
+    public static String myProgressDateFinished;
     public static String nameVR;
     public static String user_idPassedTests;
     private TextView welcome_fname;
     public static TextView myEmailForAttempts;
     public static boolean emptyUserIdFromDb;
-    public static String emailForAttempts;
+    public static String lessonIdFromServer;
     CircleImageView dahsboard_avatar;
     SharedPreferences sp;
     SharedPreferences sharedPreferences;
@@ -98,12 +106,17 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         setContentView(R.layout.activity_dashboard);
         weakActivity = new WeakReference<>(Dashboard.this);
 
-        dashboard_email = getIntent().getStringExtra("email");
+//        dashboard_email = getIntent().getStringExtra("email");
+
+
+        SharedPreferences sh = getSharedPreferences("MySharedPrefForEmail", MODE_PRIVATE);
+        dashboard_email = sh.getString("driver_email", "");
+
         sharedPreferences = getSharedPreferences(SHARED_PREFS, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("email", dashboard_email);
         editor.apply();
-        dashboard_email = sharedPreferences.getString("email", "");
+
         welcome_fname = findViewById(R.id.textView_userID);
         dahsboard_avatar = findViewById(R.id.dashboard_avatar);
         isModuleLocked = findViewById(R.id.isModLocked);
@@ -111,14 +124,27 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         recentModule = findViewById(R.id.myprogresslesson);
         activeModule = findViewById(R.id.Module);
         activeLesson = findViewById(R.id.Lesson);
-        resumeLesson = findViewById(R.id.resume);
+        resumeLesson = (Button) findViewById(R.id.resume);
         myEmailForAttempts = findViewById(R.id.emailForAttempts);
         myEmailForAttempts.setText(dashboard_email);
 
+        SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
+        lessonIdFromServer = sharedPreferences.getString("lessonId", "");
+
+        String null_lessonId = "No active modules yet, please click the button to start learning!";
+        if (lessonIdFromServer.equals("null")){
+            activeLesson.setText(null_lessonId);
+        }else{
+            activeLesson.setText(lessonIdFromServer);
+        }
         recentModule.setText(myLatestChapter);
         activeModule.setText(module);
-        activeLesson.setText(currentLesson);
 
+
+//        activeLesson.setText(currentLesson);
+        if (module == null){
+            resumeLesson.setText("Start Learning");
+        }
         resumeLesson.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -172,11 +198,20 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         String module= activeModule.getText().toString();
         switch (module){
             case Constant.MODULE_ID_1:
-                startActivity(new Intent(Dashboard.this, Lessons_Basic_Content.class));
+            case "":
+                String compe = MODULE_ID_1;
+                Intent intent = new Intent(Dashboard.this, Basic_Content.class);
+                Bundle extras = new Bundle();
+                extras.putString("module", compe);
+                intent.putExtras(extras);
+                startActivity(intent);
                 break;
-            case Constant._2:
-                startActivity(new Intent(Dashboard.this, Basic_Content.class));
-                break;
+//            case Constant.MODULE_ID_2:
+//                startActivity(new Intent(Dashboard.this, Lessons_Common_Content.class));
+//                break;
+//            case Constant.MODULE_ID_3:
+//                startActivity(new Intent(Dashboard.this, Lessons_Core_Content.class));
+//                break;
         }
     }
 
@@ -359,6 +394,34 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         switch (item.getItemId()) {
             case R.id.action_change_language:
                 Toast.makeText(this, "Language Changed", Toast.LENGTH_SHORT).show();
+            case R.id.action_log_out:
+                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove(SHARED_PREFS);
+                editor.apply();
+
+                SharedPreferences sp = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = sp.edit();
+                editor1.remove(Uid_PREFS);
+                editor1.apply();
+
+                SharedPreferences sp1 = getSharedPreferences("mySavedAttempt", MODE_PRIVATE);
+                SharedPreferences.Editor editor2 = sp1.edit();
+                editor2.remove("mySavedAttempt");
+                editor2.apply();
+
+                SharedPreferences sp2 = getSharedPreferences("MySharedPrefForEmail", MODE_PRIVATE);
+                SharedPreferences.Editor editor3 = sp2.edit();
+                editor3.remove("MySharedPrefForEmail");
+                editor3.apply();
+
+                Intent logout = new Intent(Dashboard.this, Login.class);
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(logout);
+                overridePendingTransition(0, 0);
+                System.exit(0);
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -386,13 +449,25 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 startActivity(intent);
                 break;
             case R.id.nav_siso:
-                this.getSharedPreferences(SHARED_PREFS, 0).edit().clear().apply();
-                this.getSharedPreferences(Uid_PREFS, 0).edit().clear().apply();
-                this.getSharedPreferences("mySavedAttempt", 0).edit().clear().apply();
-                finish();
+                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove(SHARED_PREFS);
+                editor.apply();
+
+                SharedPreferences sp = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+                SharedPreferences.Editor editor1 = sp.edit();
+                editor1.remove(Uid_PREFS);
+                editor1.apply();
+
+                SharedPreferences sp1 = getSharedPreferences("mySavedAttempt", MODE_PRIVATE);
+                SharedPreferences.Editor editor2 = sp1.edit();
+                editor2.remove("mySavedAttempt");
+                editor2.apply();
+
                 Intent logout = new Intent(Dashboard.this, Login.class);
                 startActivity(logout);
                 Toast.makeText(this, "Log Out Success", Toast.LENGTH_SHORT).show();
+                System.exit(0);
                 break;
         }
         return true;
@@ -579,6 +654,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         .getString("correctAnswer"));
                 Log.d("module" + i, menuitemArray.getJSONObject(i)
                         .getString("module"));
+                Log.d("moduleName" + i, menuitemArray.getJSONObject(i)
+                        .getString("moduleName"));
 
                 String question = menuitemArray.getJSONObject(i).getString("questionText");
                 String option1 = menuitemArray.getJSONObject(i).getString("choiceA");
@@ -587,7 +664,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 String option4 = menuitemArray.getJSONObject(i).getString("choiceD");
                 String answer_nr = menuitemArray.getJSONObject(i).getString("correctAnswer");
                 String chapter = menuitemArray.getJSONObject(i).getString("module");
-                Question q1 = new Question(question, option1, option2, option3, option4, Integer.parseInt(answer_nr), chapter);
+                String moduleName = menuitemArray.getJSONObject(i).getString("moduleName");
+                Question q1 = new Question(question, option1, option2, option3, option4,
+                        Integer.parseInt(answer_nr), chapter, moduleName);
                 db.addQuestion(q1);
             }
 
@@ -687,5 +766,72 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         requestQueue.add(stringRequest);
     }
 
+    //load all data for user's progress / latest module
+    public void loadUserProgressModules() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading data...");
+        progressDialog.show();
+        Database db = new Database(this);
+        db.Open();
+        StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.DEPRECATED_GET_OR_POST,
+                SERVER_DASHBOARD,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        progressDialog.dismiss();
+                        Toast.makeText(Dashboard.this, "Loading all attempts", Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jObj = new JSONObject(s);
 
+                            JSONArray menuitemArray = jObj.getJSONArray("data");
+
+                            for (int i = 0; i < menuitemArray.length(); i++) {
+
+                                Log.d("userId " + i,
+                                        menuitemArray.getJSONObject(i).getString("userId"));
+                                Log.d("module: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("module"));
+                                Log.d("lessonId: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("lessonId"));
+                                Log.d("status: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("status"));
+                                Log.d("dateStarted: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("dateStarted"));
+                                Log.d("dateFinished: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("dateFinished"));
+
+                                myProgressUserId = menuitemArray.getJSONObject(i).getString("userId");
+                                myProgressChapter= menuitemArray.getJSONObject(i).getString("module");
+                                myProgressLessonId = menuitemArray.getJSONObject(i).getString("lessonId");
+                                myProgressStatus = menuitemArray.getJSONObject(i).getString("status");
+                                myProgressDateStarted = menuitemArray.getJSONObject(i).getString("dateStarted");
+                                myProgressDateFinished = menuitemArray.getJSONObject(i).getString("dateFinished");
+                            }
+
+                            Toast.makeText(Dashboard.this, "Fetched from Progress: " + myProgressUserId, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Dashboard.this, "Progress Module: " + myProgressChapter, Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        Toast.makeText(Dashboard.this, volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                params.put("email", dashboard_email);
+                Log.d("email", Login.email + "");
+                Log.d("yes", "successful...");
+                return params;
+            }
+        };
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
+    }
 }
