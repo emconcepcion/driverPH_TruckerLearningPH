@@ -24,7 +24,7 @@ public class Lesson extends AppCompatActivity {
     ActivityLessonBinding binding;
     String[] descriptionData = {"One", "Two", "Three", "Four", "Five", "Six"};
     int arrSize;
-    public static TextView arraySize, progress_Module;
+    public static TextView arraySize, progress_Module, progress_LessonTitle;
     int current_state = 0;
     Bundle data = new Bundle();
 
@@ -33,24 +33,23 @@ public class Lesson extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityLessonBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-//        getSupportActionBar().setTitle("Lessons");
+
         arraySize = findViewById(R.id.arr_size);
         arrSize = descriptionData.length;
         arraySize.setText(String.valueOf(arrSize));
         progress_Module = findViewById(R.id.progress_Module);
+        progress_LessonTitle = findViewById(R.id.lessTitle);
 
         SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
-        String progMod = sharedPreferences.getString("lessonId", "");
+        String progMod = sharedPreferences.getString("moduleName", "");
+        String progLess = sharedPreferences.getString("lessonTitle", "");
 
-        String null_lessonId = "No active modules yet, please click the button to start learning!";
-        if (progMod.equals("null")){
+        String null_lessonId = "No active modules yet.";
+        if (progMod.equals("null") || progLess.equals("null")){
             progress_Module.setText(null_lessonId);
         }else{
             progress_Module.setText(progMod);
+            progress_LessonTitle.setText(progLess);
         }
 
 //        String currentModule = Lessons_Basic_Content.module;

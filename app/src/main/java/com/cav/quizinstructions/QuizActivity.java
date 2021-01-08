@@ -312,19 +312,19 @@ public class QuizActivity extends AppCompatActivity {
             switch (currentQuestion.getAnswerNr()) {
                 case 1:
                     currentQuestion.getOption1();
-                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption1() + "\n");
+                    askedQuestions.add("\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption1() + "\n");
                     break;
                 case 2:
                     currentQuestion.getOption2();
-                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption2()+ "\n");
+                    askedQuestions.add("\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption2()+ "\n");
                     break;
                 case 3:
                     currentQuestion.getOption3();
-                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption3()+ "\n");
+                    askedQuestions.add("\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption3()+ "\n");
                     break;
                 case 4:
                     currentQuestion.getOption4();
-                    askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption4()+ "\n");
+                    askedQuestions.add("\n" +currentQuestion.getQuestion() + "\n\nAnswer: " + currentQuestion.getOption4()+ "\n");
                     break;
             }
             score++;
@@ -332,7 +332,7 @@ public class QuizActivity extends AppCompatActivity {
 
         } else {
             String ansNotAvailable = "\nCorrect answer is hidden.\n";
-            askedQuestions.add("\n\n" +currentQuestion.getQuestion() + "\n" + ansNotAvailable);
+            askedQuestions.add("\n" +currentQuestion.getQuestion() + "\n" + ansNotAvailable);
         }
 
         showSolution();

@@ -33,8 +33,9 @@ import java.util.List;
 import static com.cav.quizinstructions.Constant.SP_LESSONID;
 
 public class Basic_Content extends AppCompatActivity {
-    public static WeakReference<Basic_Content> weakActivity;
-    public static String module;
+    public static WeakReference<Basic_Content> weakActivityBasicContent;
+
+    public static String module, moduleName;
     ListView content;
     public static List<String> al, lesson_id_key;
     public static String currentLesson, currLessonId;
@@ -43,7 +44,8 @@ public class Basic_Content extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_basic__content);
-        weakActivity = new WeakReference<>(Basic_Content.this);
+        weakActivityBasicContent = new WeakReference<>(Basic_Content.this);
+
 
         content = findViewById(R.id.listview);
         currLesson = findViewById(R.id.currLessonBasic);
@@ -51,8 +53,8 @@ public class Basic_Content extends AppCompatActivity {
         Email.setText(Dashboard.dashboard_email);
 
         module = getIntent().getStringExtra("module");
+        moduleName = getIntent().getStringExtra("moduleName");
         getData();
-//        Lesson.progress_Module.setText(module);
 
         content.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,9 +63,10 @@ public class Basic_Content extends AppCompatActivity {
                 SimpleDateFormat simpleDate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
                 String currentDate = simpleDate.format(new Date());
 
+                //my progress
                 Intent intent = new Intent(Basic_Content.this, Lessons_Basic_Content.class);
                 Bundle extras = new Bundle();
-                extras.putString("module", "1");
+                extras.putString("module", module);
                 extras.putString("course", al.get(position));
                 extras.putString("lessonId", lesson_id_key.get(position));
                 extras.putString("dateStarted", currentDate);
@@ -73,34 +76,36 @@ public class Basic_Content extends AppCompatActivity {
                 extras.putString("currLessonId", currLessonId);
                 intent.putExtras(extras);
                 startActivity(intent);
+
                 currentLesson = al.get(position);
                 currLesson.setText(String.valueOf(currentLesson));
+
                 SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
                 SharedPreferences.Editor myEdit = sharedPreferences.edit();
-                myEdit.putString("lessonId", currentLesson);
+                myEdit.putString("lessonTitle", currentLesson);
+                myEdit.putString("moduleName", moduleName);
                 myEdit.apply();
+
                 Dashboard.activeLesson.setText(currentLesson);
-                Dashboard.activeModule.setText(module);
+                Dashboard.activeModule.setText(moduleName);
             }
         });
     }
 
-    public void setRecentActivity(){
-
-    }
-
     @Override
     public void onBackPressed() {
-        startActivity(new Intent(Basic_Content.this, Lessons_Menu.class));
+
+        if (Lessons_Menu.isFromLessonsMenu){
+            startActivity(new Intent(Basic_Content.this, Lessons_Menu.class));
+        }else{
+            startActivity(new Intent(Basic_Content.this, Dashboard.class));
+        }
         finish();
     }
 
     public void getData() {
-
         String value = module;
-
         String url = Config5.DATA_URL + value;
-
 
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
@@ -153,6 +158,6 @@ public class Basic_Content extends AppCompatActivity {
     }
 
     public static Basic_Content getmInstanceActivity() {
-        return weakActivity.get();
+        return weakActivityBasicContent.get();
     }
 }

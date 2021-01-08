@@ -3,6 +3,7 @@ package com.cav.quizinstructions;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
@@ -75,6 +76,7 @@ public class QuizStatusList extends AppCompatActivity {
     boolean submittedScore;
     private boolean isRefreshedList = false;
     public static int uId;
+    SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +101,7 @@ public class QuizStatusList extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         adapter = new RecyclerAdapter(arrayList);
         recyclerView.setAdapter(adapter);
+        refreshLayout =(SwipeRefreshLayout) findViewById(R.id.refreshViewStatusList);
         readFromLocalStorage();
 
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
@@ -116,12 +119,33 @@ public class QuizStatusList extends AppCompatActivity {
             }
         };
 
+        submitScore();
+
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshLayout.setRefreshing(false);
+                Intent intent = getIntent();
+                finish();
+                overridePendingTransition(0, 0);
+                startActivity(intent);
+                overridePendingTransition(0, 0);
+            }
+        });
+
         refresh_list.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 if (QuizActivity.endedAttempt){ //|| (QuizActivity.endedAttempt)
-                    submitScore();
+//                    submitScore();
+                    Intent intent = getIntent();
+                    finish();
+                    overridePendingTransition(0, 0);
+                    startActivity(intent);
+                    overridePendingTransition(0, 0);
+                    readFromLocalStorage();
+                    Toast.makeText(QuizStatusList.this, "This list is updated.", Toast.LENGTH_SHORT).show();
                     btn_view_result.setVisibility(View.GONE);
                     refresh_list.setVisibility(View.GONE);
                     Button backToQMenu = findViewById(R.id.btn_backToQMenu);
@@ -130,11 +154,10 @@ public class QuizStatusList extends AppCompatActivity {
                         @Override
                         public void onClick(View v) {
                             startActivity(new Intent(QuizStatusList.this, Dashboard.class));
-
                         }
                     });
                 }else{
-                    submitScore();
+//                    submitScore();
                     submittedScore = true;
                     refresh_list.setVisibility(View.INVISIBLE);
                     btn_view_result.setVisibility(View.VISIBLE);
@@ -435,8 +458,8 @@ public class QuizStatusList extends AppCompatActivity {
     public boolean checkNetworkConnection() {
         ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.check_net),
-                Toast.LENGTH_LONG, R.style.toastStyle).show();
+//        StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.check_net),
+//                Toast.LENGTH_LONG, R.style.toastStyle).show();
         return (networkInfo != null && networkInfo.isConnected());
     }
 
@@ -449,8 +472,8 @@ public class QuizStatusList extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        super.onPause();
         unregisterReceiver(broadcastReceiver);
+        super.onPause();
     }
 
     public void goToQuizResults() {

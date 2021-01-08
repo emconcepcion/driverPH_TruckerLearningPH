@@ -6,19 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".Lesson">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/toolbar"/>
+<!--    <include layout="@layout/toolbar"-->
+<!--        android:id="@+id/toolbar"/>-->
 
-    <include layout="@layout/summary_list_view"
-        android:id="@+id/passedTestView"
-        android:visibility="invisible"/>
+<!--    <include layout="@layout/summary_list_view"-->
+<!--        android:id="@+id/passedTestView"-->
+<!--        android:visibility="invisible"/>-->
 
     <LinearLayout
-        android:layout_below="@id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="40dp">
 
         <TextView
             android:id="@+id/progress_Module"
@@ -26,6 +25,17 @@
             android:layout_height="wrap_content"
             android:text="Basic Competencies"
             android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#2B2B2B"
+            android:textAlignment="center"
+            android:gravity="center_horizontal" />
+
+        <TextView
+            android:id="@+id/lessTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Move and Position Camera"
+            android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#2B2B2B"
             android:textAlignment="center"
@@ -39,21 +49,11 @@
             android:layout_marginTop="10dp"
             />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Move and Position Camera"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#2B2B2B"
-            android:textAlignment="center"
-            android:gravity="center_horizontal" />
-
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/lessons_go_here"
+            android:text=""
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#2B2B2B"
@@ -65,17 +65,13 @@
             android:id="@+id/arr_size"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="array size"
+            android:text=""
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#2B2B2B"
             android:textAlignment="center"
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal" />
-
-
-
-
 
     </LinearLayout>
 
@@ -86,25 +82,26 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="30dp"
         >
         <Button
             android:id="@+id/btn_prev"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="@string/previous"
             android:textAlignment="center"
-            android:gravity="center_horizontal" />
+            android:layout_marginHorizontal="100dp"
+            android:background="@drawable/ic_arrow_left_long"
+            android:layout_gravity="center_horizontal" />
 
         <Button
             android:id="@+id/btn_next_lesson"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="@string/next"
+            android:background="@drawable/ic_arrow_right_long"
+            android:layout_marginHorizontal="100dp"
             android:textAlignment="center"
-            android:layout_marginStart="100dp"
-            android:gravity="center_horizontal"
-            android:layout_marginLeft="100dp" />
+            android:layout_gravity="center_horizontal"
+            />
     </LinearLayout>
 
 

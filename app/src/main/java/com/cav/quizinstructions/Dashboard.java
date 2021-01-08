@@ -10,8 +10,10 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -60,6 +62,8 @@ import static com.cav.quizinstructions.Basic_Content.currLesson;
 import static com.cav.quizinstructions.Basic_Content.currentLesson;
 import static com.cav.quizinstructions.Basic_Content.module;
 import static com.cav.quizinstructions.Constant.MODULE_ID_1;
+import static com.cav.quizinstructions.Constant.MODULE_ID_2;
+import static com.cav.quizinstructions.Constant.MODULE_ID_3;
 import static com.cav.quizinstructions.Constant.SP_LESSONID;
 
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,9 +72,10 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     private DrawerLayout drawer;
     static Button resumeLesson;
     public static String dashboard_email;
-    public static TextView recentModule, activeModule, activeLesson;
+    public static TextView recentModule, activeModule, activeLesson,
+                            activeModuleId, activeLessonId;
     public static String user_id;
-    public static int thisUserId, uidFromDb;
+    public static int thisUserId;
     public static TextView isModuleLocked, isModuleCompleted;
     public static String myLatestUserId;
     public static String myLatestAttempt;
@@ -88,16 +93,15 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     private TextView welcome_fname;
     public static TextView myEmailForAttempts;
     public static boolean emptyUserIdFromDb;
-    public static String lessonIdFromServer;
+    public static String lessonIdFromServer, moduleNameFromServer,
+                        lessonTitleFromServer, moduleIdFromServer;
     CircleImageView dahsboard_avatar;
     SharedPreferences sp;
     SharedPreferences sharedPreferences;
     public static final String Uid_PREFS = "USER_IDPREFS";
-    //    private String retrieveUrl="https://driver-ph.000webhostapp.com/driverphtest/retrieve.php";
     private final String retrieveUrl = "https://phportal.net/driverph/retrieve.php";
     private final String QUESTIONS_URL = "https://phportal.net/driverph/questions.php";
     private static final String Server_Scores_URL = "https://phportal.net/driverph/scoresOnline.php";
-//    private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
     public static final String SERVER_DASHBOARD = "https://phportal.net/driverph/dashboard_latest_module.php";
 
     @Override
@@ -105,9 +109,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         weakActivity = new WeakReference<>(Dashboard.this);
-
-//        dashboard_email = getIntent().getStringExtra("email");
-
 
         SharedPreferences sh = getSharedPreferences("MySharedPrefForEmail", MODE_PRIVATE);
         dashboard_email = sh.getString("driver_email", "");
@@ -122,27 +123,35 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         isModuleLocked = findViewById(R.id.isModLocked);
         isModuleCompleted = findViewById(R.id.isModCompleted);
         recentModule = findViewById(R.id.myprogresslesson);
-        activeModule = findViewById(R.id.Module);
+
+        activeLessonId = findViewById(R.id.lessonIdServer);
         activeLesson = findViewById(R.id.Lesson);
+        activeModuleId = findViewById(R.id.moduleIdServer);
+        activeModule = findViewById(R.id.Module);
+
         resumeLesson = (Button) findViewById(R.id.resume);
         myEmailForAttempts = findViewById(R.id.emailForAttempts);
         myEmailForAttempts.setText(dashboard_email);
 
         SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
         lessonIdFromServer = sharedPreferences.getString("lessonId", "");
+        lessonTitleFromServer = sharedPreferences.getString("lessonTitle", "");
+        moduleIdFromServer = sharedPreferences.getString("moduleId", "");
+        moduleNameFromServer = sharedPreferences.getString("moduleName", "");
 
-        String null_lessonId = "No active modules yet, please click the button to start learning!";
-        if (lessonIdFromServer.equals("null")){
-            activeLesson.setText(null_lessonId);
+        String null_lessonTitle = "No active modules yet, please click the button to start learning!";
+        if (lessonTitleFromServer.equals("null") || moduleNameFromServer.equals("null") ||
+                lessonIdFromServer.equals("null") || moduleIdFromServer.equals("null")){
+            activeModule.setText(null_lessonTitle);
         }else{
-            activeLesson.setText(lessonIdFromServer);
+            activeLessonId.setText(lessonIdFromServer);
+            activeLesson.setText(lessonTitleFromServer);
+            activeModuleId.setText(moduleIdFromServer);
+            activeModule.setText(moduleNameFromServer);
         }
         recentModule.setText(myLatestChapter);
-        activeModule.setText(module);
 
-
-//        activeLesson.setText(currentLesson);
-        if (module == null){
+        if (moduleNameFromServer.equals(null_lessonTitle)){
             resumeLesson.setText("Start Learning");
         }
         resumeLesson.setOnClickListener(new View.OnClickListener() {
@@ -197,21 +206,36 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     private void resumeModule() {
         String module= activeModule.getText().toString();
         switch (module){
-            case Constant.MODULE_ID_1:
-            case "":
-                String compe = MODULE_ID_1;
-                Intent intent = new Intent(Dashboard.this, Basic_Content.class);
-                Bundle extras = new Bundle();
-                extras.putString("module", compe);
-                intent.putExtras(extras);
-                startActivity(intent);
+            case Constant._1:
+            case MODULE_ID_1:
+                Intent intent1 = new Intent(Dashboard.this, Lessons_Basic_Content.class);
+                Bundle extras1 = new Bundle();
+                extras1.putString("module", MODULE_ID_1);
+                extras1.putString("lessonId", activeLessonId.getText().toString());
+                extras1.putString("moduleName", activeModule.getText().toString());
+                intent1.putExtras(extras1);
+                startActivity(intent1);
                 break;
-//            case Constant.MODULE_ID_2:
-//                startActivity(new Intent(Dashboard.this, Lessons_Common_Content.class));
-//                break;
-//            case Constant.MODULE_ID_3:
-//                startActivity(new Intent(Dashboard.this, Lessons_Core_Content.class));
-//                break;
+            case Constant._2:
+            case MODULE_ID_2:
+                Intent intent2 = new Intent(Dashboard.this, Lessons_Basic_Content.class);
+                Bundle extras2 = new Bundle();
+                extras2.putString("module", MODULE_ID_2);
+                extras2.putString("lessonId", activeLessonId.getText().toString());
+                extras2.putString("moduleName", activeModule.getText().toString());
+                intent2.putExtras(extras2);
+                startActivity(intent2);
+                break;
+            case Constant._3:
+            case MODULE_ID_3:
+                Intent intent3 = new Intent(Dashboard.this, Lessons_Basic_Content.class);
+                Bundle extras3 = new Bundle();
+                extras3.putString("module", MODULE_ID_3);
+                extras3.putString("lessonId", activeLessonId.getText().toString());
+                extras3.putString("moduleName", activeModule.getText().toString());
+                intent3.putExtras(extras3);
+                startActivity(intent3);
+                break;
         }
     }
 
@@ -395,32 +419,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             case R.id.action_change_language:
                 Toast.makeText(this, "Language Changed", Toast.LENGTH_SHORT).show();
             case R.id.action_log_out:
-                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove(SHARED_PREFS);
-                editor.apply();
-
-                SharedPreferences sp = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
-                SharedPreferences.Editor editor1 = sp.edit();
-                editor1.remove(Uid_PREFS);
-                editor1.apply();
-
-                SharedPreferences sp1 = getSharedPreferences("mySavedAttempt", MODE_PRIVATE);
-                SharedPreferences.Editor editor2 = sp1.edit();
-                editor2.remove("mySavedAttempt");
-                editor2.apply();
-
-                SharedPreferences sp2 = getSharedPreferences("MySharedPrefForEmail", MODE_PRIVATE);
-                SharedPreferences.Editor editor3 = sp2.edit();
-                editor3.remove("MySharedPrefForEmail");
-                editor3.apply();
-
-                Intent logout = new Intent(Dashboard.this, Login.class);
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(logout);
-                overridePendingTransition(0, 0);
-                System.exit(0);
+                logoutThisUser();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -449,38 +448,63 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 startActivity(intent);
                 break;
             case R.id.nav_siso:
-                SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.remove(SHARED_PREFS);
-                editor.apply();
-
-                SharedPreferences sp = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
-                SharedPreferences.Editor editor1 = sp.edit();
-                editor1.remove(Uid_PREFS);
-                editor1.apply();
-
-                SharedPreferences sp1 = getSharedPreferences("mySavedAttempt", MODE_PRIVATE);
-                SharedPreferences.Editor editor2 = sp1.edit();
-                editor2.remove("mySavedAttempt");
-                editor2.apply();
-
-                Intent logout = new Intent(Dashboard.this, Login.class);
-                startActivity(logout);
-                Toast.makeText(this, "Log Out Success", Toast.LENGTH_SHORT).show();
-                System.exit(0);
+                logoutThisUser();
                 break;
         }
         return true;
     }
 
+    public void logoutThisUser(){
+        SharedPreferences sharedPreferences = getSharedPreferences(SHARED_PREFS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(SHARED_PREFS);
+        editor.apply();
+
+        SharedPreferences sp = getSharedPreferences(Uid_PREFS, MODE_PRIVATE);
+        SharedPreferences.Editor editor1 = sp.edit();
+        editor1.remove(Uid_PREFS);
+        editor1.apply();
+
+        SharedPreferences sp1 = getSharedPreferences("mySavedAttempt", MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = sp1.edit();
+        editor2.remove("mySavedAttempt");
+        editor2.apply();
+
+        SharedPreferences sp2 = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
+        SharedPreferences.Editor editor3 = sp2.edit();
+        editor3.remove(SP_LESSONID);
+        editor3.apply();
+
+        SharedPreferences sp3 = getSharedPreferences("MySharedPrefForEmail", MODE_PRIVATE);
+        SharedPreferences.Editor editor4 = sp3.edit();
+        editor4.remove("MySharedPrefForEmail");
+        editor4.apply();
+
+        Intent logout = new Intent(Dashboard.this, Login.class);
+        startActivity(logout);
+        Toast.makeText(this, "Log Out Success", Toast.LENGTH_SHORT).show();
+        System.exit(0);
+    }
+
     @Override
     public void onBackPressed() {
-//        if (drawer.isDrawerOpen(GravityCompat.START)) {
-//            drawer.closeDrawer(GravityCompat.START);
-//        } else {
-//            startActivity(new Intent(Dashboard.this, Login.class));
-//            finish();
-//        }
+        AlertDialog alertDialog = new AlertDialog.Builder(Dashboard.this).create();
+        alertDialog.setTitle("Exit");
+        alertDialog.setMessage("Are you sure you want to exit?");
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        logoutThisUser();
+                        dialog.dismiss();
+                    }
+                });
+        alertDialog.show();
     }
 
     //for viewing of passed tests (summarized)
@@ -826,7 +850,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("email", dashboard_email);
-                Log.d("email", Login.email + "");
+                Log.d("email", dashboard_email + "");
                 Log.d("yes", "successful...");
                 return params;
             }

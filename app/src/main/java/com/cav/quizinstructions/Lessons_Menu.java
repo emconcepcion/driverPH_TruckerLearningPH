@@ -13,6 +13,10 @@ import android.widget.TextView;
 
 import static com.cav.quizinstructions.BackgroundTask.EMAIL;
 import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
+import static com.cav.quizinstructions.Constant.MODULE_ID_1;
+import static com.cav.quizinstructions.Constant.MODULE_ID_2;
+import static com.cav.quizinstructions.Constant.MODULE_ID_3;
+import static com.cav.quizinstructions.Constant.SP_LESSONID;
 import static com.cav.quizinstructions.Constant._1;
 import static com.cav.quizinstructions.Constant._2;
 import static com.cav.quizinstructions.Constant._3;
@@ -26,6 +30,8 @@ public class Lessons_Menu extends AppCompatActivity {
     SharedPreferences sp;
     public static TextView myEmailLesson;
     public static boolean isFromLessonsMenu;
+    public static String compe, lessonIdServer, lessonTitleServer,
+                        moduleIdServer, moduleNameServer, mod;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,13 @@ public class Lessons_Menu extends AppCompatActivity {
         Quizzes_menu.isFromQuizMenu = false;
         isFromLessonsMenu=true;
 
+        SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
+        lessonIdServer = sharedPreferences.getString("lessonId", "");
+        lessonTitleServer = sharedPreferences.getString("lessonTitle", "");
+        moduleIdServer = sharedPreferences.getString("moduleId", "");
+        moduleNameServer = sharedPreferences.getString("moduleName", "");
+
+
         cardViewMod1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,12 +70,9 @@ public class Lessons_Menu extends AppCompatActivity {
                 editor.apply();
                 startActivity(new Intent(Lessons_Menu.this,Lessons_Basic_Content.class));
 
-                String compe = "1";
-                Intent intent = new Intent(Lessons_Menu.this, Basic_Content.class);
-                Bundle extras = new Bundle();
-                extras.putString("module", compe);
-                intent.putExtras(extras);
-                startActivity(intent);
+                compe = MODULE_ID_1;
+                mod = _1;
+                goToModuleList();
             }
         });
 
@@ -77,6 +87,10 @@ public class Lessons_Menu extends AppCompatActivity {
                 editor.putString("chapter", chapTest);
                 editor.apply();
                 startActivity(new Intent(Lessons_Menu.this,Lessons_Basic_Content.class));
+
+                compe = MODULE_ID_2;
+                mod = _2;
+                goToModuleList();
             }
         });
 
@@ -90,6 +104,10 @@ public class Lessons_Menu extends AppCompatActivity {
                 editor.putString("chapter", chapTest);
                 editor.apply();
                 startActivity(new Intent(Lessons_Menu.this,Lessons_Basic_Content.class));
+
+                compe = MODULE_ID_3;
+                mod = _3;
+                goToModuleList();
             }
         });
 
@@ -99,6 +117,15 @@ public class Lessons_Menu extends AppCompatActivity {
                 startActivity(new Intent(Lessons_Menu.this,Evaluation_Menu.class));
             }
         });
+    }
+
+    public void goToModuleList(){
+        Intent intent = new Intent(Lessons_Menu.this, Basic_Content.class);
+        Bundle extras = new Bundle();
+        extras.putString("module", compe);
+        extras.putString("moduleName", mod);
+        intent.putExtras(extras);
+        startActivity(intent);
     }
 
     @Override

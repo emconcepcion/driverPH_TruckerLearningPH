@@ -49,7 +49,7 @@ public class Login extends AppCompatActivity {
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String EMAIL = "text";
     private String retrieveprogress="https://phportal.net/driverph/retrieve_progress.php";
-    public String user_id;
+    public static String user_id;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -194,16 +194,18 @@ public class Login extends AppCompatActivity {
                     //if no error in response
                     if (!obj.getBoolean("error")) {
                         String lesson_id = obj.getString("lessonId");
-
+                        String lesson_title = obj.getString("lessonTitle");
+                        String module_id = obj.getString("moduleId");
+                        String module_name = obj.getString("moduleName");
                         Intent intent = new Intent(Login.this, Dashboard.class);
-//                        Bundle extras = new Bundle();
-//                        extras.putString("lessonId", lesson_id);
-//                        intent.putExtras(extras);
                         startActivity(intent);
 
                         SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
                         SharedPreferences.Editor myEdit = sharedPreferences.edit();
                         myEdit.putString("lessonId", lesson_id);
+                        myEdit.putString("lessonTitle", lesson_title);
+                        myEdit.putString("moduleId", module_id);
+                        myEdit.putString("moduleName", module_name);
                         myEdit.apply();
                     }
                 } catch (Exception e ){
@@ -215,6 +217,5 @@ public class Login extends AppCompatActivity {
         progress_class show = new progress_class();
         show.execute();
     }
-
 
 }

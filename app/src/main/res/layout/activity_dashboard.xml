@@ -66,8 +66,7 @@
                     android:layout_marginRight="16dp"
                     android:src="@drawable/ic_boy"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    />
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -81,24 +80,25 @@
                     android:id="@+id/recentActivity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
                     android:text="Your active module is: "
-                    android:textStyle="bold"
                     android:textColor="@color/dark_blue"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/Module"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
                     android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:text="Module"
                     android:textAlignment="center"
-                    android:padding="5dp"
-                    android:textStyle="bold"
-                    android:textSize="16dp" />
+                    android:textSize="16dp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/Lesson"
@@ -106,9 +106,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="5dp"
-                    android:padding="5dp"
-                    android:textAlignment="center"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
                     android:text="Lesson"
+                    android:textAlignment="center"
                     android:textSize="14dp"
                     android:textStyle="bold" />
 
@@ -117,228 +118,249 @@
                     android:layout_width="150dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:background="@drawable/rounded_login_button"
-                    android:text="Resume"
                     android:padding="10dp"
+                    android:text="Resume"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    />
+                    android:textColor="@android:color/white" />
 
-                <TextView
-                    android:id="@+id/myprogresslesson"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginTop="0dp"
-                    android:text="1"
-                    android:textSize="16sp"
-                    android:visibility="visible"
-                    android:layout_marginRight="10dp" />
-
-                <TextView
-                    android:id="@+id/emailForAttempts"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:text="yourEmail"
-                    android:textSize="10dp" />
-
-
-
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-
-
-                <androidx.constraintlayout.widget.ConstraintLayout
+                <TableRow
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginBottom="50dp"
-                    android:background="#EAEAEA">
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    >
 
-
-                    <!--Welcome CARDVIEW!-->
-
-
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView_userGreeting"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/myprogresslesson"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginTop="0dp"
-                        android:layout_marginEnd="0dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent">
+                        android:layout_gravity="end"
+                        android:layout_marginRight="30dp"
+                        android:text="quizChap"
+                        android:textSize="10dp"
+                        android:visibility="visible" />
 
-                    </androidx.cardview.widget.CardView>
-
-                    <!--LESSONS CARDVIEW!-->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView_lessons"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/emailForAttempts"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="8dp"
-                        android:clickable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        app:cardCornerRadius="8dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView_userGreeting">
+                        android:layout_gravity="end"
+                        android:layout_marginRight="30dp"
+                        android:text="yourEmail"
+                        android:textSize="10dp" />
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                    <TextView
+                        android:id="@+id/lessonIdServer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="30dp"
+                        android:text="lessonId"
+                        android:textSize="10dp" />
+
+                    <TextView
+                        android:id="@+id/moduleIdServer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:layout_marginRight="30dp"
+                        android:text="moduleId"
+                        android:textSize="10dp" />
+
+                </TableRow>
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginBottom="50dp"
+                        android:background="#EAEAEA">
+
+
+                        <!--Welcome CARDVIEW!-->
+
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView_userGreeting"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="0dp"
+                            android:layout_marginTop="0dp"
+                            android:layout_marginEnd="0dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
 
-                            <ImageView
-                                android:layout_width="358dp"
-                                android:layout_height="130dp"
-                                android:layout_marginStart="4dp"
-                                android:background="@drawable/dlessons_dash_btn"
-                                android:scaleType="centerCrop"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent"
-                                android:layout_marginLeft="4dp" />
+                        </androidx.cardview.widget.CardView>
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <!--QUIZZES CARDVIEW!-->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView_quizzes"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:clickable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        app:cardCornerRadius="8dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView_lessons">
-
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <!--LESSONS CARDVIEW!-->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView_lessons"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            app:cardCornerRadius="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView_userGreeting">
 
-                            <ImageView
-                                android:layout_width="358dp"
-                                android:layout_height="130dp"
-                                android:background="@drawable/dquizzes_btn_img"
-                                android:scaleType="centerCrop"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                                <ImageView
+                                    android:layout_width="358dp"
+                                    android:layout_height="130dp"
+                                    android:layout_marginStart="4dp"
+                                    android:layout_marginLeft="4dp"
+                                    android:background="@drawable/dlessons_dash_btn"
+                                    android:scaleType="centerCrop"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
 
-                    </androidx.cardview.widget.CardView>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <!--SIMULATION CARDVIEW!-->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView_simulation"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:clickable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        app:cardCornerRadius="8dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView_quizzes">
+                        </androidx.cardview.widget.CardView>
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <!--QUIZZES CARDVIEW!-->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView_quizzes"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            app:cardCornerRadius="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView_lessons">
 
-                            <ImageView
-                                android:layout_width="358dp"
-                                android:layout_height="130dp"
-                                android:background="@drawable/dsimulation_img"
-                                android:scaleType="centerCrop"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                                <ImageView
+                                    android:layout_width="358dp"
+                                    android:layout_height="130dp"
+                                    android:background="@drawable/dquizzes_btn_img"
+                                    android:scaleType="centerCrop"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
 
-                    </androidx.cardview.widget.CardView>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <!--ASSESSMENT CARDVIEW!-->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView_assessment"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:clickable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        app:cardCornerRadius="8dp"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView_simulation">
+                        </androidx.cardview.widget.CardView>
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <!--SIMULATION CARDVIEW!-->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView_simulation"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            app:cardCornerRadius="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView_quizzes">
 
-                            <ImageView
-                                android:layout_width="358dp"
-                                android:layout_height="130dp"
-                                android:background="@drawable/dassessment_btn"
-                                android:scaleType="centerCrop"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                                <ImageView
+                                    android:layout_width="358dp"
+                                    android:layout_height="130dp"
+                                    android:background="@drawable/dsimulation_img"
+                                    android:scaleType="centerCrop"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
 
-                    </androidx.cardview.widget.CardView>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <!--POLICIES AND GUIDELINES CARDVIEW!-->
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/cardView_polguide"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:layout_marginBottom="10dp"
-                        android:clickable="true"
-                        android:foreground="?android:attr/selectableItemBackground"
-                        app:cardCornerRadius="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/cardView_assessment">
+                        </androidx.cardview.widget.CardView>
 
-                        <androidx.constraintlayout.widget.ConstraintLayout
+                        <!--ASSESSMENT CARDVIEW!-->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView_assessment"
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent">
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            app:cardCornerRadius="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView_simulation">
 
-                            <ImageView
-                                android:layout_width="358dp"
-                                android:layout_height="130dp"
-                                android:background="@drawable/dpol_guide"
-                                android:scaleType="centerCrop"
-                                app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="parent" />
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
 
-                        </androidx.constraintlayout.widget.ConstraintLayout>
+                                <ImageView
+                                    android:layout_width="358dp"
+                                    android:layout_height="130dp"
+                                    android:background="@drawable/dassessment_btn"
+                                    android:scaleType="centerCrop"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
 
-                    </androidx.cardview.widget.CardView>
+                            </androidx.constraintlayout.widget.ConstraintLayout>
 
-                </androidx.constraintlayout.widget.ConstraintLayout>
+                        </androidx.cardview.widget.CardView>
 
-            </ScrollView>
+                        <!--POLICIES AND GUIDELINES CARDVIEW!-->
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView_polguide"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="10dp"
+                            android:clickable="true"
+                            android:foreground="?android:attr/selectableItemBackground"
+                            app:cardCornerRadius="8dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/cardView_assessment">
+
+                            <androidx.constraintlayout.widget.ConstraintLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent">
+
+                                <ImageView
+                                    android:layout_width="358dp"
+                                    android:layout_height="130dp"
+                                    android:background="@drawable/dpol_guide"
+                                    android:scaleType="centerCrop"
+                                    app:layout_constraintStart_toStartOf="parent"
+                                    app:layout_constraintTop_toTopOf="parent" />
+
+                            </androidx.constraintlayout.widget.ConstraintLayout>
+
+                        </androidx.cardview.widget.CardView>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </ScrollView>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

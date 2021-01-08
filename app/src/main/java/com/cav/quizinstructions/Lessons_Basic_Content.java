@@ -67,7 +67,6 @@ public class Lessons_Basic_Content extends AppCompatActivity {
     public static TextView email_lesson;
     private String retrieveUrl="https://phportal.net/driverph/retrieve_content.php";
     public static String SERVER_USER_PROGRESS = "https://phportal.net/driverph/user_progress.php";
-    public static String SERVER_UPDATE_LESSON_PROGRESS = "https://phportal.net/driverph/update_lesson_progress.php";
     Button btnBack, btnNext;
     public static String myProgressUserId;
     public static String myProgressModule;
@@ -80,6 +79,7 @@ public class Lessons_Basic_Content extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lessons__basic__content);
+//        Basic_Content.getmInstanceActivity().getData();
 
         //this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -118,7 +118,7 @@ public class Lessons_Basic_Content extends AppCompatActivity {
                 editor1.putString("email", dashboard_email);
                 editor1.putString("username", nameVR);
                 editor1.apply();
-             //   startActivity(new Intent(Lessons_Basic_Content.this, VoiceResponse.class));
+                startActivity(new Intent(Lessons_Basic_Content.this, VoiceResponse.class));
 
             }
         });
@@ -209,13 +209,6 @@ public class Lessons_Basic_Content extends AppCompatActivity {
             }
         });
     }
-
-//    @Override
-//    public void onBackPressed() {
-//        updateAccessedModuleToServer(Integer.parseInt(dashboard_email), module, lessonId,
-//                dateStarted, dateFinished);
-//        Toast.makeText(this, "Updated lesson progress", Toast.LENGTH_SHORT).show();
-//    }
 
     public void retrievedatas(){
 //        final String course1 = course;
@@ -334,6 +327,7 @@ public class Lessons_Basic_Content extends AppCompatActivity {
         textToSpeech.setSpeechRate(speed);
         textToSpeech.speak(lessonpdf, TextToSpeech.QUEUE_FLUSH, null);
     }
+
     //load all data for user's progress / latest module
     public void insertUserProgressModules() {
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -349,7 +343,7 @@ public class Lessons_Basic_Content extends AppCompatActivity {
                         progressDialog.dismiss();
                         Toast.makeText(Lessons_Basic_Content.this, "Loading all attempts", Toast.LENGTH_SHORT).show();
                         try {
-                            JSONObject jObj = new JSONObject(s);
+                            JSONObject jObj = new JSONObject("");
 
                             JSONArray menuitemArray = jObj.getJSONArray("data");
 
@@ -409,70 +403,4 @@ public class Lessons_Basic_Content extends AppCompatActivity {
         requestQueue.add(stringRequest);
     }
 
-    public void updateAccessedModuleToServer(int userId, String module, String lessonId,
-                                             String dateStarted, String dateFinished) {
-        if (checkNetworkConnection()) {
-            StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                    SERVER_UPDATE_LESSON_PROGRESS,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                JSONObject jsonObject = new JSONObject(response);
-                                //get response from jsonobject
-                                String Response = jsonObject.getString("response");
-                                //check response from server
-                                if (Response.equals("OK")) {
-                                } else { //for server error, unable to save, will be handled by saveToAppServer
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-
-                    if (error instanceof TimeoutError) {
-                        Toast.makeText(Lessons_Basic_Content.this, "Timeout error", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof NoConnectionError) {
-                        checkNetworkConnection();
-                        Toast.makeText(Lessons_Basic_Content.this, "Network error", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof AuthFailureError) {
-                        Toast.makeText(Lessons_Basic_Content.this, "Auth error", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof ServerError) {
-                        Toast.makeText(Lessons_Basic_Content.this, "Server error", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof NetworkError) {
-                        Toast.makeText(Lessons_Basic_Content.this, "Network error", Toast.LENGTH_SHORT).show();
-                    } else if (error instanceof ParseError) {
-                        Toast.makeText(Lessons_Basic_Content.this, "Parse error", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }) {
-                //body of the string request
-                @Override
-                protected Map<String, String> getParams() throws AuthFailureError {
-                    Map<String, String> params = new HashMap<>();
-                    params.put("email", dashboard_email);
-                    params.put("module", module);
-                    params.put("lessonId", lessonId);
-                    params.put("status", status);
-                    params.put("dateStarted", dateStarted);
-                    params.put("dateFinished", dateFinished);
-                    Log.d("email", dashboard_email + "");
-                    Log.d("yes", "successful...");
-                    return params;
-                }
-            };
-            MySingleton.getInstance(Lessons_Basic_Content.this).addToRequestQueue(stringRequest);
-            Toast.makeText(this, "Updated unlocked modules.", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    //check for internet connection
-    public boolean checkNetworkConnection() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
-        return (networkInfo != null && networkInfo.isConnected());
-    }
 }
