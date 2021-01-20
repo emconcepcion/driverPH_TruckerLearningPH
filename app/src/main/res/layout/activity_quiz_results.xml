@@ -6,18 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".QuizResults">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/toolbar"/>
+<!--    <include layout="@layout/toolbar"-->
+<!--        android:id="@+id/toolbar"/>-->
 
     <TextView
-        android:layout_below="@id/toolbar"
         android:id="@+id/chapter_name_result"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:text="Chapter name"
-        android:textStyle="bold"/>
+        android:textStyle="bold"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/you_scored"
@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/chapter_name_result"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:text="@string/you_scored"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -49,7 +49,7 @@
         android:layout_margin="10dp"
         android:textColor="@color/dark_blue"
         android:text="Note: Only the questions that you attempted to answer will be displayed below:"
-        android:textStyle="bold" />
+         />
 
 <!--    <LinearLayout-->
 <!--        android:id="@+id/linear1"-->

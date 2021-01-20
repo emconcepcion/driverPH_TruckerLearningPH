@@ -6,13 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".Lesson">
 
-<!--    <include layout="@layout/toolbar"-->
-<!--        android:id="@+id/toolbar"/>-->
-
-<!--    <include layout="@layout/summary_list_view"-->
-<!--        android:id="@+id/passedTestView"-->
-<!--        android:visibility="invisible"/>-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -23,7 +16,7 @@
             android:id="@+id/progress_Module"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Basic Competencies"
+            android:text="Module"
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#2B2B2B"
@@ -34,7 +27,7 @@
             android:id="@+id/lessTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Move and Position Camera"
+            android:text="Lesson"
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="#2B2B2B"

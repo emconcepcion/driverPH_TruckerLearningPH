@@ -1,2 +1,6 @@
 include ':app'
 rootProject.name = "QuizInstructions"
+
+include ':unityLibrary'
+project(':unityLibrary').projectDir=new File('D:\\CHICHICHI\\LESSONS\\TruckerApp\\unityLibrary')
+

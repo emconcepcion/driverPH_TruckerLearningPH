@@ -43,6 +43,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
 import static com.cav.quizinstructions.Constant.MODULE_ID_1;
 import static com.cav.quizinstructions.Constant.MODULE_ID_2;
 import static com.cav.quizinstructions.Constant.MODULE_ID_3;
+import static com.cav.quizinstructions.Constant.Server_All_Attempts_URL;
 import static com.cav.quizinstructions.Constant._1;
 import static com.cav.quizinstructions.Constant._2;
 import static com.cav.quizinstructions.Constant._3;
@@ -64,12 +66,11 @@ import static com.cav.quizinstructions.Dashboard.thisUserId;
 import static com.cav.quizinstructions.Dashboard.user_id;
 
 public class Quizzes_menu extends AppCompatActivity {
-    private static final String Server_All_Attempts_URL = "https://phportal.net/driverph/get_all_attempts.php";
 
     public static CardView cardViewMod1;
     public static CardView cardViewMod2;
     public static CardView cardViewMod3;
-    TextView tChapter, mylatestModLocked, mylatestModCompleted;
+    TextView tChapter, mylatestModLocked, mylatestModCompleted, chapDash;
     Button btn_leaderBoard;
     Button btn_list_completed_quizzes;
     public static boolean isFromQuizMenu;
@@ -80,7 +81,7 @@ public class Quizzes_menu extends AppCompatActivity {
     public static String myLatestIsCompleted;
     public static String dash_email;
     @SuppressLint("StaticFieldLeak")
-    public static TextView myEmailQMenu, userIdQMenu, uidDb_txt, updatedChapter;
+    public static TextView myEmailQMenu, userIdQMenu, uidDb_txt;
     public static int latestUnlocked, latestCompleted;
     SharedPreferences sharedPreferences;
 
@@ -102,7 +103,8 @@ public class Quizzes_menu extends AppCompatActivity {
         myEmailQMenu = findViewById(R.id.email_qMenu);
         userIdQMenu = findViewById(R.id.txt_userIdQuiz);
         uidDb_txt = findViewById(R.id.txt_uidDbQuizMenu);
-        updatedChapter = findViewById(R.id.myprogresslesson);
+        chapDash = findViewById(R.id.txt_chapFromDash);
+        chapDash.setText(Dashboard.myLatestChapter);
 
         mylatestModLocked = findViewById(R.id.latestMod1Locked);
         mylatestModCompleted = findViewById(R.id.latestMod1Completed);
@@ -113,9 +115,9 @@ public class Quizzes_menu extends AppCompatActivity {
         dash_email = sharedPreferences.getString("email", "");
         Intent i = getIntent();
         Bundle b = i.getExtras();
-//        dashboard_email = b.getString("email");
         int uidDb = b.getInt("user_idFromServer");
         int uid = b.getInt("user_idFromDashboard");
+//        fetchedChap = b.getString("myLatestChapter");
         myEmailQMenu.setText(dash_email);
         uidDb_txt.setText(String.valueOf(uidDb));
         userIdQMenu.setText(String.valueOf(uid));
@@ -189,6 +191,7 @@ public class Quizzes_menu extends AppCompatActivity {
         });
     }
 
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(Quizzes_menu.this, Dashboard.class);
@@ -216,7 +219,7 @@ public class Quizzes_menu extends AppCompatActivity {
         switch (myLatestChapter) {
             case MODULE_ID_1:
                 if (sameUser && myLatestChapter.equals(MODULE_ID_1)
-                        && latestUnlocked == 0 && latestCompleted == 1) {
+                       && latestCompleted == 1) {
                     cardViewMod2.setClickable(true);
                     passedLockMod1();
                     lockedMod3();
@@ -227,7 +230,7 @@ public class Quizzes_menu extends AppCompatActivity {
                 break;
             case MODULE_ID_2:
                 if (sameUser && myLatestChapter.equals(MODULE_ID_2)
-                        && latestUnlocked == 0 && latestCompleted == 1) {
+                        && latestCompleted == 1) {
                     cardViewMod3.setClickable(true);
                     passedLockMod1();
                     passedLockMod2();
@@ -238,7 +241,7 @@ public class Quizzes_menu extends AppCompatActivity {
                 break;
             case MODULE_ID_3:
                 if (sameUser && myLatestChapter.equals(MODULE_ID_3)
-                        && latestUnlocked == 0 && latestCompleted == 1) {
+                        && latestCompleted == 1) {
                     passedLockMod1();
                     passedLockMod2();
                     passedLockMod3();
@@ -246,8 +249,8 @@ public class Quizzes_menu extends AppCompatActivity {
                 break;
         }
 
-        if (sameUser && myLatestChapter.equals(MODULE_ID_1) &&
-                latestUnlocked == 1 && latestCompleted == 0) {
+        if (sameUser && myLatestChapter.equals(MODULE_ID_1)
+                && latestCompleted == 0) {
             cardViewMod1.setClickable(true);
         }
 
@@ -350,8 +353,8 @@ public class Quizzes_menu extends AppCompatActivity {
                                 db.addScoresServer(mS1);
                             }
 
-                            Toast.makeText(Quizzes_menu.this, "Fetched from attempts: " + myLatestUserId, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(Quizzes_menu.this, "Latest Chapter: " + myLatestChapter, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Quizzes_menu.this, "Attempt QMenu: " + myLatestUserId, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Quizzes_menu.this, "Chapter QMenu: " + myLatestChapter, Toast.LENGTH_SHORT).show();
                             Dashboard.recentModule.setText(myLatestChapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -369,10 +372,10 @@ public class Quizzes_menu extends AppCompatActivity {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
-                String fetchedChap = Dashboard.recentModule.getText().toString();
-                params.put("email", dash_email);
+                String fetchedChap = Dashboard.myLatestChapter;
+                params.put("email", dashboard_email);
                 params.put("chapter", fetchedChap);
-                Log.d("email", dash_email + "");
+                Log.d("email", dashboard_email + "");
                 Log.d("yes", "successful...");
                 return params;
             }

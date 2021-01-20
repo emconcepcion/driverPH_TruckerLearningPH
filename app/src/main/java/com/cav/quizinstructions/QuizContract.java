@@ -17,6 +17,7 @@ public final class QuizContract {
         public static final String COLUMN_ANSWER_NR = "answer_nr";
         public static final String COLUMN_CHAPTER = "chapter";
         public static final String COLUMN_MODULE_NAME = "module_name";
+        public static final String COLUMN_IMAGE = "image";
     }
 
 }

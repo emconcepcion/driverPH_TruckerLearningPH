@@ -26,7 +26,6 @@
         <activity android:name=".ChangePassword" />
         <activity android:name=".ForgotPassword" />
         <activity android:name=".Basic_Content" />
-        <activity android:name=".TestListUnavailable" />
         <activity
             android:name=".CompletedQuizzes"
             android:screenOrientation="portrait" />

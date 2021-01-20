@@ -8,6 +8,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -35,13 +36,16 @@ import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.muddzdev.styleabletoast.StyleableToast;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -56,7 +60,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.cav.quizinstructions.Constant.Server_All_Attempts_URL;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+import static com.cav.quizinstructions.Dashboard.dashboard_email;
 
 public class QuizStatusList extends AppCompatActivity {
 
@@ -71,12 +77,9 @@ public class QuizStatusList extends AppCompatActivity {
     Button refresh_list;
     public static boolean completedQuizzes;
     public static TextView tv_userId_sList;
-
     public static int isLockedA, isCompletedA;
     boolean submittedScore;
-    private boolean isRefreshedList = false;
-    public static int uId;
-    SwipeRefreshLayout refreshLayout;
+    public static final String POST_ALL_TEST = "https://phportal.net/driverph/paa.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +104,6 @@ public class QuizStatusList extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         adapter = new RecyclerAdapter(arrayList);
         recyclerView.setAdapter(adapter);
-        refreshLayout =(SwipeRefreshLayout) findViewById(R.id.refreshViewStatusList);
         readFromLocalStorage();
 
         SharedPreferences sp = getApplicationContext().getSharedPreferences("mySavedAttempt", Context.MODE_PRIVATE);
@@ -119,33 +121,14 @@ public class QuizStatusList extends AppCompatActivity {
             }
         };
 
-        submitScore();
-
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                refreshLayout.setRefreshing(false);
-                Intent intent = getIntent();
-                finish();
-                overridePendingTransition(0, 0);
-                startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
-        });
-
         refresh_list.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                if (QuizActivity.endedAttempt){ //|| (QuizActivity.endedAttempt)
-//                    submitScore();
-                    Intent intent = getIntent();
-                    finish();
-                    overridePendingTransition(0, 0);
-                    startActivity(intent);
-                    overridePendingTransition(0, 0);
-                    readFromLocalStorage();
-                    Toast.makeText(QuizStatusList.this, "This list is updated.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(QuizStatusList.this, "This list is updated.", Toast.LENGTH_SHORT).show();
+
+                if (QuizActivity.endedAttempt){
+                    submitScore();
                     btn_view_result.setVisibility(View.GONE);
                     refresh_list.setVisibility(View.GONE);
                     Button backToQMenu = findViewById(R.id.btn_backToQMenu);
@@ -157,7 +140,7 @@ public class QuizStatusList extends AppCompatActivity {
                         }
                     });
                 }else{
-//                    submitScore();
+                    submitScore();
                     submittedScore = true;
                     refresh_list.setVisibility(View.INVISIBLE);
                     btn_view_result.setVisibility(View.VISIBLE);
@@ -173,8 +156,8 @@ public class QuizStatusList extends AppCompatActivity {
                 goToQuizResults();
             }
         });
+     //   loadDataAllAttemptsAndLevels();
     }
-
 
     public void submitScore() {
 
@@ -225,15 +208,19 @@ public class QuizStatusList extends AppCompatActivity {
         }
 
         //save the score to web server for all attempts table if there is internet connection
-        if (checkNetworkConnection()){
-            saveAllAttemptsToAppServer(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA, dateTakenA, isLockedA, isCompletedA);
-        }
+//        if (checkNetworkConnection()){
+//            saveAllAttemptsToAppServer(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA, dateTakenA, isLockedA, isCompletedA);
+//        }
+
         //save the score to web server only if the user passed the test, else, save only to local db
-        if (QuizActivity.unlocked && checkNetworkConnection()){
+//        if (QuizActivity.unlocked && checkNetworkConnection()){
+        if (checkNetworkConnection()){
             saveToAppServer(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA, dateTakenA, isLockedA, isCompletedA);
-        }else{
             saveToLocalStorage(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA,
                     dateTakenA, isLockedA, isCompletedA, DbContract.SYNC_STATUS_SAVED);
+        }else{
+            saveToLocalStorage(userIdA,emailA, scoreA, itemsA, chapA, attemptsA, durationA,
+                    dateTakenA, isLockedA, isCompletedA, DbContract.SYNC_STATUS_FAILED);
         }
     }
 
@@ -269,12 +256,12 @@ public class QuizStatusList extends AppCompatActivity {
         dbHelper.close();
     }
 
-
     public void saveToAppServer(int userId, String email, int score, int num_items, String chap,
                                 int num_of_attempt, String duration, String date_taken,
                                 int isLocked, int isCompleted) {
         if (checkNetworkConnection()) {
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, DbContract.ScoresTable.SERVER_URL,
+            StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                    POST_ALL_TEST,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -344,10 +331,10 @@ public class QuizStatusList extends AppCompatActivity {
                 }
             };
             MySingleton.getInstance(QuizStatusList.this).addToRequestQueue(stringRequest);
-            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
-                    date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_SAVED);
-            StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.saved),
-                    Toast.LENGTH_LONG, R.style.toastStyle).show();
+//            saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
+//                    date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_SAVED);
+//            StyleableToast.makeText(getApplicationContext(), QuizStatusList.this.getString(R.string.saved),
+//                    Toast.LENGTH_LONG, R.style.toastStyle).show();
         } else { // no internet, save to SQLite
             saveToLocalStorage(userId, email, score, num_items, chap, num_of_attempt, duration,
                     date_taken, isLocked, isCompleted, DbContract.SYNC_STATUS_FAILED);
@@ -507,8 +494,6 @@ public class QuizStatusList extends AppCompatActivity {
             TextView backAgain = findViewById(R.id.need_refresh);
             backAgain.setVisibility(View.VISIBLE);
             backAgain.setText("Please press the button to proceed.");
-//            finish();
         }
-
     }
 }

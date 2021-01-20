@@ -13,7 +13,6 @@ public class Database {
 	public static final String DATABASE_NAME= DbContract.ScoresTable.DATABASE_NAME;
 	public static final String TABLE_NAME= QuizContract.QuestionsTable.TABLE_NAME;
 	public static final int DATABSE_VERSION=1;
-	
 
 	//to create a table
 
@@ -27,7 +26,8 @@ public class Database {
 			QuizContract.QuestionsTable.COLUMN_OPTION4 + " TEXT, " +
 			QuizContract.QuestionsTable.COLUMN_ANSWER_NR + " INTEGER, " +
 			QuizContract.QuestionsTable.COLUMN_CHAPTER + " TEXT," +
-			QuizContract.QuestionsTable.COLUMN_MODULE_NAME + " TEXT" +
+			QuizContract.QuestionsTable.COLUMN_MODULE_NAME + " TEXT," +
+			QuizContract.QuestionsTable.COLUMN_IMAGE + " TEXT" +
 			");";
 
 	final String SQL_CREATE_SCORES_TABLE = "CREATE TABLE " +
@@ -149,6 +149,7 @@ public class Database {
 		cv.put(QuizContract.QuestionsTable.COLUMN_ANSWER_NR, question.getAnswerNr());
 		cv.put(QuizContract.QuestionsTable.COLUMN_CHAPTER, question.getChapter());
 		cv.put(QuizContract.QuestionsTable.COLUMN_MODULE_NAME, question.getModuleName());
+		cv.put(QuizContract.QuestionsTable.COLUMN_IMAGE, question.getImageUrl());
 			
 			Log.d("inserted... ", question.getQuestion()+"");
 			Log.d("inserted... ", question.getAnswerNr()+"");

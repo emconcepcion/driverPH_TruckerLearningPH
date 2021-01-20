@@ -48,8 +48,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginLeft="8dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="15dp"
+                    android:layout_marginBottom="10dp"
                     android:text="@string/current_date"
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
@@ -59,9 +58,9 @@
 
                 <de.hdodenhof.circleimageview.CircleImageView
                     android:id="@+id/dashboard_avatar"
-                    android:layout_width="100dp"
-                    android:layout_height="80dp"
-                    android:layout_marginTop="8dp"
+                    android:layout_width="50dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginRight="16dp"
                     android:src="@drawable/ic_boy"
@@ -84,7 +83,7 @@
                     android:layout_marginTop="10dp"
                     android:text="Your active module is: "
                     android:textColor="@color/dark_blue"
-                    android:textSize="16dp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -97,7 +96,7 @@
                     android:paddingRight="10dp"
                     android:text="Module"
                     android:textAlignment="center"
-                    android:textSize="16dp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -108,9 +107,9 @@
                     android:layout_marginTop="5dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:text="Lesson"
+                    android:text=""
                     android:textAlignment="center"
-                    android:textSize="14dp"
+                    android:textSize="16sp"
                     android:textStyle="bold" />
 
                 <Button

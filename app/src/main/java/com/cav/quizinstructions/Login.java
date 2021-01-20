@@ -49,7 +49,9 @@ public class Login extends AppCompatActivity {
     public static final String SHARED_PREFS = "sharedPrefs";
     public static final String EMAIL = "text";
     private String retrieveprogress="https://phportal.net/driverph/retrieve_progress.php";
+    public static final String SERVER_DASHBOARD = "https://phportal.net/driverph/dashboard_latest_module.php";
     public static String user_id;
+    public static boolean isFromLogin;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +62,7 @@ public class Login extends AppCompatActivity {
         username = findViewById(R.id.login_username);
         password1 = findViewById(R.id.login_password);
         fgtpassword = findViewById(R.id.textView_fgtpassword);
+        isFromLogin = true;
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,7 +74,6 @@ public class Login extends AppCompatActivity {
                 } else {
                     userLogin();
                 }
-                ;
             }
         });
 
@@ -87,9 +89,9 @@ public class Login extends AppCompatActivity {
         fgtpassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent(Login.this, ForgotPassword.class);
-//                intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                startActivity(intent);
+                Intent intent = new Intent(Login.this, ForgotPassword.class);
+                intent.addFlags(intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
             }
         });
     }
@@ -136,9 +138,11 @@ public class Login extends AppCompatActivity {
                         SharedPreferences.Editor myEdit = sharedPreferences.edit();
                         myEdit.putString("driver_email", email);
                         myEdit.putString("driver_password", password1.getText().toString());
+                        myEdit.putString("driver_userId", user_id);
                         myEdit.commit();
                         pdLoading.dismiss();
                         progress();
+                 //       loadDataAllAttemptsAndLevels();
 
 //                                Intent intent = new Intent(Login.this, Dashboard.class);
 ////                                Bundle extras = new Bundle();
@@ -213,9 +217,10 @@ public class Login extends AppCompatActivity {
                 }
             }
         }
-
         progress_class show = new progress_class();
         show.execute();
     }
+
+
 
 }

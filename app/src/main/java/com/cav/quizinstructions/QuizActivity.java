@@ -38,6 +38,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.navigation.NavigationView;
 import com.muddzdev.styleabletoast.StyleableToast;
+import com.squareup.picasso.Picasso;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -115,6 +116,8 @@ public class QuizActivity extends AppCompatActivity {
     MediaPlayer mediaPlayer;
     public static int testResultUnlock, testResultCompleted;
 
+    ImageView imgQuestion;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +144,7 @@ public class QuizActivity extends AppCompatActivity {
         attempt = findViewById(R.id.textview_attempt);
         textViewUserIdQAct = findViewById(R.id.textview_user_id);
         isModLocked = findViewById(R.id.textview_isLocked);
+        imgQuestion = findViewById(R.id.imageQuestion);
 
         textViewCountdown.setTextColor(Color.parseColor("#006400"));
 
@@ -235,6 +239,7 @@ public class QuizActivity extends AppCompatActivity {
             textViewQuestion.setText(currentQuestion.getQuestion());
             textViewChapter.setText(currentQuestion.getChapter());
             textViewModuleName.setText(currentQuestion.getModuleName());
+            PicassoClient.loadImage(this,currentQuestion.getImageUrl(), imgQuestion);
 
             rb1.setText(currentQuestion.getOption1());
             rb2.setText(currentQuestion.getOption2());

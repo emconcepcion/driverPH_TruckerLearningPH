@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NetworkMonitor extends BroadcastReceiver {
+    public static final String POST_ALL_TEST = "https://phportal.net/driverph/paa.php";
     StringRequest stringRequest;
     int counter = 0;
     @Override
@@ -48,7 +49,7 @@ public class NetworkMonitor extends BroadcastReceiver {
                     int num_attemptY = cursor.getInt(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_NUM_ATTEMPT));
                     String date_takenY = cursor.getString(cursor.getColumnIndex(DbContract.ScoresTable.COLUMN_NAME_DATE_TAKEN));
 
-                     stringRequest = new StringRequest(Request.Method.POST, DbContract.ScoresTable.SERVER_URL,
+                     stringRequest = new StringRequest(Request.Method.POST, POST_ALL_TEST,
                             new Response.Listener<String>() {
                                 @Override
                                 public void onResponse(String response) {
@@ -60,8 +61,8 @@ public class NetworkMonitor extends BroadcastReceiver {
                                         if (Response.equals("OK")){
                                             dbHelper.updateLocalDatabase(userIdY,emailY,scoreY,num_itemsY,chapterY,num_attemptY,date_takenY, DbContract.SYNC_STATUS_SAVED,database);
                                             context.sendBroadcast(new Intent(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
-//                                            StyleableToast.makeText(context, context.getString(R.string.updated),
-//                                                    Toast.LENGTH_LONG, R.style.toastStyle).show();
+                                            StyleableToast.makeText(context, context.getString(R.string.updated),
+                                                    Toast.LENGTH_LONG, R.style.toastStyle).show();
                                         }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
@@ -89,10 +90,10 @@ public class NetworkMonitor extends BroadcastReceiver {
                     }
                             ;
                     MySingleton.getInstance(context).addToRequestQueue(stringRequest);
-                    dbHelper.updateLocalDatabase(userIdY,emailY,scoreY,num_itemsY,chapterY,num_attemptY,date_takenY, DbContract.SYNC_STATUS_SAVED,database);
-                    context.sendBroadcast(new Intent(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
-                    StyleableToast.makeText(context, context.getString(R.string.updated),
-                            Toast.LENGTH_LONG, R.style.toastStyle).show();
+//                    dbHelper.updateLocalDatabase(userIdY,emailY,scoreY,num_itemsY,chapterY,num_attemptY,date_takenY, DbContract.SYNC_STATUS_SAVED,database);
+//                    context.sendBroadcast(new Intent(DbContract.ScoresTable.UI_UPDATE_BROADCAST));
+//                    StyleableToast.makeText(context, context.getString(R.string.updated),
+//                            Toast.LENGTH_LONG, R.style.toastStyle).show();
                 }
             }
           //  dbHelper.close();

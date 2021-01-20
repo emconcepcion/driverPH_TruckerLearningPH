@@ -5,6 +5,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,13 +32,16 @@ import com.android.volley.NetworkError;
 import com.android.volley.NoConnectionError;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.cav.quizinstructions.QuizActivity.*;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +55,9 @@ import static com.cav.quizinstructions.BackgroundTask.SHARED_PREFS;
 import static com.cav.quizinstructions.Constant.MODULE_ID_1;
 import static com.cav.quizinstructions.Constant.MODULE_ID_2;
 import static com.cav.quizinstructions.Constant.MODULE_ID_3;
+import static com.cav.quizinstructions.Constant.Server_All_Attempts_URL;
 import static com.cav.quizinstructions.Dashboard.Uid_PREFS;
+import static com.cav.quizinstructions.Dashboard.dashboard_email;
 import static com.cav.quizinstructions.Dashboard.thisUserId;
 import static com.cav.quizinstructions.Quizzes_menu.myLatestChapter;
 import static com.cav.quizinstructions.Quizzes_menu.myLatestIsCompleted;
@@ -68,18 +75,14 @@ public class QuizResults extends AppCompatActivity {
     TextView myEmailResult, myUserId;
     SharedPreferences sp;
     int UNLOCK_MOD2, UNLOCK_MOD3;
+    public static final String UPDATE_ALL_ATTEMPTS_TEST = "https://phportal.net/driverph/uaa.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_results);
-
         Dashboard.getmInstanceActivity().loadDataAllAttemptsAndLevels();
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
         btn_willRetake = findViewById(R.id.btn_retake);
         btn_willReview = findViewById(R.id.btn_review);
         btn_willUnlock = findViewById(R.id.btn_unlock);
@@ -103,6 +106,7 @@ public class QuizResults extends AppCompatActivity {
         String thisChapter = getIntent().getExtras().getString("chapter");
         chapter_name.setText(thisChapter);
         showResult();
+    //    loadDataAllAttemptsAndLevels();
     }
 
     public void showResult() {
@@ -141,7 +145,6 @@ public class QuizResults extends AppCompatActivity {
                 }
             });
         }
-
     }
 
     public void unlock() {
@@ -149,7 +152,7 @@ public class QuizResults extends AppCompatActivity {
         int txt_score_result = getIntent().getExtras().getInt("score");
         int items_test = getIntent().getExtras().getInt("items");
         String unlockNextModule = chapter_name.getText().toString();
-
+//        Dashboard.recentModule.setText(MODULE_ID_1);
         switch (unlockNextModule) {
             case MODULE_ID_1:
                 //module 1 is active and need to unlock mod2
@@ -209,7 +212,7 @@ public class QuizResults extends AppCompatActivity {
     public void updateUnlockedModuleToServer(int userId, String chap, int isUnLocked, int isCompleted) {
         if (checkNetworkConnection()) {
             StringRequest stringRequest = new StringRequest(Request.Method.POST,
-                    DbContract.ScoresTable.SERVER_UPDATE_PROGRESS,
+                    UPDATE_ALL_ATTEMPTS_TEST,
                     new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
@@ -267,6 +270,7 @@ public class QuizResults extends AppCompatActivity {
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return (networkInfo != null && networkInfo.isConnected());
     }
+
 
 }
 

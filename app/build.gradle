@@ -8,13 +8,16 @@ android {
 
     defaultConfig {
         applicationId "com.cav.quizinstructions"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         useLibrary 'org.apache.http.legacy'
+        ndk {
+            abiFilters 'armeabi-v7a', 'x86'
+        }
     }
 
     compileOptions {
@@ -51,6 +54,7 @@ dependencies {
 //    implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+    implementation project(path: ':unityLibrary')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
@@ -83,5 +87,8 @@ dependencies {
     //noinspection GradleCompatible
     implementation 'com.android.support:recyclerview-v7:24.0.+'
     implementation 'com.github.bumptech.glide:glide:3.7.0'
+    implementation project(':unityLibrary')
+    implementation 'com.google.android.play:core:1.9.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 
 }

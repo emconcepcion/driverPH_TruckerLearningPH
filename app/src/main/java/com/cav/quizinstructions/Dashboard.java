@@ -1,6 +1,7 @@
 package com.cav.quizinstructions;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,11 +11,21 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.OnSuccessListener;
+import com.google.android.play.core.tasks.Task;
+import com.unity3d.player.UnityPlayerActivity;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -69,12 +80,14 @@ import static com.cav.quizinstructions.Constant.SP_LESSONID;
 public class Dashboard extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static WeakReference<Dashboard> weakActivity;
 
+    private int REQUEST_CODE = 11;
+
     private DrawerLayout drawer;
     static Button resumeLesson;
     public static String dashboard_email;
     public static TextView recentModule, activeModule, activeLesson,
                             activeModuleId, activeLessonId;
-    public static String user_id;
+    public static String user_id, uId;
     public static int thisUserId;
     public static TextView isModuleLocked, isModuleCompleted;
     public static String myLatestUserId;
@@ -82,12 +95,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     public static String myLatestChapter;
     public static String myLatestIsUnlocked;
     public static String myLatestIsCompleted;
-    public static String myProgressUserId;
-    public static String myProgressChapter;
-    public static String myProgressLessonId;
-    public static String myProgressStatus;
-    public static String myProgressDateStarted;
-    public static String myProgressDateFinished;
     public static String nameVR;
     public static String user_idPassedTests;
     private TextView welcome_fname;
@@ -99,10 +106,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
     SharedPreferences sp;
     SharedPreferences sharedPreferences;
     public static final String Uid_PREFS = "USER_IDPREFS";
-    private final String retrieveUrl = "https://phportal.net/driverph/retrieve.php";
-    private final String QUESTIONS_URL = "https://phportal.net/driverph/questions.php";
+    private static final String retrieveUrl = "https://phportal.net/driverph/retrieve.php";
+    private static final String QUESTIONS_URL = "https://phportal.net/driverph/questions.php";
     private static final String Server_Scores_URL = "https://phportal.net/driverph/scoresOnline.php";
     public static final String SERVER_DASHBOARD = "https://phportal.net/driverph/dashboard_latest_module.php";
+    public static final String DASH_TEST = "https://phportal.net/driverph/daa.php";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,9 +137,11 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         activeModuleId = findViewById(R.id.moduleIdServer);
         activeModule = findViewById(R.id.Module);
 
+
         resumeLesson = (Button) findViewById(R.id.resume);
         myEmailForAttempts = findViewById(R.id.emailForAttempts);
         myEmailForAttempts.setText(dashboard_email);
+        recentModule.setText(myLatestChapter);
 
         SharedPreferences sharedPreferences = getSharedPreferences(SP_LESSONID, MODE_PRIVATE);
         lessonIdFromServer = sharedPreferences.getString("lessonId", "");
@@ -139,19 +149,21 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         moduleIdFromServer = sharedPreferences.getString("moduleId", "");
         moduleNameFromServer = sharedPreferences.getString("moduleName", "");
 
-        String null_lessonTitle = "No active modules yet, please click the button to start learning!";
+        String null_moduleTitle = "No active modules yet,";
+        String null_lessonTitle = "please click the button to start learning!";
         if (lessonTitleFromServer.equals("null") || moduleNameFromServer.equals("null") ||
                 lessonIdFromServer.equals("null") || moduleIdFromServer.equals("null")){
-            activeModule.setText(null_lessonTitle);
+            activeModule.setText(null_moduleTitle);
+            activeLesson.setText(null_lessonTitle);
         }else{
             activeLessonId.setText(lessonIdFromServer);
             activeLesson.setText(lessonTitleFromServer);
             activeModuleId.setText(moduleIdFromServer);
             activeModule.setText(moduleNameFromServer);
         }
-        recentModule.setText(myLatestChapter);
 
-        if (moduleNameFromServer.equals(null_lessonTitle)){
+
+        if (activeModule.getText().toString().equals(null_moduleTitle)){
             resumeLesson.setText("Start Learning");
         }
         resumeLesson.setOnClickListener(new View.OnClickListener() {
@@ -168,7 +180,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             myLatestIsUnlocked = "1";
             myLatestIsCompleted = "0";
             myLatestAttempt = "0";
-            myLatestChapter = "";
+            myLatestChapter = "1";
         } else {
             isModuleLocked.setText(myLatestIsUnlocked);
             isModuleCompleted.setText(myLatestIsCompleted);
@@ -183,7 +195,6 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat simpleDate = new SimpleDateFormat("EEEE MMMM dd, yyyy");
         String currentDate = simpleDate.format(calendar.getTime());
-        //String currentDate = DateFormat.getDateInstance(DateFormat.FULL).format(calendar.getTime());
 
         TextView textViewDate = findViewById(R.id.textView_greeting);
         textViewDate.setText(currentDate);
@@ -201,6 +212,38 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
+        AppUpdateManager appUpdateManager = AppUpdateManagerFactory.create(Dashboard.this);
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+
+        appUpdateInfoTask.addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+            @Override
+            public void onSuccess(AppUpdateInfo result) {
+
+                if (result.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                && result.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)){
+                    try {
+                        appUpdateManager.startUpdateFlowForResult(result, AppUpdateType.IMMEDIATE,
+                                Dashboard.this, REQUEST_CODE);
+                    } catch (IntentSender.SendIntentException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_CODE){
+            Toast.makeText(this, "Start Download", Toast.LENGTH_SHORT).show();
+
+            if (resultCode != RESULT_OK){
+                Log.d("mm", "Update flow failed" + resultCode);
+            }
+        }
     }
 
     private void resumeModule() {
@@ -208,7 +251,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         switch (module){
             case Constant._1:
             case MODULE_ID_1:
-                Intent intent1 = new Intent(Dashboard.this, Lessons_Basic_Content.class);
+                Intent intent1 = new Intent(Dashboard.this, Basic_Content.class);
                 Bundle extras1 = new Bundle();
                 extras1.putString("module", MODULE_ID_1);
                 extras1.putString("lessonId", activeLessonId.getText().toString());
@@ -218,7 +261,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 break;
             case Constant._2:
             case MODULE_ID_2:
-                Intent intent2 = new Intent(Dashboard.this, Lessons_Basic_Content.class);
+                Intent intent2 = new Intent(Dashboard.this, Basic_Content.class);
                 Bundle extras2 = new Bundle();
                 extras2.putString("module", MODULE_ID_2);
                 extras2.putString("lessonId", activeLessonId.getText().toString());
@@ -228,13 +271,16 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 break;
             case Constant._3:
             case MODULE_ID_3:
-                Intent intent3 = new Intent(Dashboard.this, Lessons_Basic_Content.class);
+                Intent intent3 = new Intent(Dashboard.this, Basic_Content.class);
                 Bundle extras3 = new Bundle();
                 extras3.putString("module", MODULE_ID_3);
                 extras3.putString("lessonId", activeLessonId.getText().toString());
                 extras3.putString("moduleName", activeModule.getText().toString());
                 intent3.putExtras(extras3);
                 startActivity(intent3);
+                break;
+            default:
+                startActivity(new Intent(Dashboard.this, Lessons_Menu.class));
                 break;
         }
     }
@@ -309,7 +355,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         cardViewSimulation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(Dashboard.this, "Simulation Activity", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(Dashboard.this, UnityPlayerActivity.class));
             }
         });
 
@@ -488,23 +534,27 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
     @Override
     public void onBackPressed() {
-        AlertDialog alertDialog = new AlertDialog.Builder(Dashboard.this).create();
-        alertDialog.setTitle("Exit");
-        alertDialog.setMessage("Are you sure you want to exit?");
-        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        logoutThisUser();
-                        dialog.dismiss();
-                    }
-                });
-        alertDialog.show();
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }else{
+            AlertDialog alertDialog = new AlertDialog.Builder(Dashboard.this).create();
+            alertDialog.setTitle("Exit");
+            alertDialog.setMessage("Are you sure you want to exit?");
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Yes",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            logoutThisUser();
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
     }
 
     //for viewing of passed tests (summarized)
@@ -527,51 +577,38 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
 
                             for (int i = 0; i < menuitemArray.length(); i++) {
 
-                                Log.d("user_id " + i,
-                                        menuitemArray.getJSONObject(i).getString("user_id")
+                                Log.d("userId " + i,
+                                        menuitemArray.getJSONObject(i).getString("userId")
                                                 .toString());
                                 Log.d("email: " + i, menuitemArray.getJSONObject(i)
                                         .getString("email"));
-                                Log.d("score: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("score"));
-                                Log.d("num_of_items: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("num_of_items"));
-                                Log.d("chapter: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("chapter"));
-                                Log.d("num_of_attempt: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("num_of_attempt"));
-                                Log.d("duration: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("duration"));
-                                Log.d("date_taken: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("date_taken"));
+                                Log.d("numberOfCorrectAnswers: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("numberOfCorrectAnswers"));
+                                Log.d("numberOfQuestions: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("numberOfQuestions"));
+                                Log.d("module: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("module"));
+                                Log.d("retryCount: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("retryCount"));
+                                Log.d("minutesToFinish: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("minutesToFinish"));
+                                Log.d("createdOn: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("createdOn"));
                                 Log.d("isUnlocked: " + i, menuitemArray.getJSONObject(i)
                                         .getString("isUnlocked"));
-                                Log.d("isCompleted: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("isCompleted"));
+                                Log.d("passed: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("passed"));
 
-                                user_idPassedTests = menuitemArray.getJSONObject(i).getString("user_id");
+                                user_idPassedTests = menuitemArray.getJSONObject(i).getString("userId");
                                 String email = menuitemArray.getJSONObject(i).getString("email");
-                                String score = menuitemArray.getJSONObject(i).getString("score");
-                                String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
-                                String chapter = menuitemArray.getJSONObject(i).getString("chapter");
-//                                String passedChapter = "";
-//                                switch (chapter){
-//                                    case "1":
-//                                        passedChapter = Constant._1;
-//                                        break;
-//                                    case "2":
-//                                        passedChapter = Constant._2;
-//                                        break;
-//                                    case "3":
-//                                        passedChapter = Constant._3;
-//                                        break;
-//                                }
-
-                                String num_of_attempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
-                                String duration = menuitemArray.getJSONObject(i).getString("duration");
-                                String date_taken = menuitemArray.getJSONObject(i).getString("date_taken");
+                                String score = menuitemArray.getJSONObject(i).getString("numberOfCorrectAnswers");
+                                String num_items = menuitemArray.getJSONObject(i).getString("numberOfQuestions");
+                                String chapter = menuitemArray.getJSONObject(i).getString("module");
+                                String num_of_attempt = menuitemArray.getJSONObject(i).getString("retryCount");
+                                String duration = menuitemArray.getJSONObject(i).getString("minutesToFinish");
+                                String date_taken = menuitemArray.getJSONObject(i).getString("createdOn");
                                 String isLocked = menuitemArray.getJSONObject(i).getString("isUnlocked");
-                                String isCompleted = menuitemArray.getJSONObject(i).getString("isCompleted");
+                                String isCompleted = menuitemArray.getJSONObject(i).getString("passed");
                                 MyScoresServer mS1 = new MyScoresServer(Integer.parseInt(user_idPassedTests), email, Integer.parseInt(score),
                                         Integer.parseInt(num_items), chapter, Integer.parseInt(num_of_attempt), duration,
                                         date_taken, Integer.parseInt(isLocked), Integer.parseInt(isCompleted));
@@ -680,6 +717,8 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                         .getString("module"));
                 Log.d("moduleName" + i, menuitemArray.getJSONObject(i)
                         .getString("moduleName"));
+                Log.d("imageUrl" + i, menuitemArray.getJSONObject(i)
+                        .getString("imageUrl"));
 
                 String question = menuitemArray.getJSONObject(i).getString("questionText");
                 String option1 = menuitemArray.getJSONObject(i).getString("choiceA");
@@ -689,8 +728,9 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
                 String answer_nr = menuitemArray.getJSONObject(i).getString("correctAnswer");
                 String chapter = menuitemArray.getJSONObject(i).getString("module");
                 String moduleName = menuitemArray.getJSONObject(i).getString("moduleName");
+                String image = menuitemArray.getJSONObject(i).getString("imageUrl");
                 Question q1 = new Question(question, option1, option2, option3, option4,
-                        Integer.parseInt(answer_nr), chapter, moduleName);
+                        Integer.parseInt(answer_nr), chapter, moduleName, image);
                 db.addQuestion(q1);
             }
 
@@ -710,7 +750,7 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
         Database db = new Database(this);
         db.Open();
         StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.DEPRECATED_GET_OR_POST,
-                SERVER_DASHBOARD,
+                DASH_TEST,
                 new com.android.volley.Response.Listener<String>() {
                     @Override
                     public void onResponse(String s) {
@@ -780,81 +820,12 @@ public class Dashboard extends AppCompatActivity implements NavigationView.OnNav
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<>();
                 params.put("email", dashboard_email);
-                Log.d("email", Login.email + "");
-                Log.d("yes", "successful...");
-                return params;
-            }
-        };
-
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-        requestQueue.add(stringRequest);
-    }
-
-    //load all data for user's progress / latest module
-    public void loadUserProgressModules() {
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading data...");
-        progressDialog.show();
-        Database db = new Database(this);
-        db.Open();
-        StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.DEPRECATED_GET_OR_POST,
-                SERVER_DASHBOARD,
-                new com.android.volley.Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String s) {
-                        progressDialog.dismiss();
-                        Toast.makeText(Dashboard.this, "Loading all attempts", Toast.LENGTH_SHORT).show();
-                        try {
-                            JSONObject jObj = new JSONObject(s);
-
-                            JSONArray menuitemArray = jObj.getJSONArray("data");
-
-                            for (int i = 0; i < menuitemArray.length(); i++) {
-
-                                Log.d("userId " + i,
-                                        menuitemArray.getJSONObject(i).getString("userId"));
-                                Log.d("module: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("module"));
-                                Log.d("lessonId: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("lessonId"));
-                                Log.d("status: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("status"));
-                                Log.d("dateStarted: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("dateStarted"));
-                                Log.d("dateFinished: " + i, menuitemArray.getJSONObject(i)
-                                        .getString("dateFinished"));
-
-                                myProgressUserId = menuitemArray.getJSONObject(i).getString("userId");
-                                myProgressChapter= menuitemArray.getJSONObject(i).getString("module");
-                                myProgressLessonId = menuitemArray.getJSONObject(i).getString("lessonId");
-                                myProgressStatus = menuitemArray.getJSONObject(i).getString("status");
-                                myProgressDateStarted = menuitemArray.getJSONObject(i).getString("dateStarted");
-                                myProgressDateFinished = menuitemArray.getJSONObject(i).getString("dateFinished");
-                            }
-
-                            Toast.makeText(Dashboard.this, "Fetched from Progress: " + myProgressUserId, Toast.LENGTH_SHORT).show();
-                            Toast.makeText(Dashboard.this, "Progress Module: " + myProgressChapter, Toast.LENGTH_SHORT).show();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new com.android.volley.Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        progressDialog.dismiss();
-                        Toast.makeText(Dashboard.this, volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> params = new HashMap<>();
-                params.put("email", dashboard_email);
                 Log.d("email", dashboard_email + "");
                 Log.d("yes", "successful...");
                 return params;
             }
         };
+
         RequestQueue requestQueue = Volley.newRequestQueue(this);
         requestQueue.add(stringRequest);
     }

@@ -16,10 +16,10 @@
         android:layout_above="@id/subForm"
         android:orientation="vertical">
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/refreshViewStatusList"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+<!--        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout-->
+<!--            android:id="@+id/refreshViewStatusList"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent">-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
@@ -32,7 +32,7 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+<!--        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>-->
     </LinearLayout>
 
 

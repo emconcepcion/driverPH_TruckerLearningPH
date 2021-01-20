@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.cav.quizinstructions.Constant.Server_All_Attempts_URL;
 import static com.cav.quizinstructions.Constant._1;
 import static com.cav.quizinstructions.Constant._2;
 import static com.cav.quizinstructions.Constant._3;
@@ -65,6 +66,12 @@ public class QuizInstructions extends AppCompatActivity {
 
     public static String chapter;
     Button buttonStartQuiz, back_btn;
+    public static String myLatestUserId;
+    public static String myLatestAttempt;
+    public static String myLatestChapter;
+    public static String myLatestIsUnlocked;
+    public static String myLatestIsCompleted;
+    public static String dash_email;
 
     // Adding HTTP Server URL to string variable.
     private final String QUESTIONS_URL = "https://phportal.net/driverph/questions.php";
@@ -78,8 +85,8 @@ public class QuizInstructions extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.quiz_instructions);
-
         Dashboard.getmInstanceActivity().loadDataAllAttemptsAndLevels();
+
 
         buttonStartQuiz = findViewById(R.id.btn_start_quiz);
         back_btn = findViewById(R.id.btn_back_to_take_quiz);
@@ -122,7 +129,7 @@ public class QuizInstructions extends AppCompatActivity {
             }
         });
         getJSON(QUESTIONS_URL);
-
+    //    loadDataAllAttemptsAndLevels();
     }
 
     private void backToLessons() {
@@ -232,6 +239,8 @@ public class QuizInstructions extends AppCompatActivity {
                         .getString("module"));
                 Log.d("moduleName" + i, menuitemArray.getJSONObject(i)
                         .getString("moduleName"));
+                Log.d("image" + i, menuitemArray.getJSONObject(i)
+                        .getString("image"));
 
                 String question = menuitemArray.getJSONObject(i).getString("questionText");
                 String option1 = menuitemArray.getJSONObject(i).getString("choiceA");
@@ -241,8 +250,9 @@ public class QuizInstructions extends AppCompatActivity {
                 String answer_nr = menuitemArray.getJSONObject(i).getString("correctAnswer");
                 String chapter = menuitemArray.getJSONObject(i).getString("module");
                 String moduleName = menuitemArray.getJSONObject(i).getString("moduleName");
+                String image = menuitemArray.getJSONObject(i).getString("imageUrl");
                 Question q1 = new Question(question, option1, option2, option3, option4,
-                        Integer.parseInt(answer_nr), chapter, moduleName);
+                        Integer.parseInt(answer_nr), chapter, moduleName, image);
                 db.addQuestion(q1);
             }
 
@@ -252,6 +262,97 @@ public class QuizInstructions extends AppCompatActivity {
         }
         Log.d("Inside aysnc task", "inside asynctask...");
      //   db.close();
+    }
+
+    //load all data attempts and unlocked modules from web
+    public void loadDataAllAttemptsAndLevels() {
+        ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Loading data...");
+        progressDialog.show();
+        Database db = new Database(this);
+        db.Open();
+        StringRequest stringRequest = new StringRequest(com.android.volley.Request.Method.DEPRECATED_GET_OR_POST,
+                Server_All_Attempts_URL,
+                new com.android.volley.Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String s) {
+                        progressDialog.dismiss();
+                        Toast.makeText(QuizInstructions.this, "Loading all attempts", Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jObj = new JSONObject(s);
+
+                            JSONArray menuitemArray = jObj.getJSONArray("data");
+
+                            for (int i = 0; i < menuitemArray.length(); i++) {
+
+                                Log.d("user_id " + i,
+                                        menuitemArray.getJSONObject(i).getString("user_id")
+                                                .toString());
+                                Log.d("email: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("email"));
+                                Log.d("score: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("score"));
+                                Log.d("num_of_items: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("num_of_items"));
+                                Log.d("chapter: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("chapter"));
+                                Log.d("num_of_attempt: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("num_of_attempt"));
+                                Log.d("duration: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("duration"));
+                                Log.d("date_taken: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("date_taken"));
+                                Log.d("isUnlocked: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("isUnlocked"));
+                                Log.d("isCompleted: " + i, menuitemArray.getJSONObject(i)
+                                        .getString("isCompleted"));
+
+                                myLatestUserId = menuitemArray.getJSONObject(i).getString("user_id");
+                                String email = menuitemArray.getJSONObject(i).getString("email");
+                                String score = menuitemArray.getJSONObject(i).getString("score");
+                                String num_items = menuitemArray.getJSONObject(i).getString("num_of_items");
+                                myLatestChapter = menuitemArray.getJSONObject(i).getString("chapter");
+                                myLatestAttempt = menuitemArray.getJSONObject(i).getString("num_of_attempt");
+                                String duration = menuitemArray.getJSONObject(i).getString("duration");
+                                String date_taken = menuitemArray.getJSONObject(i).getString("date_taken");
+                                myLatestIsUnlocked = menuitemArray.getJSONObject(i).getString("isUnlocked");
+                                myLatestIsCompleted = menuitemArray.getJSONObject(i).getString("isCompleted");
+                                MyScoresServer mS1 = new MyScoresServer(Integer.parseInt(myLatestUserId), email, Integer.parseInt(score),
+                                        Integer.parseInt(num_items), myLatestChapter, Integer.parseInt(myLatestAttempt), duration,
+                                        date_taken, Integer.parseInt(myLatestIsUnlocked), Integer.parseInt(myLatestIsCompleted));
+                                db.addScoresServer(mS1);
+                            }
+
+                            Toast.makeText(QuizInstructions.this, "Fetched from attempts: " + myLatestUserId, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(QuizInstructions.this, "Latest Chapter: " + myLatestChapter, Toast.LENGTH_SHORT).show();
+                            Dashboard.recentModule.setText(myLatestChapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },
+                new com.android.volley.Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        progressDialog.dismiss();
+                        Toast.makeText(QuizInstructions.this, volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<>();
+                String fetchedChap = Dashboard.myLatestChapter;
+                params.put("email", dashboard_email);
+                params.put("chapter", fetchedChap);
+                Log.d("email", dashboard_email + "");
+                Log.d("yes", "successful...");
+                return params;
+            }
+        };
+
+        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        requestQueue.add(stringRequest);
     }
 
 }

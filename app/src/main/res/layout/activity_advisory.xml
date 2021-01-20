@@ -7,8 +7,8 @@
     android:background="#FAFAFA"
     tools:context=".Advisory">
 
-    <include layout="@layout/toolbar"
-        android:id="@+id/toolbar"/>
+<!--    <include layout="@layout/toolbar"-->
+<!--        android:id="@+id/toolbar"/>-->
 
     <LinearLayout
         android:layout_width="match_parent"
